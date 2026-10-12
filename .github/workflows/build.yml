@@ -32,7 +32,7 @@ jobs:
       - name: Generate texture
         run: |
           cd scripts
-          python generate_texture.py
+          python generate_texture.py --output-dir ${{ github.workspace }}
       
       - name: Validate project structure
         run: |

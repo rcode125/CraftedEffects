@@ -11,6 +11,8 @@ Creates a Minecraft-style texture with:
 
 from PIL import Image, ImageDraw
 import os
+import argparse
+from pathlib import Path
 
 def create_9x_mace_texture():
     # Create a 16x16 image with transparent background
@@ -183,9 +185,19 @@ def create_9x_mace_texture():
     return img
 
 def main():
-    output_path = "/home/rcode125/CraftedEffects/resource_pack/textures/items/9x_mace.png"
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    
+    parser = argparse.ArgumentParser(description="Generate 9x Mace texture")
+    parser.add_argument(
+        "--output-dir",
+        default=os.getenv('GITHUB_WORKSPACE', Path.cwd()),
+        help="Directory where the generated texture will be saved (default: GITHUB_WORKSPACE or current directory)",
+    )
+    args = parser.parse_args()
+
+    workspace = Path(args.output_dir)
+    output_dir = workspace / "resource_pack" / "textures" / "items"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / "9x_mace.png"
+
     img = create_9x_mace_texture()
     img.save(output_path)
     print(f"Texture saved to {output_path}")
