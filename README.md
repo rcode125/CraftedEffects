@@ -245,8 +245,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Issues**: Report bugs on the [GitHub Issues](https://github.com/YOUR_USERNAME/9x-mace-addon/issues) page
-- **Discussions**: Use [GitHub Discussions](https://github.com/YOUR_USERNAME/9x-mace-addon/discussions) for questions
+- **Issues**: Report bugs on the [GitHub Issues](https://github.com/rcode125/CraftedEffects/issues) page
 
 ---
 
