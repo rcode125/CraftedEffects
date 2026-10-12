@@ -1,0 +1,23 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "craftedeffects:9x_mace_recipe"
+    },
+    "tags": ["crafting_table"],
+    "pattern": [
+      "###",
+      "###",
+      "###"
+    ],
+    "key": {
+      "#": {
+        "item": "minecraft:mace"
+      }
+    },
+    "result": {
+      "item": "craftedeffects:9x_mace",
+      "count": 1
+    }
+  }
+}

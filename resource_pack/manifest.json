@@ -1,0 +1,17 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "9x Mace Addon - Resource Pack",
+    "description": "Custom texture for the 9x Mace item",
+    "uuid": "5c7487c1-bbba-4a3a-a6aa-b7ca89e41cd5",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 21, 0]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "b0a44692-ac8e-4a40-bb42-d8d5c0f5c8f4",
+      "version": [1, 0, 0]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "9x Mace Addon - Behavior Pack",
+    "description": "Adds the 9x Mace custom item crafted from 9 vanilla maces",
+    "uuid": "fbec5def-8634-4464-928a-4c71b3bd97cf",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 21, 0]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "8c9f35b1-e05f-460f-9c3a-8ffed4624c44",
+      "version": [1, 0, 0]
+    }
+  ],
+  "dependencies": [
+    {
+      "uuid": "5c7487c1-bbba-4a3a-a6aa-b7ca89e41cd5",
+      "version": [1, 0, 0]
+    }
+  ]
+}
