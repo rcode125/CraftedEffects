@@ -143,18 +143,19 @@ jobs:
           test -f build/9x-Mace-Addon.mcaddon || (echo "Missing output file" && exit 1)
           echo "Output file exists"
           
-          # Verify it's a valid zip
+          # Verify the .mcaddon contains two valid .mcpack archives, each with
+          # its manifest at the archive root.
           python3 -c "
           import zipfile
           with zipfile.ZipFile('build/9x-Mace-Addon.mcaddon', 'r') as zf:
               files = zf.namelist()
-              print(f'Files in archive: {len(files)}')
-              # Check for required structure
-              assert any(f.startswith('behavior_pack/') for f in files), 'Missing behavior_pack/'
-              assert any(f.startswith('resource_pack/') for f in files), 'Missing resource_pack/'
-              assert 'behavior_pack/manifest.json' in files, 'Missing behavior_pack/manifest.json'
-              assert 'resource_pack/manifest.json' in files, 'Missing resource_pack/manifest.json'
-              print('Archive structure valid')
+              assert set(files) == {'behavior_pack.mcpack', 'resource_pack.mcpack'}, f'Unexpected addon entries: {files}'
+              for pack_name in files:
+                  with zipfile.ZipFile(zf.open(pack_name), 'r') as pack:
+                      pack_files = pack.namelist()
+                      assert 'manifest.json' in pack_files, f'{pack_name} missing root manifest.json'
+                      assert not any(name.startswith('/') or '..' in name.split('/') for name in pack_files), f'{pack_name} contains unsafe paths'
+              print('Both pack archives and manifests are valid')
           "
       
       - name: Upload .mcaddon artifact

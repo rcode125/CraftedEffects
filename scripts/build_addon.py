@@ -10,6 +10,7 @@ import os
 import sys
 import zipfile
 import uuid
+from io import BytesIO
 from pathlib import Path
 
 # Configuration
@@ -56,6 +57,8 @@ def validate_uuid(uuid_str, field_name):
 def validate_manifests():
     """Validate both manifest.json files."""
     errors = []
+    bp_manifest = None
+    rp_manifest = None
     
     # Validate behavior pack manifest
     bp_manifest_path = BEHAVIOR_PACK_DIR / "manifest.json"
@@ -116,7 +119,7 @@ def validate_manifests():
                     errors.append(error)
         
         # Verify behavior pack references resource pack UUID
-        if "dependencies" in bp_manifest and "header" in rp_manifest:
+        if bp_manifest is not None and "dependencies" in bp_manifest and "header" in rp_manifest:
             rp_uuid = rp_manifest["header"]["uuid"]
             bp_dep_uuids = [dep.get("uuid") for dep in bp_manifest.get("dependencies", [])]
             if rp_uuid not in bp_dep_uuids:
@@ -291,24 +294,17 @@ def check_required_files():
     return errors
 
 def create_mcaddon():
-    """Create the .mcaddon file."""
+    """Create a .mcaddon containing separate behavior/resource .mcpack archives."""
     OUTPUT_DIR.mkdir(exist_ok=True)
-    
-    if OUTPUT_FILE.exists():
-        OUTPUT_FILE.unlink()
-    
+
     with zipfile.ZipFile(OUTPUT_FILE, 'w', zipfile.ZIP_DEFLATED) as zf:
-        # Add behavior pack files
-        for file_path in BEHAVIOR_PACK_DIR.rglob("*"):
-            if file_path.is_file() and not file_path.name.startswith('.'):
-                arcname = f"behavior_pack/{file_path.relative_to(BEHAVIOR_PACK_DIR)}"
-                zf.write(file_path, arcname)
-        
-        # Add resource pack files
-        for file_path in RESOURCE_PACK_DIR.rglob("*"):
-            if file_path.is_file() and not file_path.name.startswith('.'):
-                arcname = f"resource_pack/{file_path.relative_to(RESOURCE_PACK_DIR)}"
-                zf.write(file_path, arcname)
+        for pack_name, pack_dir in (("behavior_pack", BEHAVIOR_PACK_DIR), ("resource_pack", RESOURCE_PACK_DIR)):
+            pack_buffer = BytesIO()
+            with zipfile.ZipFile(pack_buffer, 'w', zipfile.ZIP_DEFLATED) as pack_zip:
+                for file_path in pack_dir.rglob("*"):
+                    if file_path.is_file() and not file_path.name.startswith('.'):
+                        pack_zip.write(file_path, file_path.relative_to(pack_dir).as_posix())
+            zf.writestr(f"{pack_name}.mcpack", pack_buffer.getvalue())
     
     print(f"Created {OUTPUT_FILE}")
     print(f"Size: {OUTPUT_FILE.stat().st_size} bytes")

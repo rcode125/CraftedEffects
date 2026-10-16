@@ -134,17 +134,7 @@ def create_9x_mace_texture():
     draw.point((9, 1), fill=RED_MID)
     draw.point((10, 1), fill=RED_BRIGHT)
     
-    # "9x" text on the front face of mace head (around y=4-6, x=6-9)
-    # Draw "9" at x=6-7, y=4-6
-    # 9 shape: top curve, middle bar, bottom curve
-    nine_pixels = [
-        (6, 4), (7, 4),  # top
-        (8, 4),          # top right
-        (8, 5),          # right middle
-        (6, 5), (7, 5), (8, 5),  # middle bar
-        (6, 6),          # left bottom
-        (6, 6), (7, 6), (8, 6),  # bottom
-    ]
+    # "9x" text on the front face of mace head (around y=4-6, x=6-10)
     # Simpler 9: 3x3 block at (6,4) to (8,6)
     for px, py in [(6,4),(7,4),(8,4), (8,5), (6,5),(7,5),(8,5), (6,6),(7,6)]:
         draw.point((px, py), fill=TEXT_OUTLINE)
@@ -153,11 +143,6 @@ def create_9x_mace_texture():
     
     # Draw "x" at x=9-10, y=4-6
     # X shape: diagonal lines
-    x_pixels = [
-        (9, 4), (10, 4),  # top
-        (9, 5), (10, 5),  # middle
-        (9, 6), (10, 6),  # bottom
-    ]
     # Draw X with crossing diagonals
     for px, py in [(9,4), (10,6)]:  # \
         draw.point((px, py), fill=TEXT_OUTLINE)
@@ -188,8 +173,8 @@ def main():
     parser = argparse.ArgumentParser(description="Generate 9x Mace texture")
     parser.add_argument(
         "--output-dir",
-        default=os.getenv('GITHUB_WORKSPACE', Path.cwd()),
-        help="Directory where the generated texture will be saved (default: GITHUB_WORKSPACE or current directory)",
+        default=os.getenv('GITHUB_WORKSPACE', Path(__file__).resolve().parent.parent),
+        help="Project directory where the generated texture will be saved (default: GITHUB_WORKSPACE or repository root)",
     )
     args = parser.parse_args()
 

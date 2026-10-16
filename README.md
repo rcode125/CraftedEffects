@@ -41,9 +41,7 @@ git clone https://github.com/rcode125/9x-mace-addon.git
 cd 9x-mace-addon
 
 # Generate the texture (if not already present)
-cd scripts
-python generate_texture.py
-cd ..
+python scripts/generate_texture.py
 
 # Run the build script
 python scripts/build_addon.py
