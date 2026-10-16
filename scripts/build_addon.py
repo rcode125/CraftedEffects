@@ -176,6 +176,9 @@ def validate_item_definition():
             errors.append("Item missing 'minecraft:icon' component")
         elif comps["minecraft:icon"].get("texture") != "9x_mace":
             errors.append(f"Item icon texture should be '9x_mace', got '{comps['minecraft:icon'].get('texture')}'")
+
+        if comps.get("minecraft:damage") != 200:
+            errors.append(f"Item damage should be 200, got '{comps.get('minecraft:damage')}'")
     
     return errors
 

@@ -203,7 +203,7 @@ If you prefer to install the packs separately:
 - **Min Engine Version**: 1.21.0
 - **Item Identifier**: `craftedeffects:9x_mace`
 - **Max Stack Size**: 1
-- **Damage**: 12 (higher than vanilla mace's 8)
+- **Damage**: 200 (configured item damage; Minecraft may also apply the player's base attack damage)
 - **Durability**: 2500 (higher than vanilla mace's 500)
 - **Enchantability**: 15 (weapon slot)
 - **Repairable**: With vanilla maces (250 durability each)
