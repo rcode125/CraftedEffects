@@ -22,7 +22,7 @@ Crafted from 9 vanilla maces in a crafting table, this add-on introduces a new c
 
 ### Method 1: Download Pre-built .mcaddon (Recommended)
 
-1. Go to the [GitHub Releases](https://github.com/YOUR_USERNAME/9x-mace-addon/releases) page
+1. Go to the [GitHub Releases](https://github.com/rcode125/9x-mace-addon/releases) page
 2. Download the latest `9x-Mace-Addon.mcaddon` file
 3. **Double-click** the `.mcaddon` file to automatically import into Minecraft Bedrock
 4. Follow the in-game prompts to complete the import
@@ -37,7 +37,7 @@ Crafted from 9 vanilla maces in a crafting table, this add-on introduces a new c
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/9x-mace-addon.git
+git clone https://github.com/rcode125/9x-mace-addon.git
 cd 9x-mace-addon
 
 # Generate the texture (if not already present)
