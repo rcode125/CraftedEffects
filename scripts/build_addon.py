@@ -17,7 +17,7 @@ ROOT = content.ROOT
 BP_DIR = content.BP_DIR
 RP_DIR = content.RP_DIR
 BUILD_DIR = ROOT / "build"
-SCRIPT_API = "2.9.0"  # stable Script API of Bedrock 26.3
+SCRIPT_API = "2.8.0"  # stable Script API shipped with Bedrock 26.3 (2.9.0 is only beta there)
 MIN_ENGINE = [1, 26, 30]  # Bedrock 26.3 = engine 1.26.30
 
 

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "pretest": "python3 ../scripts/build_addon.py && python3 tools/make_arena.py",
-    "test": "bc-bds run --packs ../behavior_pack --packs ../resource_pack --packs gametest_pack --tag craftedeffects --expect-registered 7 --json .bds/result.json",
+    "test": "bc-bds run --packs ../behavior_pack --packs ../resource_pack --packs gametest_pack --tag craftedeffects --expect-registered 7 --json .bds/result.json; status=$?; python3 tools/check_log.py || exit 1; exit $status",
     "test:inspect": "npm test -- --keep-alive",
     "where": "bc-bds where"
   },

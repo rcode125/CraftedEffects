@@ -77,7 +77,7 @@ python3 scripts/build_addon.py
 
 - `scripts/generate_content.py` ist die **einzige Quelle** für Relikte, Effekte und Angriffe. Er erzeugt Items, Rezepte, Texturen, Sprachdateien, `behavior_pack/scripts/data.js` und `RELIKTE.md`.
 - `scripts/build_addon.py` ruft den Generator auf, prüft Manifeste, IDs, Texturen und Rezepte (keine doppelten) sowie die JavaScript-Syntax und packt dann `build/CraftedEffects-<version>.mcaddon`.
-- Ziel: Engine `[1, 26, 30]` (= Bedrock 26.3), Script-API `@minecraft/server` **2.9.0** (stabil).
+- Ziel: Engine `[1, 26, 30]` (= Bedrock 26.3), Script-API `@minecraft/server` **2.8.0** (die stabile Version von 26.3; 2.9.0 ist dort nur Beta).
 
 | Script-Datei | Aufgabe |
 |---|---|

@@ -12,7 +12,7 @@
 
 ## Alle Relikte und ihre Rezepte
 
-Alle Rezepte werden an der **Werkbank (Crafting Table)** gelegt und haben denselben Rahmen: 4 Goldbarren in den Ecken, 4 Diamanten an den Seiten. **Nur die Mitte** bestimmt, welches Relikt entsteht. Die Rezepte sind von Anfang an im Rezeptbuch freigeschaltet.
+Alle Rezepte werden an der **Werkbank (Crafting Table)** gelegt und haben denselben Rahmen: 4 Goldbarren in den Ecken, 4 Diamanten an den Seiten. **Nur die Mitte** bestimmt, welches Relikt entsteht. Die Rezepte erscheinen im Rezeptbuch, sobald du einen Diamanten hast.
 
 ```text
 +-----------+-----------+-----------+
