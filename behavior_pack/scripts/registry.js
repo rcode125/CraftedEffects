@@ -157,6 +157,7 @@ export function scanPlayer(player) {
 
 function playerHasSerial(number, serial) {
   for (const player of world.getAllPlayers()) {
+    if (!player) continue;
     const container = player.getComponent("minecraft:inventory")?.container;
     if (!container) continue;
     for (let index = 0; index < container.size; index++) {
@@ -186,11 +187,11 @@ export function watchForLoss() {
   const pickedUp = new Set();
 
   world.beforeEvents.entityItemPickup.subscribe(({ item }) => {
-    pickedUp.add(item.id);
+    if (item) pickedUp.add(item.id);
   });
 
   world.beforeEvents.entityRemove.subscribe(({ removedEntity }) => {
-    if (removedEntity.typeId !== "minecraft:item") return;
+    if (removedEntity?.typeId !== "minecraft:item") return;
     const itemStack = removedEntity.getComponent("minecraft:item")?.itemStack;
     const number = relicNumber(itemStack?.typeId);
     if (!number) return;

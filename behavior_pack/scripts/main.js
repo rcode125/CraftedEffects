@@ -29,6 +29,7 @@ const activeRelics = new Map(); // player id -> relic numbers currently carried
 // Inventory scan: registers fresh crafts, removes duplicates, updates names.
 system.runInterval(() => {
   for (const player of world.getAllPlayers()) {
+    if (!player) continue;
     try {
       activeRelics.set(player.id, scanPlayer(player));
     } catch (error) {
@@ -40,6 +41,7 @@ system.runInterval(() => {
 // Permanent effects of all carried relics.
 system.runInterval(() => {
   for (const player of world.getAllPlayers()) {
+    if (!player) continue;
     try {
       applyRelicEffects(player, activeRelics.get(player.id) ?? []);
       const held = player.getComponent("minecraft:inventory")?.container?.getItem(player.selectedSlotIndex);

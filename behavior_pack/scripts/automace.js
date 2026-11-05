@@ -138,8 +138,8 @@ export function setupAutoMace() {
 
   // No fall damage while an Auto-Mace is running (or right after landing).
   world.beforeEvents.entityHurt.subscribe((event) => {
-    if (event.hurtEntity.typeId !== "minecraft:player") return;
-    if (event.damageSource.cause !== EntityDamageCause.fall) return;
+    if (event.hurtEntity?.typeId !== "minecraft:player") return;
+    if (event.damageSource?.cause !== EntityDamageCause.fall) return;
     if (states.has(event.hurtEntity.id) || recentlyFinished(event.hurtEntity.id)) event.cancel = true;
   });
 }

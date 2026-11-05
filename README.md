@@ -7,12 +7,16 @@ Add-on für Minecraft **Bedrock Edition 26.3**, für **normale Welten und Realms
 - **Spezialangriff** per Rechtsklick (Feuerball, Blitz, Schockwelle, Dash, Teleport, Heilung, Schild, **Auto-Mace**)
 - **Admin-Befehle** (`/ce:…`), um jedes Relikt im Spiel umzukonfigurieren
 
+## ⬇️ Download (ohne GitHub-Konto)
+
+**[CraftedEffects.mcaddon herunterladen](https://github.com/rcode125/CraftedEffects/releases/latest/download/CraftedEffects.mcaddon)** – immer die neueste getestete Version. Ältere Versionen gibt es unter [Releases](https://github.com/rcode125/CraftedEffects/releases).
+
 👉 **Alle Rezepte, Effekte, Angriffe und Befehle stehen in [RELIKTE.md](RELIKTE.md).**
 
 ## Installation – normale Welt
 
 1. Alte Versionen (Eternal Elixir, 9x Mace) in der Welt deaktivieren und unter *Einstellungen → Speicher* löschen.
-2. `build/CraftedEffects-3.0.0.mcaddon` öffnen; Minecraft importiert beide Packs.
+2. Die heruntergeladene `CraftedEffects.mcaddon` öffnen (oder selbst gebaut: `build/CraftedEffects-3.0.0.mcaddon`); Minecraft importiert beide Packs.
 3. Welt bearbeiten → **Verhaltenspakete**: *CraftedEffects Behavior Pack v3.0.0* aktivieren (das Ressourcenpaket wird automatisch mit aktiviert).
 4. Es werden **keine Experimente** und **keine Cheats** benötigt.
 
@@ -107,5 +111,7 @@ Schlägt der automatische Download fehl (Firewall/Proxy), die Server-ZIP für Li
 ```bash
 python3 tests/tools/install_server.py ~/Downloads/bedrock-server-1.26.30.5.zip
 ```
+
+`npm test` macht zwei Läufe: `test:shipped` lädt das **ausgelieferte** Pack (API 2.8.0) und prüft per Smoke-Test, dass es fehlerfrei lädt. `test:gametests` nutzt eine Testkopie mit `2.9.0-beta`, weil nur Beta-Packs die simulierten Testspieler sehen können. Beide Läufe schlagen auch fehl, wenn der Server beim Laden Fehler meldet (Rezepte, Items, Scripts).
 
 Getestet wird: Registrierung beim Craften, Dauer-Effekt im Inventar und dessen Entfernen, Entfernen von Duplikaten samt Rückgabe der Zutaten, Freigabe nach Zerstörung in Lava, Schockwelle, Auto-Mace (Flughöhe, Wechsel zur Mace, Treffer, kein Fallschaden) und Admin-Befehle. Die gemessene Auto-Mace-Höhe steht im Log als `[CE-TEST]`. In GitHub Actions läuft dasselbe automatisch als Job `gametests`.

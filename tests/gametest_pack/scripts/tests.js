@@ -1,6 +1,6 @@
 // GameTests for CraftedEffects. They treat the add-on as a black box: they
 // only look at what a player could see (item names, effects, inventory, health).
-import { GameMode, ItemStack } from "@minecraft/server";
+import { GameMode, ItemStack, ItemTypes } from "@minecraft/server";
 import { LookDuration, registerAsync } from "@minecraft/server-gametest";
 
 const TAG = "craftedeffects";
@@ -176,3 +176,16 @@ test("admin_command_changes_effect", 200, async (gameTest) => {
   command(gameTest, "ce:effect 7 night_vision 1"); // restore the default
   gameTest.succeed();
 });
+
+// Smoke test for the shipped pack (stable API, no simulated players needed).
+registerAsync("ce", "smoke_shipped_addon_loads", async (gameTest) => {
+  for (let number = 1; number <= 12; number++) {
+    gameTest.assert(ItemTypes.get(relicId(number)) !== undefined, `Item ${relicId(number)} fehlt`);
+  }
+  const result = gameTest.getDimension().runCommand("ce:list");
+  gameTest.assert(result.successCount > 0, "/ce:list hat nicht funktioniert");
+  gameTest.succeed();
+})
+  .structureName(ARENA)
+  .maxTicks(100)
+  .tag("smoke");

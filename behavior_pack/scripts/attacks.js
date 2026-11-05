@@ -92,7 +92,7 @@ const ATTACKS = {
 
   heal(player) {
     const players = player.dimension.getPlayers({ location: player.location, maxDistance: 8 });
-    for (const friend of players) {
+    for (const friend of players.filter(Boolean)) {
       friend.addEffect("instant_health", 1, { amplifier: 1, showParticles: true });
       friend.addEffect("regeneration", 100, { amplifier: 1, showParticles: true });
     }
