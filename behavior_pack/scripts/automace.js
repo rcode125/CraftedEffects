@@ -9,6 +9,7 @@ const LAUNCH_STRENGTH = 2.1; // vertical knockback; 2.6 measured 31 blocks in Ga
 const LOOK_RANGE = 40;
 const DIVE_STRENGTH = 1.8;
 const HIT_RANGE = 3.2;
+const LANDING_SMASH_RANGE = 5; // landing right next to the target still counts, like a real mace smash
 const MAX_TICKS = 260;
 const MACE_ID = "minecraft:mace";
 
@@ -118,17 +119,23 @@ function tick(player, state) {
   if (state.phase === "dive") {
     const target = state.target;
     if (!target?.isValid) return finish(player, "Ziel verschwunden");
-    if (distanceToTarget(player, target) <= HIT_RANGE) {
+    const velocity = player.getVelocity();
+    const speed = Math.hypot(velocity.x, velocity.y, velocity.z);
+    const gap = distanceToTarget(player, target);
+    const arrived = gap <= HIT_RANGE + speed; // reached now or within the next tick
+    const landedNextToTarget = player.isOnGround && state.ticks > 10 && gap <= LANDING_SMASH_RANGE;
+    if (arrived || landedNextToTarget) {
       const maceHeld = state.hasMace && maceHotbarSlot(player) === player.selectedSlotIndex;
       if (maceHeld) smash(player, state);
-      return finish(player, maceHeld ? "Treffer" : "am Ziel, keine Mace in der Hand");
+      return finish(player, maceHeld ? `Treffer (${gap.toFixed(1)} Blöcke)` : "am Ziel, keine Mace in der Hand");
     }
     if (player.isOnGround && state.ticks > 10) {
-      return finish(player, `gelandet, ${distanceToTarget(player, target).toFixed(1)} Blöcke vom Ziel`);
+      return finish(player, `gelandet, ${gap.toFixed(1)} Blöcke vom Ziel`);
     }
+    const head = target.getHeadLocation();
     const direction = normalize({
       x: target.location.x - player.location.x,
-      y: target.location.y + 0.5 - player.location.y,
+      y: (target.location.y + head.y) / 2 - player.location.y, // aim at the body's middle
       z: target.location.z - player.location.z,
     });
     player.applyKnockback({ x: direction.x * DIVE_STRENGTH, z: direction.z * DIVE_STRENGTH }, direction.y * DIVE_STRENGTH);
