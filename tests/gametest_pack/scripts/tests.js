@@ -1,6 +1,6 @@
 // GameTests for CraftedEffects. They treat the add-on as a black box: they
 // only look at what a player could see (item names, effects, inventory, health).
-import { GameMode, ItemStack, ItemTypes } from "@minecraft/server";
+import { GameMode, ItemStack, ItemTypes, world } from "@minecraft/server";
 import { LookDuration, registerAsync } from "@minecraft/server-gametest";
 
 const TAG = "craftedeffects";
@@ -56,7 +56,6 @@ async function waitFor(gameTest, ticks, message, condition) {
     if (condition()) return;
     await gameTest.idle(1);
   }
-  gameTest.fail(message);
   throw new Error(message);
 }
 
@@ -71,6 +70,8 @@ async function craft(gameTest, player, number, slot = 0) {
 test("craft_registers_and_names_relic", 120, async (gameTest) => {
   await freshRelic(gameTest, 10);
   const player = spawnPlayer(gameTest, 3, 3, "ce_crafter");
+  await gameTest.idle(5);
+  console.warn(`[CE-TEST] Test-Pack sieht ${world.getAllPlayers().length} Spieler`);
   await craft(gameTest, player, 10);
   const lore = inventory(player).getItem(0).getLore().join(" ");
   gameTest.assert(lore.includes("Unsichtbarkeit I"), `Beschreibung nennt den Effekt nicht: ${lore}`);
