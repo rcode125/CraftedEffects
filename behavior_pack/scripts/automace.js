@@ -5,8 +5,8 @@ import { distance, lookedAtTarget, normalize } from "./targets.js";
 //   rise  -> launched straight up (~20 blocks)
 //   float -> slow falling at the top, waiting for the player to look at a target
 //   dive  -> dashing towards the target; on contact a mace smash is dealt
-const LAUNCH_STRENGTH = 2.6; // vertical knockback; tune if the height is off
-const LOOK_RANGE = 32;
+const LAUNCH_STRENGTH = 2.1; // vertical knockback; 2.6 measured 31 blocks in GameTests, ~20 wanted
+const LOOK_RANGE = 40;
 const DIVE_STRENGTH = 1.8;
 const HIT_RANGE = 3.2;
 const MAX_TICKS = 260;

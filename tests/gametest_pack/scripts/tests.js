@@ -156,10 +156,18 @@ test("automace_launches_and_smashes", 400, async (gameTest) => {
     await gameTest.idle(1);
   }
   console.warn(`[CE-TEST] Auto-Mace Flughöhe: ${(apex - startY).toFixed(1)} Blöcke`);
-  gameTest.assert(apex - startY >= 12, `Auto-Mace flog nur ${(apex - startY).toFixed(1)} Blöcke hoch`);
+  gameTest.assert(apex - startY >= 14 && apex - startY <= 26, `Auto-Mace flog ${(apex - startY).toFixed(1)} statt ~20 Blöcke hoch`);
 
   player.lookAtEntity(target, LookDuration.Continuous);
-  await waitFor(gameTest, 160, "Auto-Mace hat das Ziel nicht getroffen", () => health.currentValue < before);
+  const describe = () => {
+    const p = player.location;
+    const t = target.location;
+    const distance = Math.hypot(p.x - t.x, p.y - t.y, p.z - t.z).toFixed(1);
+    return `Spieler y=${p.y.toFixed(1)}, Abstand ${distance}, Slot ${player.selectedSlotIndex}`;
+  };
+  console.warn(`[CE-TEST] Auto-Mace vor dem Dash: ${describe()}`);
+  for (let tick = 0; tick < 160 && health.currentValue >= before; tick++) await gameTest.idle(1);
+  gameTest.assert(health.currentValue < before, `Auto-Mace hat das Ziel nicht getroffen (${describe()})`);
   gameTest.assert(player.selectedSlotIndex === 4, "Es wurde nicht zur Mace gewechselt");
   console.warn(`[CE-TEST] Auto-Mace Schaden: ${(before - health.currentValue).toFixed(1)}`);
   gameTest.assert(player.getComponent("minecraft:health").currentValue >= 19, "Spieler hat Fallschaden genommen");
