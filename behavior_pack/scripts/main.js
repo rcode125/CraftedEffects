@@ -17,7 +17,8 @@ system.beforeEvents.startup.subscribe(({ itemComponentRegistry, customCommandReg
       });
     },
   });
-  registerCommands(customCommandRegistry);
+  const commands = registerCommands(customCommandRegistry);
+  console.log(`[CraftedEffects] geladen: Relikt-Komponente und ${commands} Befehle registriert`);
 });
 
 watchForLoss();

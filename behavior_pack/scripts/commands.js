@@ -143,26 +143,38 @@ const COMMANDS = [
   },
 ];
 
+/** Registers all /ce: commands. Returns how many worked; failures are logged one by one. */
 export function registerCommands(registry) {
   registry.registerEnum(EFFECT_ENUM, Object.keys(DATA.effects));
   registry.registerEnum(ATTACK_ENUM, Object.keys(DATA.attacks));
+  let registered = 0;
   for (const command of COMMANDS) {
-    registry.registerCommand(
-      {
-        name: command.name,
-        description: command.description,
-        permissionLevel: CommandPermissionLevel.GameDirectors,
-        cheatsRequired: false,
-        mandatoryParameters: command.mandatoryParameters,
-        optionalParameters: command.optionalParameters,
-      },
-      (origin, ...args) => {
-        try {
-          return command.run(origin, ...args);
-        } catch (error) {
-          return fail(`Fehler: ${error}`);
-        }
-      },
-    );
+    try {
+      registerOne(registry, command);
+      registered++;
+    } catch (error) {
+      console.error(`[CraftedEffects] Befehl /${command.name} konnte nicht registriert werden: ${error}`);
+    }
   }
+  return registered;
+}
+
+function registerOne(registry, command) {
+  registry.registerCommand(
+    {
+      name: command.name,
+      description: command.description,
+      permissionLevel: CommandPermissionLevel.GameDirectors,
+      cheatsRequired: false,
+      mandatoryParameters: command.mandatoryParameters,
+      optionalParameters: command.optionalParameters,
+    },
+    (origin, ...args) => {
+      try {
+        return command.run(origin, ...args);
+      } catch (error) {
+        return fail(`Fehler: ${error}`);
+      }
+    },
+  );
 }
