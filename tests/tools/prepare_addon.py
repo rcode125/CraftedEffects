@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Copy the add-on's behavior pack for testing, using the beta Script API of the same game version.
+"""Copy the add-on's behavior pack for testing, so it can see GameTest's simulated players.
 
-Simulated players come from the beta-only @minecraft/server-gametest module. A pack on the
-stable API (2.8.0) cannot see them: world.getAllPlayers() returns undefined for them. The
-test copy therefore uses 2.9.0-beta, which is the same game version's API plus beta extras.
+Simulated players are SimulatedPlayer objects from the beta-only @minecraft/server-gametest
+module. A pack that does not depend on that module gets undefined for them from
+world.getAllPlayers() (verified in CI: "8 Spieler, 0 lesbar"). The test copy therefore uses
+the beta API of the same game version and depends on the GameTest module; the code is unchanged.
 The shipped pack keeps 2.8.0; tools/check_log.py still verifies it loads without errors
 because the server log is checked for every pack load problem.
 """
@@ -26,6 +27,7 @@ def main():
     for dependency in manifest["dependencies"]:
         if dependency.get("module_name") == "@minecraft/server":
             dependency["version"] = TEST_API
+    manifest["dependencies"].append({"module_name": "@minecraft/server-gametest", "version": "1.0.0-beta"})
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print(f"Prepared test copy of the add-on at {TARGET} (@minecraft/server {TEST_API})")
 
