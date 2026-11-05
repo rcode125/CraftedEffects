@@ -57,7 +57,8 @@ function distanceToTarget(player, target) {
   return Math.min(distance(player.location, feet), distance(player.location, middle), distance(player.location, head));
 }
 
-function finish(player, softLanding = true) {
+function finish(player, reason, softLanding = true) {
+  console.log(`[CraftedEffects] Auto-Mace Ende: ${reason}`);
   states.delete(player.id);
   finishedAt.set(player.id, system.currentTick);
   if (softLanding && player.isValid) {
@@ -69,7 +70,11 @@ function smash(player, state) {
   const target = state.target;
   const fallDistance = state.apexY - target.location.y;
   const damage = smashDamage(fallDistance);
-  target.applyDamage(damage, { cause: EntityDamageCause.maceSmash, damagingEntity: player });
+  // Some targets reject the maceSmash cause; fall back to a normal attack then.
+  const hit =
+    target.applyDamage(damage, { cause: EntityDamageCause.maceSmash, damagingEntity: player }) ||
+    target.applyDamage(damage, { cause: EntityDamageCause.entityAttack, damagingEntity: player });
+  console.log(`[CraftedEffects] Auto-Mace Smash: ${damage} Schaden, angekommen: ${hit}`);
   const away = normalize({ x: target.location.x - player.location.x, y: 0, z: target.location.z - player.location.z });
   target.applyKnockback({ x: away.x * 1.2, z: away.z * 1.2 }, 0.5);
   try {
@@ -84,7 +89,7 @@ function smash(player, state) {
 
 function tick(player, state) {
   state.ticks++;
-  if (state.ticks > MAX_TICKS || !player.isValid) return finish(player);
+  if (state.ticks > MAX_TICKS || !player.isValid) return finish(player, "Zeit abgelaufen");
 
   const velocity = player.getVelocity();
   state.apexY = Math.max(state.apexY, player.location.y);
@@ -98,7 +103,7 @@ function tick(player, state) {
   }
 
   if (state.phase === "float") {
-    if (player.isOnGround) return finish(player, false);
+    if (player.isOnGround) return finish(player, "gelandet ohne Ziel", false);
     const target = lookedAtTarget(player, LOOK_RANGE);
     if (!target) return;
     state.phase = "dive";
@@ -112,12 +117,15 @@ function tick(player, state) {
 
   if (state.phase === "dive") {
     const target = state.target;
-    if (!target?.isValid) return finish(player);
+    if (!target?.isValid) return finish(player, "Ziel verschwunden");
     if (distanceToTarget(player, target) <= HIT_RANGE) {
-      if (state.hasMace && maceHotbarSlot(player) === player.selectedSlotIndex) smash(player, state);
-      return finish(player);
+      const maceHeld = state.hasMace && maceHotbarSlot(player) === player.selectedSlotIndex;
+      if (maceHeld) smash(player, state);
+      return finish(player, maceHeld ? "Treffer" : "am Ziel, keine Mace in der Hand");
     }
-    if (player.isOnGround && state.ticks > 10) return finish(player);
+    if (player.isOnGround && state.ticks > 10) {
+      return finish(player, `gelandet, ${distanceToTarget(player, target).toFixed(1)} Blöcke vom Ziel`);
+    }
     const direction = normalize({
       x: target.location.x - player.location.x,
       y: target.location.y + 0.5 - player.location.y,
