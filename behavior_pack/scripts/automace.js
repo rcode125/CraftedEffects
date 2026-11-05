@@ -49,6 +49,14 @@ export function smashDamage(fallDistance) {
   return Math.round(6 + bonus);
 }
 
+/** Distance to the closest of the target's feet, middle and head (tall mobs, landing on top). */
+function distanceToTarget(player, target) {
+  const feet = target.location;
+  const head = target.getHeadLocation();
+  const middle = { x: feet.x, y: (feet.y + head.y) / 2, z: feet.z };
+  return Math.min(distance(player.location, feet), distance(player.location, middle), distance(player.location, head));
+}
+
 function finish(player, softLanding = true) {
   states.delete(player.id);
   finishedAt.set(player.id, system.currentTick);
@@ -105,7 +113,7 @@ function tick(player, state) {
   if (state.phase === "dive") {
     const target = state.target;
     if (!target?.isValid) return finish(player);
-    if (distance(player.location, target.location) <= HIT_RANGE) {
+    if (distanceToTarget(player, target) <= HIT_RANGE) {
       if (state.hasMace && maceHotbarSlot(player) === player.selectedSlotIndex) smash(player, state);
       return finish(player);
     }
