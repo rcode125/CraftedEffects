@@ -1,250 +1,111 @@
-# 9x Mace Addon
+# CraftedEffects – Einzigartige Relikte
 
-A Minecraft Bedrock Edition add-on that adds a powerful custom item: the **9x Mace**.
+Add-on für Minecraft **Bedrock Edition 26.3**, für **normale Welten und Realms**.
 
-Crafted from 9 vanilla maces in a crafting table, this add-on introduces a new custom item with its own unique texture, display name, and crafting recipe.
+- **12 craftbare Relikte**, jedes existiert **nur einmal pro Welt**
+- **Dauer-Effekt**, solange das Relikt irgendwo im Inventar, in der Hotbar oder in der Zweithand liegt
+- **Spezialangriff** per Rechtsklick (Feuerball, Blitz, Schockwelle, Dash, Teleport, Heilung, Schild, **Auto-Mace**)
+- **Admin-Befehle** (`/ce:…`), um jedes Relikt im Spiel umzukonfigurieren
 
-## 🎯 Features
+👉 **Alle Rezepte, Effekte, Angriffe und Befehle stehen in [RELIKTE.md](RELIKTE.md).**
 
-- **Custom Item**: `craftedeffects:9x_mace` - A unique item with identifier, display name "9x Mace", and max stack size of 1
-- **Crafting Recipe**: 3x3 shaped recipe using 9 vanilla maces (`minecraft:mace`)
-- **Custom Texture**: 16x16 pixel art texture featuring a dark metallic handle, golden mace head, red glowing details, and "9x" design
-- **Realm Compatible**: Works on Minecraft Bedrock Realms (no cheats, no experimental features required)
-- **Survival Friendly**: Craftable in survival mode without commands
+## Installation – normale Welt
 
-## 📋 Requirements
+1. Alte Versionen (Eternal Elixir, 9x Mace) in der Welt deaktivieren und unter *Einstellungen → Speicher* löschen.
+2. `build/CraftedEffects-3.0.0.mcaddon` öffnen; Minecraft importiert beide Packs.
+3. Welt bearbeiten → **Verhaltenspakete**: *CraftedEffects Behavior Pack v3.0.0* aktivieren (das Ressourcenpaket wird automatisch mit aktiviert).
+4. Es werden **keine Experimente** und **keine Cheats** benötigt.
 
-- **Minecraft Bedrock Edition**: Version 1.21.0 or later (tested on 1.21.x)
-- **Platform**: Windows 10/11, Android, iOS, Xbox, PlayStation, Nintendo Switch
-- **Realm Support**: Yes - all content is self-contained in the packs
+## Installation – Realm
 
-## 📥 Installation
+1. Das `.mcaddon` wie oben importieren.
+2. *Realm bearbeiten → Verhaltenspakete* → *CraftedEffects Behavior Pack v3.0.0* aktivieren und bestätigen. Alternativ: das Add-on in einer lokalen Welt aktivieren und diese über *Welt ersetzen* hochladen.
+3. Admin-Befehle funktionieren für Spieler mit **Operator**-Rechten (Realm-Einstellungen → Mitglieder → Operator).
 
-### Method 1: Download Pre-built .mcaddon (Recommended)
+## Kurzüberblick
 
-1. Go to the [GitHub Releases](https://github.com/rcode125/9x-mace-addon/releases) page
-2. Download the latest `9x-Mace-Addon.mcaddon` file
-3. **Double-click** the `.mcaddon` file to automatically import into Minecraft Bedrock
-4. Follow the in-game prompts to complete the import
+| # | Relikt | Kern im Rezept | Effekt | Angriff |
+|---|---|---|---|---|
+| 1 | Relikt des Himmelssturzes | Breeze-Rute | Sprungkraft II | Auto-Mace |
+| 2 | Relikt der Stärke | Lohenrute | Stärke II | Schockwelle |
+| 3 | Relikt des Windes | Zucker | Schnelligkeit II | Dash |
+| 4 | Relikt der Glut | Magmacreme | Feuerresistenz | Feuerball |
+| 5 | Relikt des Lebens | Ghast-Träne | Regeneration I | Heilung |
+| 6 | Relikt des Bollwerks | Eisenblock | Resistenz I | Schild |
+| 7 | Relikt der Nacht | Enderperle | Nachtsicht | Teleport |
+| 8 | Relikt der Tiefe | Herz des Meeres | Wasseratmung | Blitz |
+| 9 | Relikt des Bergmanns | Smaragdblock | Eile II | Schockwelle |
+| 10 | Relikt der Schatten | Fermentiertes Spinnenauge | Unsichtbarkeit | Teleport |
+| 11 | Relikt des Goldes | Goldener Apfel | Absorption I | Schild |
+| 12 | Relikt der Unsterblichkeit | Totem der Unsterblichkeit | Gesundheitsschub I | Heilung |
 
-### Method 2: Build from Source
+Jedes Rezept (Werkbank): **Goldbarren in den 4 Ecken, Diamanten an den 4 Seiten, Kern in der Mitte.**
 
-#### Prerequisites
-- Python 3.8+
-- Pillow library (`pip install pillow`)
+## So funktioniert die Einzigartigkeit
 
-#### Build Steps
+- Beim Craften bekommt das Relikt eine Seriennummer und wird für die Welt registriert.
+- Craftet jemand ein Relikt, das schon existiert, wird die Kopie entfernt und die Zutaten kommen zurück.
+- Duplikate (z. B. aus dem Kreativ-Inventar oder durch Glitches) werden automatisch entfernt.
+- Verbrennt, despawnt oder fällt ein Relikt in die Leere, wird es freigegeben und im Chat angekündigt.
+- Ein Relikt in einer Truhe bleibt registriert. Wer offline ist, behält sein Relikt.
+- Notfalls gibt ein Admin ein Relikt mit `/ce:free <nummer>` frei.
+
+## Auto-Mace
+
+1. Rechtsklick → du wirst etwa 20 Blöcke hochgeschleudert und bekommst oben *Sanfter Fall*.
+2. Schaust du einen Spieler oder Mob an (bis 32 Blöcke), wirst du zu ihm gedasht.
+3. Liegt eine **Mace in der Hotbar**, wechselt das Add-on automatisch zu ihr und teilt beim Aufprall Smash-Schaden nach Fallhöhe aus (Vanilla-Formel).
+4. Während und kurz nach der Auto-Mace bekommst du keinen Fallschaden.
+
+## Spieltest-Checkliste
+
+- [ ] Relikt craften → Name und Beschreibung erscheinen, Chat meldet „… hat … erschaffen!“
+- [ ] Effekt ist aktiv, solange das Relikt im Inventar liegt, und verschwindet beim Ablegen in eine Truhe
+- [ ] Dasselbe Relikt erneut craften → wird entfernt, Zutaten kommen zurück
+- [ ] Relikt in Lava werfen → Chat meldet die Zerstörung, danach ist es wieder craftbar
+- [ ] Alle Angriffe testen; Auto-Mace mit und ohne Mace in der Hotbar
+- [ ] `/ce:list` und `/ce:effect 3 speed 3` als Operator → funktioniert; als normaler Spieler → nicht erlaubt
+- [ ] Welt bzw. Realm neu starten → Einstellungen und Registrierung bleiben erhalten
+
+Bei Problemen hilft der Content-Log (*Einstellungen → Creator → Content-Log aktivieren*). Alle Meldungen des Add-ons beginnen mit `[CraftedEffects]`.
+
+## Für Entwickler
 
 ```bash
-# Clone the repository
-git clone https://github.com/rcode125/9x-mace-addon.git
-cd 9x-mace-addon
-
-# Generate the texture (if not already present)
-python scripts/generate_texture.py
-
-# Run the build script
-python scripts/build_addon.py
+python3 scripts/build_addon.py
 ```
 
-The output file will be at `build/9x-Mace-Addon.mcaddon`.
+- `scripts/generate_content.py` ist die **einzige Quelle** für Relikte, Effekte und Angriffe. Er erzeugt Items, Rezepte, Texturen, Sprachdateien, `behavior_pack/scripts/data.js` und `RELIKTE.md`.
+- `scripts/build_addon.py` ruft den Generator auf, prüft Manifeste, IDs, Texturen und Rezepte (keine doppelten) sowie die JavaScript-Syntax und packt dann `build/CraftedEffects-<version>.mcaddon`.
+- Ziel: Engine `[1, 26, 30]` (= Bedrock 26.3), Script-API `@minecraft/server` **2.9.0** (stabil).
 
-### Method 3: Manual Pack Installation (Advanced)
+| Script-Datei | Aufgabe |
+|---|---|
+| `main.js` | Startpunkt: registriert Item-Komponente und Befehle, startet die Intervalle |
+| `config.js` | Admin-Konfiguration, gespeichert in der Welt |
+| `registry.js` | Einzigartigkeit: Seriennummern, Duplikate, Verlust-Erkennung |
+| `effects.js` | Dauer-Effekte aus dem Inventar |
+| `attacks.js` | Spezialangriffe und Abklingzeiten |
+| `automace.js` | Auto-Mace-Ablauf |
+| `commands.js` | `/ce:`-Befehle |
+| `targets.js` | Zielauswahl (PvP-Regel, keine Items/Rüstungsständer) |
+| `data.js` | generiert – nicht von Hand bearbeiten |
 
-If you prefer to install the packs separately:
+## Automatische Tests (echter Bedrock-Server)
 
-1. Copy the `behavior_pack` folder to:
-   - **Windows**: `%LOCALAPPDATA%\Packages\Microsoft.MinecraftUWP_8wekyb3d8bbwe\LocalState\games\com.mojang\behavior_packs\`
-   - **Android**: `/storage/emulated/0/games/com.mojang/behavior_packs/`
-   - **iOS**: Use Files app to navigate to `On My iPad/iPhone > Minecraft > games > com.mojang > behavior_packs`
+Die GameTests in `tests/` laufen mit [bds-runner](https://github.com/bedrock-core/bds-runner) auf einem echten Bedrock Dedicated Server **1.26.30.5** (= Bedrock 26.3, festgelegt in `tests/bds-runner.json`). Das Test-Pack `tests/gametest_pack` wird nie mit dem Add-on ausgeliefert. Nur in der Testwelt werden die Beta-APIs eingeschaltet.
 
-2. Copy the `resource_pack` folder to the corresponding `resource_packs` folder
-
-3. In Minecraft, create a new world or edit an existing world
-4. Under **Behavior Packs**, activate "9x Mace Addon - Behavior Pack"
-5. Under **Resource Packs**, activate "9x Mace Addon - Resource Pack"
-6. Create/load the world
-
-## 🔨 How to Craft the 9x Mace
-
-1. Open a **Crafting Table** (3x3 grid)
-2. Fill **all 9 slots** with **vanilla Maces** (`minecraft:mace`)
-3. The result will be **1x 9x Mace**
-
-```
-[Mace] [Mace] [Mace]
-[Mace] [Mace] [Mace]   →   [9x Mace]
-[Mace] [Mace] [Mace]
+```bash
+cd tests
+npm install        # einmalig
+npm test           # baut das Add-on, lädt den Server (einmalig ca. 100 MB) und führt alle Tests aus
+npm run test:inspect   # wie oben, danach bleibt der Server offen: im Spiel mit 127.0.0.1:19140 verbinden
 ```
 
-**Note**: The recipe consumes all 9 maces and produces exactly 1 9x Mace.
+Schlägt der automatische Download fehl (Firewall/Proxy), die Server-ZIP für Linux im Browser laden ([bedrock-server-1.26.30.5.zip](https://www.minecraft.net/bedrockdedicatedserver/bin-linux/bedrock-server-1.26.30.5.zip); mit dem Download akzeptierst du die Minecraft-EULA) und einmalig einspielen:
 
-## 🌐 Using on a Minecraft Bedrock Realm
-
-### For Realm Owners:
-
-1. **Test locally first**: Create a local world with both packs enabled and verify the crafting recipe works
-2. **Upload the world to your Realm**:
-   - In Minecraft, go to the world settings
-   - Click "Replace World" on your Realm
-   - Select the local world with the packs enabled
-   - Confirm the upload
-3. **Realm players**: All players joining the Realm will automatically download the packs
-
-### Important Realm Notes:
-
-- ✅ **All custom content is included** in the behavior and resource packs
-- ✅ **No server-side plugins needed** - works on vanilla Realms
-- ✅ **No cheats/operator permissions required** for crafting
-- ✅ **No experimental features** used
-- ⚠️ **Resource pack must be enabled** on the world for textures to appear
-- ⚠️ **Behavior pack must be enabled** for the recipe and item to exist
-- ⚠️ **Maximum pack size limits apply** (this addon is well under limits)
-
-## 🐛 Troubleshooting
-
-### Missing Texture (Pink/Black Checkerboard)
-
-**Cause**: Resource pack not enabled, or texture file not found.
-
-**Fix**:
-1. Ensure the **Resource Pack** is activated in world settings
-2. Verify `resource_pack/textures/items/9x_mace.png` exists
-3. Check `resource_pack/textures/item_texture.json` registers `9x_mace` correctly
-4. Restart Minecraft and re-enter the world
-
-### Invalid Manifest Error
-
-**Cause**: JSON syntax error, duplicate UUIDs, or version mismatch.
-
-**Fix**:
-1. Run the build script: `python scripts/build_addon.py` - it validates all JSON
-2. Check that all UUIDs in `manifest.json` files are unique
-3. Ensure `min_engine_version` matches your Minecraft version
-4. Verify behavior pack `dependencies` includes the resource pack UUID
-
-### Recipe Not Showing
-
-**Cause**: Behavior pack not enabled, or recipe file missing.
-
-**Fix**:
-1. Ensure the **Behavior Pack** is activated in world settings
-2. Verify `behavior_pack/recipes/9x_mace_recipe.json` exists
-3. Check that the recipe uses `minecraft:mace` (not a custom identifier)
-4. Make sure you're using a **Crafting Table** (not 2x2 inventory grid)
-
-### Item Not Appearing in Creative Inventory
-
-**Cause**: Item group/category not set correctly.
-
-**Fix**:
-- The item is in the "Equipment" category under "Mace" group
-- Search for "9x Mace" in creative inventory search bar
-- Use `/give @s craftedeffects:9x_mace` command (if cheats enabled)
-
-### "Unable to Import" Error on .mcaddon
-
-**Cause**: Corrupted archive, wrong file extension, or version incompatibility.
-
-**Fix**:
-1. Re-download the `.mcaddon` file
-2. Ensure file extension is exactly `.mcaddon` (not `.zip` or `.mcaddon.zip`)
-3. Try building from source using the build script
-4. Check Minecraft version is 1.21.0+
-
-## 🔄 Updating the Addon
-
-### For Local Worlds:
-1. Download the new `.mcaddon` file
-2. Double-click to import (will prompt to replace existing)
-3. Re-enable packs in world settings if needed
-
-### For Realms:
-1. Update the packs in a local test world
-2. Verify everything works
-3. Upload the updated world to the Realm (Replace World)
-4. All players will receive the updated packs on next join
-
-**Note**: GitHub stores the source code only. You must manually download/build the `.mcaddon` and install it - GitHub does not automatically push updates to your Realm or Minecraft.
-
-## 📁 Project Structure
-
-```
-9x-mace-addon/
-├── README.md
-├── .gitignore
-├── LICENSE
-├── behavior_pack/
-│   ├── manifest.json
-│   ├── items/
-│   │   └── 9x_mace.json
-│   └── recipes/
-│       └── 9x_mace_recipe.json
-├── resource_pack/
-│   ├── manifest.json
-│   ├── textures/
-│   │   ├── item_texture.json
-│   │   └── items/
-│   │       └── 9x_mace.png
-│   └── texts/
-│       └── en_US.lang
-├── scripts/
-│   ├── build_addon.py
-│   └── generate_texture.py
-└── .github/
-    └── workflows/
-        └── build.yml
+```bash
+python3 tests/tools/install_server.py ~/Downloads/bedrock-server-1.26.30.5.zip
 ```
 
-## ⚙️ Technical Details
-
-### Behavior Pack
-- **Format Version**: 2
-- **Min Engine Version**: 1.21.0
-- **Item Identifier**: `craftedeffects:9x_mace`
-- **Max Stack Size**: 1
-- **Damage**: 200 (configured item damage; Minecraft may also apply the player's base attack damage)
-- **Durability**: 2500 (higher than vanilla mace's 500)
-- **Enchantability**: 15 (weapon slot)
-- **Repairable**: With vanilla maces (250 durability each)
-
-### Resource Pack
-- **Format Version**: 2
-- **Texture Resolution**: 16x16 (standard Bedrock item size)
-- **Texture Format**: PNG with transparency (RGBA)
-- **Language**: en_US.lang with display name translation
-
-### Crafting Recipe
-- **Type**: `minecraft:recipe_shaped`
-- **Pattern**: 3x3 grid, all slots `#`
-- **Key**: `#` = `minecraft:mace`
-- **Result**: 1x `craftedeffects:9x_mace`
-- **Crafting Station**: Crafting Table only
-
-## ⚠️ Known Limitations
-
-1. **Vanilla Mace Mechanics**: The 9x Mace is a *separate custom item* - it does not automatically inherit all vanilla mace mechanics (smash attack, wind charge interaction, etc.). It has its own damage, durability, and enchantability values.
-
-2. **Smash Attack**: Bedrock's script API does not currently allow custom items to fully replicate the vanilla mace's smash attack mechanic. The 9x Mace functions as a high-damage melee weapon.
-
-3. **Wind Charges**: The 9x Mace does not interact with wind charges like the vanilla mace.
-
-4. **Enchantments**: Standard weapon enchantments (Sharpness, Smite, Bane of Arthropods, Fire Aspect, Knockback, Looting, Unbreaking, Mending) work normally.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Credits
-
-- **Minecraft Bedrock Edition** by Mojang Studios / Microsoft
-- **Bedrock Addon Documentation**: https://learn.microsoft.com/en-us/minecraft/creator/
-- **Bedrock Samples**: https://github.com/Mojang/bedrock-samples
-
-## 📞 Support
-
-- **Issues**: Report bugs on the [GitHub Issues](https://github.com/rcode125/CraftedEffects/issues) page
-
----
-
-**Enjoy your 9x Mace!** ⚔️
+Getestet wird: Registrierung beim Craften, Dauer-Effekt im Inventar und dessen Entfernen, Entfernen von Duplikaten samt Rückgabe der Zutaten, Freigabe nach Zerstörung in Lava, Schockwelle, Auto-Mace (Flughöhe, Wechsel zur Mace, Treffer, kein Fallschaden) und Admin-Befehle. Die gemessene Auto-Mace-Höhe steht im Log als `[CE-TEST]`. In GitHub Actions läuft dasselbe automatisch als Job `gametests`.

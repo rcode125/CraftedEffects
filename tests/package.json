@@ -1,0 +1,18 @@
+{
+  "name": "craftedeffects-tests",
+  "private": true,
+  "description": "GameTests for CraftedEffects, run on a real Bedrock Dedicated Server via bds-runner",
+  "type": "module",
+  "scripts": {
+    "pretest": "python3 ../scripts/build_addon.py && python3 tools/make_arena.py",
+    "test": "bc-bds run --packs ../behavior_pack --packs ../resource_pack --packs gametest_pack --tag craftedeffects --expect-registered 7 --json .bds/result.json",
+    "test:inspect": "npm test -- --keep-alive",
+    "where": "bc-bds where"
+  },
+  "devDependencies": {
+    "@bedrock-core/bds-runner": "0.2.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

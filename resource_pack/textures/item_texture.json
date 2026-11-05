@@ -1,9 +1,42 @@
 {
-  "resource_pack_name": "9x Mace Addon",
+  "resource_pack_name": "CraftedEffects",
   "texture_name": "atlas.items",
   "texture_data": {
-    "9x_mace": {
-      "textures": "textures/items/9x_mace"
+    "craftedeffects_relic_01": {
+      "textures": "textures/items/relic_01"
+    },
+    "craftedeffects_relic_02": {
+      "textures": "textures/items/relic_02"
+    },
+    "craftedeffects_relic_03": {
+      "textures": "textures/items/relic_03"
+    },
+    "craftedeffects_relic_04": {
+      "textures": "textures/items/relic_04"
+    },
+    "craftedeffects_relic_05": {
+      "textures": "textures/items/relic_05"
+    },
+    "craftedeffects_relic_06": {
+      "textures": "textures/items/relic_06"
+    },
+    "craftedeffects_relic_07": {
+      "textures": "textures/items/relic_07"
+    },
+    "craftedeffects_relic_08": {
+      "textures": "textures/items/relic_08"
+    },
+    "craftedeffects_relic_09": {
+      "textures": "textures/items/relic_09"
+    },
+    "craftedeffects_relic_10": {
+      "textures": "textures/items/relic_10"
+    },
+    "craftedeffects_relic_11": {
+      "textures": "textures/items/relic_11"
+    },
+    "craftedeffects_relic_12": {
+      "textures": "textures/items/relic_12"
     }
   }
 }
