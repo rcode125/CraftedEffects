@@ -8,8 +8,9 @@ import { nearbyTargets, normalize } from "./targets.js";
 const cooldowns = new Map(); // "playerId:relicKey" -> tick when ready again
 
 // Tuning values. The dash and launch strengths are checked by GameTests.
-const DASH_STRENGTH = 2.7; // ~30 blocks in the looking direction
-const DASH_LIFT = 0.35; // a little lift so a horizontal dash does not grind along the ground
+const DASH_SPEED = 2.5; // blocks per tick while dashing
+const DASH_TICKS = 10; // pushed for this many ticks, then glides out: ~30 blocks in total
+const DASH_LIFT = 0.1; // a little lift so a horizontal dash does not grind along the ground
 const RING_MAX_RADIUS = 10;
 const RING_DAMAGE = 6; // 3 hearts
 const FORTRESS_TICKS = 60; // 3 seconds
@@ -102,13 +103,15 @@ export function setupAttacks() {
 const ATTACKS = {
   /** 30-block dash in any direction, no fall damage afterwards. */
   dash(player) {
-    const view = player.getViewDirection();
+    const view = player.getViewDirection(); // fixed at the start: the dash keeps its direction
     protect(player, "fall", 200);
-    player.applyKnockback(
-      { x: view.x * DASH_STRENGTH, z: view.z * DASH_STRENGTH },
-      view.y * DASH_STRENGTH + DASH_LIFT,
-    );
     playSound(player, "wind_charge.burst");
+    // Pushed every tick like the Auto-Mace dive (a single push is eaten by ground friction).
+    repeat(DASH_TICKS, 1, () => {
+      if (!player.isValid) return false;
+      player.applyKnockback({ x: view.x * DASH_SPEED, z: view.z * DASH_SPEED }, view.y * DASH_SPEED + DASH_LIFT);
+      return true;
+    });
     return true;
   },
 
@@ -167,7 +170,7 @@ const ATTACKS = {
         y: center.y + COMET_HEIGHT,
         z: center.z + Math.sin(angle) * COMET_RING_RADIUS,
       };
-      const comet = player.dimension.spawnEntity("minecraft:small_fireball", spawn);
+      const comet = player.dimension.spawnEntity("minecraft:fireball", spawn); // small_fireball is not summonable
       comets.set(comet.id, player.id);
       const projectile = comet.getComponent("minecraft:projectile");
       if (projectile) {
@@ -200,7 +203,9 @@ const ATTACKS = {
       for (const target of nearbyTargets(player, AEGIS_RADIUS)) pushAway(center, target, 1.5, 0.3);
       if (tick % 20 === 0) {
         player.addEffect("saturation", 20, { amplifier: 0, showParticles: false });
-        player.addEffect("instant_health", 1, { amplifier: 0, showParticles: false });
+        const hp = player.getComponent("minecraft:health");
+        if (hp) hp.setCurrentValue(Math.min(hp.effectiveMax, hp.currentValue + 4)); // instant health I = 2 hearts
+        particle(player.dimension, "minecraft:heart_particle", { ...player.location, y: player.location.y + 2 });
       }
       return true;
     });
@@ -221,6 +226,7 @@ export function useRelic(player, itemStack) {
   const relic = relicConfig(key);
   if (!relic.enabled || relic.attack === "none") return;
   if (serialOf(itemStack) === undefined || serialOf(itemStack) !== registeredSerial(key)) {
+    console.log(`[CraftedEffects] ${relic.name}: Seriennummer ${serialOf(itemStack)} passt nicht zu ${registeredSerial(key)}`);
     player.sendMessage("§7Dieses Relikt wird noch geprüft …");
     return;
   }
@@ -236,6 +242,7 @@ export function useRelic(player, itemStack) {
   const attack = ATTACKS[relic.attack];
   if (!attack) return;
   try {
+    console.log(`[CraftedEffects] ${player.name} benutzt ${relic.name}: ${relic.attack}`);
     if (attack(player)) {
       cooldowns.set(cooldownId, system.currentTick + relic.cooldown * 20);
       player.onScreenDisplay.setActionBar(`§6${relic.name}: §e${relic.attack === "automace" ? "Auto-Mace!" : "Angriff!"}`);

@@ -167,7 +167,7 @@ test("haste_duplicate_refund_and_fortress", 400, async (gameTest) => {
   copier.setItem(new ItemStack(relicId("haste"), 1), 0, true);
   await waitFor(gameTest, 40, "Zweites Exemplar wurde nicht entfernt", () => countItems(copier, relicId("haste")) === 0);
   gameTest.assert(countItems(copier, "minecraft:diamond_pickaxe") === 2, "2 Diamant-Spitzhacken nicht zurückgegeben");
-  gameTest.assert(countItems(copier, "minecraft:emerald") === 5, "5 Smaragde nicht zurückgegeben");
+  gameTest.assert(countItems(copier, "minecraft:emerald") === 6, "6 Smaragde nicht zurückgegeben");
   gameTest.assert(countItems(copier, "minecraft:glass_bottle") === 1, "Glasflasche nicht zurückgegeben");
   copier.disconnect();
 

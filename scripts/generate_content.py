@@ -233,6 +233,8 @@ def item_json(full_id, texture_key, custom_component, stack, glint):
     }
     if glint:
         components["minecraft:glint"] = True
+    if custom_component == "relic":
+        components["minecraft:allow_off_hand"] = {"value": True}  # needed for the offhand + diadem
     return {
         "format_version": ITEM_FORMAT,
         "minecraft:item": {
