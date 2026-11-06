@@ -1,17 +1,17 @@
 import { EquipmentSlot, ItemStack, system, world } from "@minecraft/server";
 import { DATA } from "./data.js";
-import { RELIC_COUNT, relicConfig, relicDisplay, relicNumber, relicTypeId } from "./config.js";
+import { relicConfig, relicDisplay, relicKey, relicTypeId, saveConfig } from "./config.js";
 
 // Keeps track of which relic currently exists in the world, so that each one
 // can only exist once. Every real relic carries a serial number; the registry
 // stores the serial of the one valid copy.
 
-const REGISTRY_KEY = "ce:registry";
+const REGISTRY_KEY = `ce:registry_v${DATA.version}`; // a new relic table starts a new registry
 const SERIAL_PROPERTY = "ce:serial";
 const LOSS_CHECK_DELAY_TICKS = 60;
 
 let registry;
-const pendingLosses = new Map(); // "relic:serial" -> true while checking
+const pendingLosses = new Map(); // "key:serial" -> true while checking
 
 function load() {
   if (registry) return registry;
@@ -30,16 +30,16 @@ function save() {
 }
 
 /** Serial of the valid copy of a relic, or undefined if the relic is free. */
-export function registeredSerial(number) {
-  return load().relics[number]?.serial;
+export function registeredSerial(key) {
+  return load().relics[key]?.serial;
 }
 
-export function isRelicFree(number) {
-  return registeredSerial(number) === undefined;
+export function isRelicFree(key) {
+  return registeredSerial(key) === undefined;
 }
 
-export function freeRelic(number) {
-  delete load().relics[number];
+export function freeRelic(key) {
+  delete load().relics[key];
   save();
 }
 
@@ -49,34 +49,37 @@ export function serialOf(itemStack) {
 }
 
 /** Creates a brand-new registered relic item (used for crafting and /ce:give). */
-export function claimRelic(number, itemStack, holderName) {
+export function claimRelic(key, itemStack, holderName) {
   const data = load();
   const serial = data.nextSerial++;
-  data.relics[number] = { serial, holder: holderName };
+  data.relics[key] = { serial, holder: holderName };
   save();
+  // A newly made relic always starts at level 1 (levels are lost with the old copy).
+  relicConfig(key).level = 1;
+  saveConfig();
   itemStack.setDynamicProperty(SERIAL_PROPERTY, serial);
-  applyDisplay(number, itemStack);
+  applyDisplay(key, itemStack);
   return itemStack;
 }
 
-export function newRelicItem(number, holderName) {
-  return claimRelic(number, new ItemStack(relicTypeId(number), 1), holderName);
+export function newRelicItem(key, holderName) {
+  return claimRelic(key, new ItemStack(relicTypeId(key), 1), holderName);
 }
 
-function applyDisplay(number, itemStack) {
-  const { nameTag, lore } = relicDisplay(number);
+function applyDisplay(key, itemStack) {
+  const { nameTag, lore } = relicDisplay(key);
   itemStack.nameTag = nameTag;
   itemStack.setLore(lore);
 }
 
-function displayIsCurrent(number, itemStack) {
-  const { nameTag, lore } = relicDisplay(number);
+function displayIsCurrent(key, itemStack) {
+  const { nameTag, lore } = relicDisplay(key);
   return itemStack.nameTag === nameTag && itemStack.getLore().join("\n") === lore.join("\n");
 }
 
-function refundIngredients(player, number) {
+function refundIngredients(player, key) {
   const container = player.getComponent("minecraft:inventory")?.container;
-  const items = [...DATA.refund, DATA.cores[number - 1]];
+  const items = DATA.refund[key] ?? [];
   for (const typeId of items) {
     const leftover = container?.addItem(new ItemStack(typeId, 1));
     if (leftover) player.dimension.spawnItem(leftover, player.location);
@@ -84,57 +87,57 @@ function refundIngredients(player, number) {
 }
 
 /**
- * Checks one inventory slot of a player. Returns the relic number if the slot
- * holds a valid, enabled relic, otherwise 0. Invalid copies are removed.
+ * Checks one inventory slot of a player. Returns the relic key if the slot
+ * holds a valid, enabled relic, otherwise undefined. Invalid copies are removed.
  */
 function checkSlot(player, slot) {
   const itemStack = slot.getItem();
-  if (!itemStack) return 0;
-  const number = relicNumber(itemStack.typeId);
-  if (!number) return 0;
+  if (!itemStack) return undefined;
+  const key = relicKey(itemStack.typeId);
+  if (!key) return undefined;
 
-  const relic = relicConfig(number);
+  const relic = relicConfig(key);
   const serial = serialOf(itemStack);
-  const registered = registeredSerial(number);
+  const registered = registeredSerial(key);
 
   if (serial === undefined) {
     // Freshly crafted (or spawned in creative).
     if (!relic.enabled) {
       slot.setItem(undefined);
-      refundIngredients(player, number);
+      refundIngredients(player, key);
       player.sendMessage(`§c${relic.name} ist deaktiviert. Die Zutaten wurden zurückgegeben.`);
-      return 0;
+      return undefined;
     }
     if (registered !== undefined) {
       slot.setItem(undefined);
-      refundIngredients(player, number);
+      refundIngredients(player, key);
       player.sendMessage(`§c${relic.name} existiert bereits in dieser Welt. Die Zutaten wurden zurückgegeben.`);
-      return 0;
+      return undefined;
     }
-    slot.setItem(claimRelic(number, itemStack, player.name));
+    slot.setItem(claimRelic(key, itemStack, player.name));
     world.sendMessage(`§6${player.name} hat §d${relic.name}§6 erschaffen!`);
-    return number;
+    return key;
   }
 
   if (registered === undefined && relic.enabled) {
     // Was marked as lost, but turned up again: it becomes the valid copy.
-    load().relics[number] = { serial, holder: player.name };
+    load().relics[key] = { serial, holder: player.name };
     save();
-  } else if (serial !== registeredSerial(number)) {
+  } else if (serial !== registeredSerial(key)) {
     slot.setItem(undefined);
     player.sendMessage(`§c${relic.name} war eine ungültige Kopie und wurde entfernt.`);
-    return 0;
+    return undefined;
   }
 
-  if (load().relics[number].holder !== player.name) {
-    load().relics[number].holder = player.name;
+  if (load().relics[key].holder !== player.name) {
+    load().relics[key].holder = player.name;
     save();
   }
-  if (!displayIsCurrent(number, itemStack)) {
-    applyDisplay(number, itemStack);
+  if (!displayIsCurrent(key, itemStack)) {
+    applyDisplay(key, itemStack);
     slot.setItem(itemStack);
   }
-  return relic.enabled ? number : 0;
+  return relic.enabled ? key : undefined;
 }
 
 /** Scans the whole inventory, hotbar and offhand. Returns the active relics. */
@@ -143,29 +146,29 @@ export function scanPlayer(player) {
   const container = player.getComponent("minecraft:inventory")?.container;
   if (container) {
     for (let index = 0; index < container.size; index++) {
-      const number = checkSlot(player, container.getSlot(index));
-      if (number) active.push(number);
+      const key = checkSlot(player, container.getSlot(index));
+      if (key) active.push(key);
     }
   }
   const offhand = player.getComponent("minecraft:equippable")?.getEquipmentSlot(EquipmentSlot.Offhand);
   if (offhand) {
-    const number = checkSlot(player, offhand);
-    if (number) active.push(number);
+    const key = checkSlot(player, offhand);
+    if (key) active.push(key);
   }
   return active;
 }
 
-function playerHasSerial(number, serial) {
+function playerHasSerial(key, serial) {
   for (const player of world.getAllPlayers()) {
     if (!player) continue;
     const container = player.getComponent("minecraft:inventory")?.container;
     if (!container) continue;
     for (let index = 0; index < container.size; index++) {
       const item = container.getItem(index);
-      if (item && relicNumber(item.typeId) === number && serialOf(item) === serial) return true;
+      if (item && relicKey(item.typeId) === key && serialOf(item) === serial) return true;
     }
     const offhand = player.getComponent("minecraft:equippable")?.getEquipment(EquipmentSlot.Offhand);
-    if (offhand && relicNumber(offhand.typeId) === number && serialOf(offhand) === serial) return true;
+    if (offhand && relicKey(offhand.typeId) === key && serialOf(offhand) === serial) return true;
   }
   return false;
 }
@@ -193,36 +196,35 @@ export function watchForLoss() {
   world.beforeEvents.entityRemove.subscribe(({ removedEntity }) => {
     if (removedEntity?.typeId !== "minecraft:item") return;
     const itemStack = removedEntity.getComponent("minecraft:item")?.itemStack;
-    const number = relicNumber(itemStack?.typeId);
-    if (!number) return;
+    const key = relicKey(itemStack?.typeId);
+    if (!key) return;
     const serial = serialOf(itemStack);
     if (serial === undefined) return;
 
     const entityId = removedEntity.id;
     const dimension = removedEntity.dimension;
     const location = { ...removedEntity.location };
-    const key = `${number}:${serial}`;
-    if (pendingLosses.has(key)) return;
-    pendingLosses.set(key, true);
+    const pendingId = `${key}:${serial}`;
+    if (pendingLosses.has(pendingId)) return;
+    pendingLosses.set(pendingId, true);
 
     system.runTimeout(() => {
-      pendingLosses.delete(key);
+      pendingLosses.delete(pendingId);
       const wasPickedUp = pickedUp.delete(entityId);
-      if (wasPickedUp || registeredSerial(number) !== serial) return;
-      if (playerHasSerial(number, serial)) return;
+      if (wasPickedUp || registeredSerial(key) !== serial) return;
+      if (playerHasSerial(key, serial)) return;
       // Chunk unloaded (player walked away) - the item still exists there.
       if (location.y >= dimension.heightRange.min && !dimension.getBlock(location)) return;
       if (location.y >= dimension.heightRange.min && hopperNearby(dimension, location)) return;
 
-      freeRelic(number);
-      world.sendMessage(`§e${relicConfig(number).name} wurde zerstört und kann wieder gecraftet werden.`);
+      freeRelic(key);
+      world.sendMessage(`§e${relicConfig(key).name} wurde zerstört und kann wieder gecraftet werden.`);
     }, LOSS_CHECK_DELAY_TICKS);
   });
 }
 
-export function relicStatus(number) {
-  const entry = load().relics[number];
+export function relicStatus(key) {
+  const entry = load().relics[key];
   return entry ? `existiert (zuletzt bei ${entry.holder ?? "?"})` : "frei";
 }
 
-export { RELIC_COUNT };

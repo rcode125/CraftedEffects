@@ -2,7 +2,7 @@
   "format_version": "1.20.10",
   "minecraft:recipe_shaped": {
     "description": {
-      "identifier": "craftedeffects:relic_03_recipe"
+      "identifier": "craftedeffects:relic_fire_recipe"
     },
     "tags": [
       "crafting_table"
@@ -20,16 +20,16 @@
         "item": "minecraft:diamond"
       },
       "C": {
-        "item": "minecraft:sugar"
+        "item": "minecraft:magma_cream"
       }
     },
     "unlock": [
       {
-        "item": "minecraft:diamond"
+        "item": "minecraft:magma_cream"
       }
     ],
     "result": {
-      "item": "craftedeffects:relic_03",
+      "item": "craftedeffects:relic_fire",
       "count": 1
     }
   }

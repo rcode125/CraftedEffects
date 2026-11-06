@@ -2,7 +2,7 @@
   "format_version": "1.20.10",
   "minecraft:recipe_shaped": {
     "description": {
-      "identifier": "craftedeffects:relic_07_recipe"
+      "identifier": "craftedeffects:relic_health_recipe"
     },
     "tags": [
       "crafting_table"
@@ -20,16 +20,16 @@
         "item": "minecraft:diamond"
       },
       "C": {
-        "item": "minecraft:ender_pearl"
+        "item": "minecraft:golden_apple"
       }
     },
     "unlock": [
       {
-        "item": "minecraft:diamond"
+        "item": "minecraft:golden_apple"
       }
     ],
     "result": {
-      "item": "craftedeffects:relic_07",
+      "item": "craftedeffects:relic_health",
       "count": 1
     }
   }

@@ -1,167 +1,163 @@
-# CraftedEffects – Relikte, Effekte und Crafting
+# CraftedEffects – Relikte, Diadem und Crafting
 
 > Automatisch erzeugt von `scripts/generate_content.py`. Für Minecraft **Bedrock 26.3** – normale Welten und Realms.
 
 ## So funktionieren Relikte
 
-- Jedes der 12 Relikte existiert **nur einmal pro Welt**. Wer ein bereits existierendes Relikt noch einmal craftet, bekommt die Zutaten zurück.
+- Jedes der 6 Relikte existiert **nur einmal pro Welt**. Wer ein bereits existierendes Relikt noch einmal craftet, bekommt die Zutaten zurück.
 - Liegt ein Relikt **irgendwo im Inventar, in der Hotbar oder in der Zweithand**, hast du dauerhaft seinen Effekt. Mehrere Relikte wirken gleichzeitig.
-- **Rechtsklick** (am Handy: Tippen/Halten) mit dem Relikt in der Hand löst den **Spezialangriff** aus. Danach läuft eine Abklingzeit (Anzeige über der Hotbar).
-- Wird ein Relikt zerstört (Lava, Feuer, Kaktus, Void, Despawn), meldet das der Chat und es kann **wieder gecraftet** werden.
-- Admins (Operatoren) können Effekt, Stufe, Angriff, Abklingzeit und Namen jedes Relikts ändern – siehe Befehle unten.
+- **Rechtsklick** (am Handy: Tippen/Halten) mit dem Relikt in der Hand löst den **Spezialangriff** aus. Danach läuft die Abklingzeit (Anzeige über der Hotbar).
+- Ein Relikt startet auf **Level 1**. Mit dem **Diadem** steigt es bis zum Maximallevel. Das Level verstärkt nur den Dauer-Effekt.
+- Wird ein Relikt zerstört (Lava, Feuer, Kaktus, Void, Despawn), meldet das der Chat. Es kann **wieder gecraftet** werden und beginnt dann wieder bei Level 1.
+- ⚠️ Die Explosionen von **Bollwerk** und **Kometenhagel** zerstören Blöcke und die Kometen hinterlassen Lava – Vorsicht in der Nähe von Bauten.
 
-## Alle Relikte und ihre Rezepte
+## Übersicht
 
-Alle Rezepte werden an der **Werkbank (Crafting Table)** gelegt und haben denselben Rahmen: 4 Goldbarren in den Ecken, 4 Diamanten an den Seiten. **Nur die Mitte** bestimmt, welches Relikt entsteht. Die Rezepte erscheinen im Rezeptbuch, sobald du einen Diamanten hast.
-
-```text
-+-----------+-----------+-----------+
-| Gold      | Diamant   | Gold      |
-+-----------+-----------+-----------+
-| Diamant   |  KERN     | Diamant   |
-+-----------+-----------+-----------+
-| Gold      | Diamant   | Gold      |
-+-----------+-----------+-----------+
-```
-
-| # | Relikt (Standard) | Kern in der Mitte | Dauer-Effekt | Spezialangriff | Abklingzeit |
+| Relikt | Dauer-Effekt | Max. Level | Spezialangriff | Abklingzeit | Rezept |
 |---|---|---|---|---|---|
-| 1 | Relikt des Himmelssturzes | Breeze-Rute (`minecraft:breeze_rod`) | Sprungkraft II | Auto-Mace | 25 s |
-| 2 | Relikt der Stärke | Lohenrute (`minecraft:blaze_rod`) | Stärke II | Schockwelle | 20 s |
-| 3 | Relikt des Windes | Zucker (`minecraft:sugar`) | Schnelligkeit II | Dash | 5 s |
-| 4 | Relikt der Glut | Magmacreme (`minecraft:magma_cream`) | Feuerresistenz I | Feuerball | 8 s |
-| 5 | Relikt des Lebens | Ghast-Träne (`minecraft:ghast_tear`) | Regeneration I | Heilung | 30 s |
-| 6 | Relikt des Bollwerks | Eisenblock (`minecraft:iron_block`) | Resistenz I | Schild | 30 s |
-| 7 | Relikt der Nacht | Enderperle (`minecraft:ender_pearl`) | Nachtsicht I | Teleport | 10 s |
-| 8 | Relikt der Tiefe | Herz des Meeres (`minecraft:heart_of_the_sea`) | Wasseratmung I | Blitz | 15 s |
-| 9 | Relikt des Bergmanns | Smaragdblock (`minecraft:emerald_block`) | Eile II | Schockwelle | 20 s |
-| 10 | Relikt der Schatten | Fermentiertes Spinnenauge (`minecraft:fermented_spider_eye`) | Unsichtbarkeit I | Teleport | 10 s |
-| 11 | Relikt des Goldes | Goldener Apfel (`minecraft:golden_apple`) | Absorption I | Schild | 30 s |
-| 12 | Relikt der Unsterblichkeit | Totem der Unsterblichkeit (`minecraft:totem_of_undying`) | Gesundheitsschub I | Heilung | 30 s |
+| Relikt des Windes | Schnelligkeit | 3 (III) | Dash | 30 s | fertig |
+| Relikt der Stärke | Stärke | 3 (III) | Kraftring | 30 s | vorläufig |
+| Relikt des Bergmanns | Eile | 5 (V) | Bollwerk | 90 s | vorläufig |
+| Relikt der Glut | Feuerresistenz | 1 (I) | Kometenhagel | 120 s | vorläufig |
+| Relikt des Lebens | Gesundheitsschub | 10 (X) = 30 Herzen | Lebensschild | 90 s | vorläufig |
+| Relikt des Himmelssturzes | Sprungkraft | 4 (IV) | Auto-Mace | 30 s | vorläufig |
 
-### 1. Relikt des Himmelssturzes
+## Relikte im Detail
 
-Effekt: **Sprungkraft II** · Angriff: **Auto-Mace** · Item-ID: `craftedeffects:relic_01`
+### Relikt des Windes
+
+- **Dauer-Effekt:** Schnelligkeit (Level 1 bis 3)
+- **Spezialangriff – Dash:** Schleudert dich 30 Blöcke in Blickrichtung (auch nach oben oder unten). Danach 5 Sekunden kein Fallschaden.
+- **Abklingzeit:** 30 Sekunden
+- **Item-ID:** `craftedeffects:relic_speed`
+
+| | Links | Mitte | Rechts |
+|---|---|---|---|
+| **Oben** | Feuerwerksrakete | Flow-Rüstungsbesatz | Feuerwerksrakete |
+| **Mitte** | Nautilusschale | Glasflasche | Nautilusschale |
+| **Unten** | Diamanthose | Bolt-Rüstungsbesatz | Diamanthose |
+
+Zutaten insgesamt: 2× Feuerwerksrakete, 1× Flow-Rüstungsbesatz, 2× Nautilusschale, 1× Glasflasche, 2× Diamanthose, 1× Bolt-Rüstungsbesatz
+
+### Relikt der Stärke
+
+- **Dauer-Effekt:** Stärke (Level 1 bis 3)
+- **Spezialangriff – Kraftring:** Ein Partikelring breitet sich von dir aus (bis 10 Blöcke). Jedes getroffene Wesen bekommt 3 Herzen Schaden.
+- **Abklingzeit:** 30 Sekunden
+- **Item-ID:** `craftedeffects:relic_strength`
+
+> ⏳ **Vorläufiges Rezept** – das endgültige Rezept folgt.
+
+| | Links | Mitte | Rechts |
+|---|---|---|---|
+| **Oben** | Diamant | Lohenrute | Diamant |
+| **Mitte** | Lohenrute | Glasflasche | Lohenrute |
+| **Unten** | Diamant | Lohenrute | Diamant |
+
+Zutaten insgesamt: 4× Diamant, 4× Lohenrute, 1× Glasflasche
+
+### Relikt des Bergmanns
+
+- **Dauer-Effekt:** Eile (Level 1 bis 5)
+- **Spezialangriff – Bollwerk:** 3 Sekunden Resistenz V (unverwundbar) und Langsamkeit. Eine Explosion um dich schleudert Gegner weg, macht Schaden und zerstört Blöcke. Du selbst bekommst keinen Schaden.
+- **Abklingzeit:** 90 Sekunden
+- **Item-ID:** `craftedeffects:relic_haste`
+
+> ⏳ **Vorläufiges Rezept** – das endgültige Rezept folgt.
+
+| | Links | Mitte | Rechts |
+|---|---|---|---|
+| **Oben** | Diamant-Spitzhacke | Smaragd | Diamant-Spitzhacke |
+| **Mitte** | Smaragd | Glasflasche | Smaragd |
+| **Unten** | Smaragd | Smaragd | Smaragd |
+
+Zutaten insgesamt: 2× Diamant-Spitzhacke, 6× Smaragd, 1× Glasflasche
+
+### Relikt der Glut
+
+- **Dauer-Effekt:** Feuerresistenz (Level 1 bis 1)
+- **Spezialangriff – Kometenhagel:** 8 Kometen erscheinen im Ring 10 Blöcke über dir und stürzen herab. Beim Aufprall explodieren sie und hinterlassen Lava. Du selbst bekommst keinen Schaden.
+- **Abklingzeit:** 120 Sekunden
+- **Item-ID:** `craftedeffects:relic_fire`
+
+> ⏳ **Vorläufiges Rezept** – das endgültige Rezept folgt.
 
 | | Links | Mitte | Rechts |
 |---|---|---|---|
 | **Oben** | Goldbarren | Diamant | Goldbarren |
-| **Mitte** | Diamant | **Breeze-Rute** | Diamant |
+| **Mitte** | Diamant | Magmacreme | Diamant |
 | **Unten** | Goldbarren | Diamant | Goldbarren |
 
-### 2. Relikt der Stärke
+Zutaten insgesamt: 4× Goldbarren, 4× Diamant, 1× Magmacreme
 
-Effekt: **Stärke II** · Angriff: **Schockwelle** · Item-ID: `craftedeffects:relic_02`
+### Relikt des Lebens
+
+- **Dauer-Effekt:** Gesundheitsschub (Level 1 bis 10)
+- **Spezialangriff – Lebensschild:** Stößt Gegner in deiner Nähe weg und erzeugt 5 Sekunden lang ein Schild um dich, das Gegner fernhält. Im Schild bekommst du jede Sekunde Sättigung und Sofortheilung.
+- **Abklingzeit:** 90 Sekunden
+- **Item-ID:** `craftedeffects:relic_health`
+
+> ⏳ **Vorläufiges Rezept** – das endgültige Rezept folgt.
 
 | | Links | Mitte | Rechts |
 |---|---|---|---|
 | **Oben** | Goldbarren | Diamant | Goldbarren |
-| **Mitte** | Diamant | **Lohenrute** | Diamant |
+| **Mitte** | Diamant | Goldener Apfel | Diamant |
 | **Unten** | Goldbarren | Diamant | Goldbarren |
 
-### 3. Relikt des Windes
+Zutaten insgesamt: 4× Goldbarren, 4× Diamant, 1× Goldener Apfel
 
-Effekt: **Schnelligkeit II** · Angriff: **Dash** · Item-ID: `craftedeffects:relic_03`
+### Relikt des Himmelssturzes
+
+- **Dauer-Effekt:** Sprungkraft (Level 1 bis 4)
+- **Spezialangriff – Auto-Mace:** Schleudert dich 30 Blöcke hoch, dann 5 Sekunden sanfter Fall. Schaust du auf einen Gegner, wirst du zu ihm gedasht. Liegt eine Mace in der Hotbar, wird zu ihr gewechselt und beim Aufprall Smash-Schaden nach Fallhöhe ausgeteilt. Kein Fallschaden.
+- **Abklingzeit:** 30 Sekunden
+- **Item-ID:** `craftedeffects:relic_jump`
+
+> ⏳ **Vorläufiges Rezept** – das endgültige Rezept folgt.
 
 | | Links | Mitte | Rechts |
 |---|---|---|---|
 | **Oben** | Goldbarren | Diamant | Goldbarren |
-| **Mitte** | Diamant | **Zucker** | Diamant |
+| **Mitte** | Diamant | Breeze-Rute | Diamant |
 | **Unten** | Goldbarren | Diamant | Goldbarren |
 
-### 4. Relikt der Glut
+Zutaten insgesamt: 4× Goldbarren, 4× Diamant, 1× Breeze-Rute
 
-Effekt: **Feuerresistenz I** · Angriff: **Feuerball** · Item-ID: `craftedeffects:relic_04`
+## Diadem
+
+Lege ein Relikt in die **Zweithand**, nimm das Diadem in die Haupthand und mach einen **Rechtsklick**: Das Relikt steigt um **1 Level** (bis zum Maximallevel) und das Diadem wird verbraucht. Ist das Relikt schon auf dem Maximallevel, passiert nichts und das Diadem bleibt erhalten. Diademe kann man beliebig oft craften.
+
+Item-ID: `craftedeffects:diadem`
 
 | | Links | Mitte | Rechts |
 |---|---|---|---|
-| **Oben** | Goldbarren | Diamant | Goldbarren |
-| **Mitte** | Diamant | **Magmacreme** | Diamant |
-| **Unten** | Goldbarren | Diamant | Goldbarren |
+| **Oben** | Goldbarren | Spielerkopf | Goldbarren |
+| **Mitte** | Spielerkopf | Enderauge | Spielerkopf |
+| **Unten** | Goldbarren | Spielerkopf | Goldbarren |
 
-### 5. Relikt des Lebens
+Zutaten insgesamt: 4× Goldbarren, 4× Spielerkopf, 1× Enderauge
 
-Effekt: **Regeneration I** · Angriff: **Heilung** · Item-ID: `craftedeffects:relic_05`
+> Hinweis: Spielerköpfe gibt es in Bedrock nicht im Überlebensmodus – nur per Befehl oder im Kreativmodus.
 
-| | Links | Mitte | Rechts |
-|---|---|---|---|
-| **Oben** | Goldbarren | Diamant | Goldbarren |
-| **Mitte** | Diamant | **Ghast-Träne** | Diamant |
-| **Unten** | Goldbarren | Diamant | Goldbarren |
+## Admin-Befehle
 
-### 6. Relikt des Bollwerks
+Nur Operatoren (auf Realms: Spieler mit Operator-Rechten) können diese Befehle nutzen. Cheats müssen **nicht** aktiviert sein. Relikt-Namen in Befehlen: `speed`, `strength`, `haste`, `fire`, `health`, `jump`.
 
-Effekt: **Resistenz I** · Angriff: **Schild** · Item-ID: `craftedeffects:relic_06`
+| Befehl | Wirkung |
+|---|---|
+| `/ce:list` | Zeigt alle Relikte mit Einstellungen, Level und ob sie gerade existieren. |
+| `/ce:level <relikt> <level>` | Setzt das Level, z. B. `/ce:level speed 3`. |
+| `/ce:effect <relikt> <effekt> <level>` | Ändert den Dauer-Effekt, z. B. `/ce:effect speed night_vision 1`. |
+| `/ce:attack <relikt> <angriff> [abklingzeit]` | Ändert den Spezialangriff, z. B. `/ce:attack speed automace 20`. |
+| `/ce:name <relikt> <name>` | Benennt ein Relikt um, z. B. `/ce:name speed "Relikt des Sturms"`. |
+| `/ce:enable <relikt> <true\|false>` | Schaltet ein Relikt an oder aus (aus = nicht craftbar, keine Wirkung). |
+| `/ce:free <relikt>` | Gibt ein Relikt frei, damit es neu gecraftet werden kann. Die alte Kopie wird ungültig. |
+| `/ce:give <relikt> [spieler]` | Gibt ein Relikt direkt (nur wenn es gerade frei ist). |
+| `/ce:pvp <true\|false>` | Schaltet Schaden der Relikt-Angriffe gegen Spieler an oder aus. |
+| `/ce:reset` | Stellt alle Einstellungen auf die Standardbelegung zurück. |
 
-| | Links | Mitte | Rechts |
-|---|---|---|---|
-| **Oben** | Goldbarren | Diamant | Goldbarren |
-| **Mitte** | Diamant | **Eisenblock** | Diamant |
-| **Unten** | Goldbarren | Diamant | Goldbarren |
-
-### 7. Relikt der Nacht
-
-Effekt: **Nachtsicht I** · Angriff: **Teleport** · Item-ID: `craftedeffects:relic_07`
-
-| | Links | Mitte | Rechts |
-|---|---|---|---|
-| **Oben** | Goldbarren | Diamant | Goldbarren |
-| **Mitte** | Diamant | **Enderperle** | Diamant |
-| **Unten** | Goldbarren | Diamant | Goldbarren |
-
-### 8. Relikt der Tiefe
-
-Effekt: **Wasseratmung I** · Angriff: **Blitz** · Item-ID: `craftedeffects:relic_08`
-
-| | Links | Mitte | Rechts |
-|---|---|---|---|
-| **Oben** | Goldbarren | Diamant | Goldbarren |
-| **Mitte** | Diamant | **Herz des Meeres** | Diamant |
-| **Unten** | Goldbarren | Diamant | Goldbarren |
-
-### 9. Relikt des Bergmanns
-
-Effekt: **Eile II** · Angriff: **Schockwelle** · Item-ID: `craftedeffects:relic_09`
-
-| | Links | Mitte | Rechts |
-|---|---|---|---|
-| **Oben** | Goldbarren | Diamant | Goldbarren |
-| **Mitte** | Diamant | **Smaragdblock** | Diamant |
-| **Unten** | Goldbarren | Diamant | Goldbarren |
-
-### 10. Relikt der Schatten
-
-Effekt: **Unsichtbarkeit I** · Angriff: **Teleport** · Item-ID: `craftedeffects:relic_10`
-
-| | Links | Mitte | Rechts |
-|---|---|---|---|
-| **Oben** | Goldbarren | Diamant | Goldbarren |
-| **Mitte** | Diamant | **Fermentiertes Spinnenauge** | Diamant |
-| **Unten** | Goldbarren | Diamant | Goldbarren |
-
-### 11. Relikt des Goldes
-
-Effekt: **Absorption I** · Angriff: **Schild** · Item-ID: `craftedeffects:relic_11`
-
-| | Links | Mitte | Rechts |
-|---|---|---|---|
-| **Oben** | Goldbarren | Diamant | Goldbarren |
-| **Mitte** | Diamant | **Goldener Apfel** | Diamant |
-| **Unten** | Goldbarren | Diamant | Goldbarren |
-
-### 12. Relikt der Unsterblichkeit
-
-Effekt: **Gesundheitsschub I** · Angriff: **Heilung** · Item-ID: `craftedeffects:relic_12`
-
-| | Links | Mitte | Rechts |
-|---|---|---|---|
-| **Oben** | Goldbarren | Diamant | Goldbarren |
-| **Mitte** | Diamant | **Totem der Unsterblichkeit** | Diamant |
-| **Unten** | Goldbarren | Diamant | Goldbarren |
-
-## Alle verfügbaren Effekte
-
-Diese Effekte kann ein Admin mit `/ce:effect` vergeben. Stufe 1–5 (I–V).
+### Effekte für `/ce:effect`
 
 | Befehlswert | Effekt | Wirkung |
 |---|---|---|
@@ -170,47 +166,23 @@ Diese Effekte kann ein Admin mit `/ce:effect` vergeben. Stufe 1–5 (I–V).
 | `haste` | Eile | Schneller abbauen. |
 | `strength` | Stärke | Mehr Nahkampfschaden. |
 | `jump_boost` | Sprungkraft | Höher springen, weniger Fallschaden. |
+| `fire_resistance` | Feuerresistenz | Immun gegen Feuer und Lava. |
+| `health_boost` | Gesundheitsschub | Mehr maximale Herzen (+2 Herzen pro Level). |
 | `regeneration` | Regeneration | Leben regeneriert sich laufend. |
 | `resistance` | Resistenz | Weniger Schaden aus allen Quellen. |
-| `fire_resistance` | Feuerresistenz | Immun gegen Feuer und Lava. |
 | `water_breathing` | Wasseratmung | Unter Wasser atmen. |
-| `invisibility` | Unsichtbarkeit | Für andere unsichtbar (Rüstung bleibt sichtbar). |
 | `night_vision` | Nachtsicht | Im Dunkeln alles hell sehen. |
-| `health_boost` | Gesundheitsschub | Mehr maximale Herzen. |
 | `absorption` | Absorption | Goldene Extra-Herzen. |
-| `saturation` | Sättigung | Hunger füllt sich auf. |
 | `slow_falling` | Sanfter Fall | Langsam fallen, kein Fallschaden. |
-| `conduit_power` | Meereskraft | Unter Wasser sehen, atmen und schneller abbauen. |
-| `village_hero` | Held des Dorfes | Bessere Handelspreise bei Dorfbewohnern. |
 
-## Alle Spezialangriffe
+### Angriffe für `/ce:attack`
 
-Diese Angriffe kann ein Admin mit `/ce:attack` vergeben. Angriffe treffen Mobs und – wenn PvP an ist – andere Spieler, nie dich selbst.
-
-| Befehlswert | Angriff | Wirkung | Standard-Abklingzeit |
-|---|---|---|---|
-| `none` | Kein Angriff | Rechtsklick macht nichts. | 0 s |
-| `fireball` | Feuerball | Schießt drei Feuerbälle in Blickrichtung. | 8 s |
-| `lightning` | Blitz | Lässt einen Blitz am anvisierten Punkt (bis 48 Blöcke) einschlagen. | 15 s |
-| `shockwave` | Schockwelle | Schleudert alle Gegner im Umkreis von 6 Blöcken weg (8 Schaden). | 20 s |
-| `dash` | Dash | Schneller Sprint nach vorne in Blickrichtung. | 5 s |
-| `teleport` | Teleport | Teleportiert dich bis zu 16 Blöcke in Blickrichtung. | 10 s |
-| `heal` | Heilung | Heilt dich und Mitspieler im Umkreis von 8 Blöcken. | 30 s |
-| `shield` | Schild | 8 Sekunden Resistenz III und Absorption II. | 30 s |
-| `automace` | Auto-Mace | Schleudert dich ~20 Blöcke hoch, dann sanfter Fall. Schaust du auf einen Gegner, wirst du zu ihm gedasht. Liegt eine Mace in der Hotbar, wird automatisch zu ihr gewechselt und beim Aufprall Smash-Schaden nach Fallhöhe ausgeteilt. | 25 s |
-
-## Admin-Befehle
-
-Nur Operatoren (auf Realms: Spieler mit Operator-Rechten) können diese Befehle nutzen. Cheats müssen **nicht** aktiviert sein.
-
-| Befehl | Wirkung |
-|---|---|
-| `/ce:list` | Zeigt alle Relikte mit Einstellungen und ob sie gerade existieren. |
-| `/ce:effect <relikt> <effekt> <stufe>` | Setzt den Dauer-Effekt, z. B. `/ce:effect 3 speed 3`. |
-| `/ce:attack <relikt> <angriff> [abklingzeit]` | Setzt den Spezialangriff, z. B. `/ce:attack 3 automace 20`. |
-| `/ce:name <relikt> <name>` | Benennt ein Relikt um, z. B. `/ce:name 3 "Relikt des Blitzes"`. |
-| `/ce:enable <relikt> <true\|false>` | Schaltet ein Relikt an oder aus (aus = nicht craftbar, keine Wirkung). |
-| `/ce:free <relikt>` | Gibt ein Relikt frei, damit es neu gecraftet werden kann. Die alte Kopie wird ungültig. |
-| `/ce:give <relikt> [spieler]` | Gibt ein Relikt direkt (nur wenn es gerade frei ist). |
-| `/ce:pvp <true\|false>` | Schaltet Schaden der Relikt-Angriffe gegen Spieler an oder aus. |
-| `/ce:reset` | Stellt alle Einstellungen auf die Standardbelegung zurück. |
+| Befehlswert | Angriff | Wirkung |
+|---|---|---|
+| `none` | Kein Angriff | Rechtsklick macht nichts. |
+| `dash` | Dash | Schleudert dich 30 Blöcke in Blickrichtung (auch nach oben oder unten). Danach 5 Sekunden kein Fallschaden. |
+| `ring` | Kraftring | Ein Partikelring breitet sich von dir aus (bis 10 Blöcke). Jedes getroffene Wesen bekommt 3 Herzen Schaden. |
+| `fortress` | Bollwerk | 3 Sekunden Resistenz V (unverwundbar) und Langsamkeit. Eine Explosion um dich schleudert Gegner weg, macht Schaden und zerstört Blöcke. Du selbst bekommst keinen Schaden. |
+| `comets` | Kometenhagel | 8 Kometen erscheinen im Ring 10 Blöcke über dir und stürzen herab. Beim Aufprall explodieren sie und hinterlassen Lava. Du selbst bekommst keinen Schaden. |
+| `aegis` | Lebensschild | Stößt Gegner in deiner Nähe weg und erzeugt 5 Sekunden lang ein Schild um dich, das Gegner fernhält. Im Schild bekommst du jede Sekunde Sättigung und Sofortheilung. |
+| `automace` | Auto-Mace | Schleudert dich 30 Blöcke hoch, dann 5 Sekunden sanfter Fall. Schaust du auf einen Gegner, wirst du zu ihm gedasht. Liegt eine Mace in der Hotbar, wird zu ihr gewechselt und beim Aufprall Smash-Schaden nach Fallhöhe ausgeteilt. Kein Fallschaden. |

@@ -10,10 +10,10 @@ const givenEffects = new Map(); // player id -> Set of effect ids we applied
 /** Gives every effect of the active relics; removes ones no longer provided. */
 export function applyRelicEffects(player, activeRelics) {
   const wanted = new Map(); // effect id -> highest amplifier
-  for (const number of activeRelics) {
-    const relic = relicConfig(number);
+  for (const key of activeRelics) {
+    const relic = relicConfig(key);
     if (relic.effect === "none") continue;
-    const amplifier = Math.max(0, Math.min(4, relic.level - 1));
+    const amplifier = Math.max(0, Math.min(254, relic.level - 1)); // level 10 health boost = amplifier 9
     wanted.set(relic.effect, Math.max(wanted.get(relic.effect) ?? 0, amplifier));
   }
 

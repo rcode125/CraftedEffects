@@ -2,41 +2,26 @@
   "resource_pack_name": "CraftedEffects",
   "texture_name": "atlas.items",
   "texture_data": {
-    "craftedeffects_relic_01": {
-      "textures": "textures/items/relic_01"
+    "craftedeffects_relic_speed": {
+      "textures": "textures/items/relic_speed"
     },
-    "craftedeffects_relic_02": {
-      "textures": "textures/items/relic_02"
+    "craftedeffects_relic_strength": {
+      "textures": "textures/items/relic_strength"
     },
-    "craftedeffects_relic_03": {
-      "textures": "textures/items/relic_03"
+    "craftedeffects_relic_haste": {
+      "textures": "textures/items/relic_haste"
     },
-    "craftedeffects_relic_04": {
-      "textures": "textures/items/relic_04"
+    "craftedeffects_relic_fire": {
+      "textures": "textures/items/relic_fire"
     },
-    "craftedeffects_relic_05": {
-      "textures": "textures/items/relic_05"
+    "craftedeffects_relic_health": {
+      "textures": "textures/items/relic_health"
     },
-    "craftedeffects_relic_06": {
-      "textures": "textures/items/relic_06"
+    "craftedeffects_relic_jump": {
+      "textures": "textures/items/relic_jump"
     },
-    "craftedeffects_relic_07": {
-      "textures": "textures/items/relic_07"
-    },
-    "craftedeffects_relic_08": {
-      "textures": "textures/items/relic_08"
-    },
-    "craftedeffects_relic_09": {
-      "textures": "textures/items/relic_09"
-    },
-    "craftedeffects_relic_10": {
-      "textures": "textures/items/relic_10"
-    },
-    "craftedeffects_relic_11": {
-      "textures": "textures/items/relic_11"
-    },
-    "craftedeffects_relic_12": {
-      "textures": "textures/items/relic_12"
+    "craftedeffects_diadem": {
+      "textures": "textures/items/diadem"
     }
   }
 }

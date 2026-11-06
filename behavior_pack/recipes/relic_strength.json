@@ -2,34 +2,34 @@
   "format_version": "1.20.10",
   "minecraft:recipe_shaped": {
     "description": {
-      "identifier": "craftedeffects:relic_04_recipe"
+      "identifier": "craftedeffects:relic_strength_recipe"
     },
     "tags": [
       "crafting_table"
     ],
     "pattern": [
-      "GDG",
-      "DCD",
-      "GDG"
+      "DLD",
+      "LBL",
+      "DLD"
     ],
     "key": {
-      "G": {
-        "item": "minecraft:gold_ingot"
-      },
       "D": {
         "item": "minecraft:diamond"
       },
-      "C": {
-        "item": "minecraft:magma_cream"
+      "L": {
+        "item": "minecraft:blaze_rod"
+      },
+      "B": {
+        "item": "minecraft:glass_bottle"
       }
     },
     "unlock": [
       {
-        "item": "minecraft:diamond"
+        "item": "minecraft:glass_bottle"
       }
     ],
     "result": {
-      "item": "craftedeffects:relic_04",
+      "item": "craftedeffects:relic_strength",
       "count": 1
     }
   }

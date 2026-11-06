@@ -64,41 +64,46 @@ def validate_relics():
     textures = load_json(RP_DIR / "textures" / "item_texture.json")["texture_data"]
     lang = (RP_DIR / "texts" / "en_US.lang").read_text(encoding="utf-8")
     recipes_seen = set()
-    expected_items = {f"{content.relic_id(i)}.json" for i in range(1, len(content.RELICS) + 1)}
+    item_names = [content.relic_id(r) for r in content.RELICS] + ["diadem"]
+    expected_files = {f"{name}.json" for name in item_names}
     for folder in ("items", "recipes"):
         found = {p.name for p in (BP_DIR / folder).glob("*.json")}
-        if found != expected_items:
-            fail(f"{folder}/ must contain exactly the relic files, found extra/missing: {found ^ expected_items}")
+        if found != expected_files:
+            fail(f"{folder}/ must contain exactly the relic and diadem files, found extra/missing: {found ^ expected_files}")
 
-    for index in range(1, len(content.RELICS) + 1):
-        rid = content.relic_id(index)
-        full_id = f"{content.NAMESPACE}:{rid}"
-        item = load_json(BP_DIR / "items" / f"{rid}.json")["minecraft:item"]
+    for name in item_names:
+        is_relic = name != "diadem"
+        full_id = f"{content.NAMESPACE}:{name}"
+        item = load_json(BP_DIR / "items" / f"{name}.json")["minecraft:item"]
         if item["description"]["identifier"] != full_id:
-            fail(f"{rid}: wrong item identifier")
+            fail(f"{name}: wrong item identifier")
         components = item["components"]
-        if components["minecraft:max_stack_size"] != 1:
-            fail(f"{rid}: relics must not stack (needed for serial numbers)")
-        if f"{content.NAMESPACE}:relic" not in components:
-            fail(f"{rid}: missing relic custom component")
+        if is_relic and components["minecraft:max_stack_size"] != 1:
+            fail(f"{name}: relics must not stack (needed for serial numbers)")
+        component = "relic" if is_relic else "diadem"
+        if f"{content.NAMESPACE}:{component}" not in components:
+            fail(f"{name}: missing {component} custom component")
         texture_key = components["minecraft:icon"]["textures"]["default"]
         if texture_key not in textures:
-            fail(f"{rid}: icon {texture_key} missing in item_texture.json")
+            fail(f"{name}: icon {texture_key} missing in item_texture.json")
         if not (RP_DIR / (textures[texture_key]["textures"] + ".png")).is_file():
-            fail(f"{rid}: texture file missing")
+            fail(f"{name}: texture file missing")
         if f"item.{full_id}.name=" not in lang:
-            fail(f"{rid}: name missing in en_US.lang")
+            fail(f"{name}: name missing in en_US.lang")
 
-        recipe = load_json(BP_DIR / "recipes" / f"{rid}.json")["minecraft:recipe_shaped"]
+        recipe = load_json(BP_DIR / "recipes" / f"{name}.json")["minecraft:recipe_shaped"]
         if recipe["result"] != {"item": full_id, "count": 1}:
-            fail(f"{rid}: recipe result does not match the item")
+            fail(f"{name}: recipe result does not match the item")
+        used = {c for row in recipe["pattern"] for c in row if c != " "}
+        if used != set(recipe["key"]):
+            fail(f"{name}: recipe pattern and key do not match ({sorted(used ^ set(recipe['key']))})")
         signature = json.dumps([recipe["pattern"], recipe["key"]], sort_keys=True)
         if signature in recipes_seen:
-            fail(f"{rid}: recipe is identical to another relic")
+            fail(f"{name}: recipe is identical to another item")
         recipes_seen.add(signature)
 
     data_js = (BP_DIR / "scripts" / "data.js").read_text(encoding="utf-8")
-    if data_js.count('"attack":') != len(content.RELICS):
+    if f'"version": {content.CONFIG_VERSION},' not in data_js or data_js.count('"maxLevel":') != len(content.RELICS):
         fail("scripts/data.js is out of date - run scripts/generate_content.py")
 
 

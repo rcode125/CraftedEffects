@@ -2,9 +2,10 @@
 
 Add-on für Minecraft **Bedrock Edition 26.3**, für **normale Welten und Realms**.
 
-- **12 craftbare Relikte**, jedes existiert **nur einmal pro Welt**
+- **6 craftbare Relikte**, jedes existiert **nur einmal pro Welt**
 - **Dauer-Effekt**, solange das Relikt irgendwo im Inventar, in der Hotbar oder in der Zweithand liegt
-- **Spezialangriff** per Rechtsklick (Feuerball, Blitz, Schockwelle, Dash, Teleport, Heilung, Schild, **Auto-Mace**)
+- **Spezialangriff** per Rechtsklick: Dash, Kraftring, Bollwerk, Kometenhagel, Lebensschild, **Auto-Mace**
+- **Diadem**: hebt ein Relikt um 1 Level bis zum Maximum
 - **Admin-Befehle** (`/ce:…`), um jedes Relikt im Spiel umzukonfigurieren
 
 ## ⬇️ Download (ohne GitHub-Konto)
@@ -16,34 +17,34 @@ Add-on für Minecraft **Bedrock Edition 26.3**, für **normale Welten und Realms
 ## Installation – normale Welt
 
 1. Alte Versionen (Eternal Elixir, 9x Mace) in der Welt deaktivieren und unter *Einstellungen → Speicher* löschen.
-2. Die heruntergeladene `CraftedEffects.mcaddon` öffnen (oder selbst gebaut: `build/CraftedEffects-3.0.0.mcaddon`); Minecraft importiert beide Packs.
-3. Welt bearbeiten → **Verhaltenspakete**: *CraftedEffects Behavior Pack v3.0.0* aktivieren (das Ressourcenpaket wird automatisch mit aktiviert).
+2. Die heruntergeladene `CraftedEffects.mcaddon` öffnen (oder selbst gebaut: `build/CraftedEffects-4.0.0.mcaddon`); Minecraft importiert beide Packs.
+3. Welt bearbeiten → **Verhaltenspakete**: *CraftedEffects Behavior Pack v4.0.0* aktivieren (das Ressourcenpaket wird automatisch mit aktiviert).
 4. Es werden **keine Experimente** und **keine Cheats** benötigt.
 
 ## Installation – Realm
 
 1. Das `.mcaddon` wie oben importieren.
-2. *Realm bearbeiten → Verhaltenspakete* → *CraftedEffects Behavior Pack v3.0.0* aktivieren und bestätigen. Alternativ: das Add-on in einer lokalen Welt aktivieren und diese über *Welt ersetzen* hochladen.
+2. *Realm bearbeiten → Verhaltenspakete* → *CraftedEffects Behavior Pack v4.0.0* aktivieren und bestätigen. Alternativ: das Add-on in einer lokalen Welt aktivieren und diese über *Welt ersetzen* hochladen.
 3. Admin-Befehle funktionieren für Spieler mit **Operator**-Rechten (Realm-Einstellungen → Mitglieder → Operator).
 
 ## Kurzüberblick
 
-| # | Relikt | Kern im Rezept | Effekt | Angriff |
-|---|---|---|---|---|
-| 1 | Relikt des Himmelssturzes | Breeze-Rute | Sprungkraft II | Auto-Mace |
-| 2 | Relikt der Stärke | Lohenrute | Stärke II | Schockwelle |
-| 3 | Relikt des Windes | Zucker | Schnelligkeit II | Dash |
-| 4 | Relikt der Glut | Magmacreme | Feuerresistenz | Feuerball |
-| 5 | Relikt des Lebens | Ghast-Träne | Regeneration I | Heilung |
-| 6 | Relikt des Bollwerks | Eisenblock | Resistenz I | Schild |
-| 7 | Relikt der Nacht | Enderperle | Nachtsicht | Teleport |
-| 8 | Relikt der Tiefe | Herz des Meeres | Wasseratmung | Blitz |
-| 9 | Relikt des Bergmanns | Smaragdblock | Eile II | Schockwelle |
-| 10 | Relikt der Schatten | Fermentiertes Spinnenauge | Unsichtbarkeit | Teleport |
-| 11 | Relikt des Goldes | Goldener Apfel | Absorption I | Schild |
-| 12 | Relikt der Unsterblichkeit | Totem der Unsterblichkeit | Gesundheitsschub I | Heilung |
+| Relikt | Effekt (max. Level) | Spezialangriff | Abklingzeit |
+|---|---|---|---|
+| Relikt des Windes | Schnelligkeit (3) | Dash 30 Blöcke in Blickrichtung, kein Fallschaden | 30 s |
+| Relikt der Stärke | Stärke (3) | Kraftring: 3 Herzen Schaden an allem, was er trifft | 30 s |
+| Relikt des Bergmanns | Eile (5) | Bollwerk: 3 s unverwundbar + Explosion um dich | 90 s |
+| Relikt der Glut | Feuerresistenz (1) | Kometenhagel: 8 Kometen, Explosionen und Lava | 120 s |
+| Relikt des Lebens | Gesundheitsschub (10 = 30 Herzen) | Lebensschild: stößt Gegner weg, heilt und sättigt 5 s | 90 s |
+| Relikt des Himmelssturzes | Sprungkraft (4) | Auto-Mace: 30 Blöcke hoch, Dash aufs Ziel, Mace-Smash | 30 s |
 
-Jedes Rezept (Werkbank): **Goldbarren in den 4 Ecken, Diamanten an den 4 Seiten, Kern in der Mitte.**
+Die genauen Rezepte stehen in [RELIKTE.md](RELIKTE.md). Das Rezept des Relikts des Windes und das Diadem sind fertig, die übrigen Rezepte sind **vorläufig**.
+
+> ⚠️ Bollwerk und Kometenhagel zerstören Blöcke, die Kometen hinterlassen Lava. Der Auslöser selbst bekommt keinen Schaden – andere Spieler und deren Bauten schon.
+
+## Diadem
+
+Relikt in die **Zweithand**, Diadem in die Haupthand, **Rechtsklick** → das Relikt steigt um 1 Level, das Diadem ist verbraucht. Am Maximallevel passiert nichts. Wird ein Relikt zerstört und neu gecraftet, beginnt es wieder bei Level 1.
 
 ## So funktioniert die Einzigartigkeit
 
@@ -52,12 +53,12 @@ Jedes Rezept (Werkbank): **Goldbarren in den 4 Ecken, Diamanten an den 4 Seiten,
 - Duplikate (z. B. aus dem Kreativ-Inventar oder durch Glitches) werden automatisch entfernt.
 - Verbrennt, despawnt oder fällt ein Relikt in die Leere, wird es freigegeben und im Chat angekündigt.
 - Ein Relikt in einer Truhe bleibt registriert. Wer offline ist, behält sein Relikt.
-- Notfalls gibt ein Admin ein Relikt mit `/ce:free <nummer>` frei.
+- Notfalls gibt ein Admin ein Relikt mit `/ce:free <relikt>` frei, z. B. `/ce:free speed`.
 
 ## Auto-Mace
 
-1. Rechtsklick → du wirst etwa 20 Blöcke hochgeschleudert und bekommst oben *Sanfter Fall*.
-2. Schaust du einen Spieler oder Mob an (bis 32 Blöcke), wirst du zu ihm gedasht.
+1. Rechtsklick → du wirst etwa 30 Blöcke hochgeschleudert und bekommst oben 5 Sekunden *Sanfter Fall*.
+2. Schaust du einen Spieler oder Mob an (bis 40 Blöcke), wirst du zu ihm gedasht.
 3. Liegt eine **Mace in der Hotbar**, wechselt das Add-on automatisch zu ihr und teilt beim Aufprall Smash-Schaden nach Fallhöhe aus (Vanilla-Formel).
 4. Während und kurz nach der Auto-Mace bekommst du keinen Fallschaden.
 
@@ -68,7 +69,8 @@ Jedes Rezept (Werkbank): **Goldbarren in den 4 Ecken, Diamanten an den 4 Seiten,
 - [ ] Dasselbe Relikt erneut craften → wird entfernt, Zutaten kommen zurück
 - [ ] Relikt in Lava werfen → Chat meldet die Zerstörung, danach ist es wieder craftbar
 - [ ] Alle Angriffe testen; Auto-Mace mit und ohne Mace in der Hotbar
-- [ ] `/ce:list` und `/ce:effect 3 speed 3` als Operator → funktioniert; als normaler Spieler → nicht erlaubt
+- [ ] Diadem: Relikt in der Zweithand steigt um 1 Level, am Maximum wird nichts verbraucht
+- [ ] `/ce:list` und `/ce:level speed 3` als Operator → funktioniert; als normaler Spieler → nicht erlaubt
 - [ ] Welt bzw. Realm neu starten → Einstellungen und Registrierung bleiben erhalten
 
 Bei Problemen hilft der Content-Log (*Einstellungen → Creator → Content-Log aktivieren*). Alle Meldungen des Add-ons beginnen mit `[CraftedEffects]`.
@@ -85,12 +87,14 @@ python3 scripts/build_addon.py
 
 | Script-Datei | Aufgabe |
 |---|---|
-| `main.js` | Startpunkt: registriert Item-Komponente und Befehle, startet die Intervalle |
+| `main.js` | Startpunkt: registriert Item-Komponenten und Befehle, startet die Intervalle |
 | `config.js` | Admin-Konfiguration, gespeichert in der Welt |
 | `registry.js` | Einzigartigkeit: Seriennummern, Duplikate, Verlust-Erkennung |
 | `effects.js` | Dauer-Effekte aus dem Inventar |
 | `attacks.js` | Spezialangriffe und Abklingzeiten |
 | `automace.js` | Auto-Mace-Ablauf |
+| `diadem.js` | Diadem: Relikt in der Zweithand +1 Level |
+| `protection.js` | Kein Schaden durch eigene Angriffe (Fall, Explosion, Lava) |
 | `commands.js` | `/ce:`-Befehle |
 | `targets.js` | Zielauswahl (PvP-Regel, keine Items/Rüstungsständer) |
 | `data.js` | generiert – nicht von Hand bearbeiten |

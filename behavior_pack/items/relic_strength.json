@@ -2,24 +2,24 @@
   "format_version": "1.21.90",
   "minecraft:item": {
     "description": {
-      "identifier": "craftedeffects:relic_08",
+      "identifier": "craftedeffects:relic_strength",
       "menu_category": {
         "category": "equipment"
       }
     },
     "components": {
       "minecraft:display_name": {
-        "value": "item.craftedeffects:relic_08.name"
+        "value": "item.craftedeffects:relic_strength.name"
       },
       "minecraft:icon": {
         "textures": {
-          "default": "craftedeffects_relic_08"
+          "default": "craftedeffects_relic_strength"
         }
       },
       "minecraft:max_stack_size": 1,
-      "minecraft:glint": true,
       "minecraft:rarity": "epic",
-      "craftedeffects:relic": {}
+      "craftedeffects:relic": {},
+      "minecraft:glint": true
     }
   }
 }

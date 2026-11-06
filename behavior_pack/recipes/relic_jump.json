@@ -2,7 +2,7 @@
   "format_version": "1.20.10",
   "minecraft:recipe_shaped": {
     "description": {
-      "identifier": "craftedeffects:relic_12_recipe"
+      "identifier": "craftedeffects:relic_jump_recipe"
     },
     "tags": [
       "crafting_table"
@@ -20,16 +20,16 @@
         "item": "minecraft:diamond"
       },
       "C": {
-        "item": "minecraft:totem_of_undying"
+        "item": "minecraft:breeze_rod"
       }
     },
     "unlock": [
       {
-        "item": "minecraft:diamond"
+        "item": "minecraft:breeze_rod"
       }
     ],
     "result": {
-      "item": "craftedeffects:relic_12",
+      "item": "craftedeffects:relic_jump",
       "count": 1
     }
   }

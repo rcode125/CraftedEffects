@@ -2,24 +2,24 @@
   "format_version": "1.21.90",
   "minecraft:item": {
     "description": {
-      "identifier": "craftedeffects:relic_12",
+      "identifier": "craftedeffects:relic_haste",
       "menu_category": {
         "category": "equipment"
       }
     },
     "components": {
       "minecraft:display_name": {
-        "value": "item.craftedeffects:relic_12.name"
+        "value": "item.craftedeffects:relic_haste.name"
       },
       "minecraft:icon": {
         "textures": {
-          "default": "craftedeffects_relic_12"
+          "default": "craftedeffects_relic_haste"
         }
       },
       "minecraft:max_stack_size": 1,
-      "minecraft:glint": true,
       "minecraft:rarity": "epic",
-      "craftedeffects:relic": {}
+      "craftedeffects:relic": {},
+      "minecraft:glint": true
     }
   }
 }

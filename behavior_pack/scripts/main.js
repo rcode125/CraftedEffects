@@ -1,11 +1,14 @@
 import { system, world } from "@minecraft/server";
 import { scanPlayer, watchForLoss } from "./registry.js";
 import { applyRelicEffects, forgetPlayer } from "./effects.js";
-import { showCooldown, useRelic } from "./attacks.js";
+import { setupAttacks, showCooldown, useRelic } from "./attacks.js";
 import { setupAutoMace } from "./automace.js";
 import { registerCommands } from "./commands.js";
+import { onDiademUse } from "./diadem.js";
+import { setupProtection } from "./protection.js";
 
 const RELIC_COMPONENT = "craftedeffects:relic";
+const DIADEM_COMPONENT = "craftedeffects:diadem";
 const SCAN_INTERVAL_TICKS = 10;
 const EFFECT_INTERVAL_TICKS = 20;
 
@@ -17,16 +20,22 @@ system.beforeEvents.startup.subscribe(({ itemComponentRegistry, customCommandReg
       });
     },
   });
+  itemComponentRegistry.registerCustomComponent(DIADEM_COMPONENT, {
+    onUse({ source }) {
+      onDiademUse(source);
+    },
+  });
   const commands = registerCommands(customCommandRegistry);
-  console.log(`[CraftedEffects] geladen: Relikt-Komponente und ${commands} Befehle registriert`);
+  console.log(`[CraftedEffects] geladen: Relikte, Diadem und ${commands} Befehle registriert`);
 });
 
 watchForLoss();
+setupProtection();
+setupAttacks();
 setupAutoMace();
 
-const activeRelics = new Map(); // player id -> relic numbers currently carried
+const activeRelics = new Map(); // player id -> relic keys currently carried
 let reportedUnreadable = false;
-let reportedScan = 0;
 
 // Inventory scan: registers fresh crafts, removes duplicates, updates names.
 system.runInterval(() => {
@@ -34,10 +43,6 @@ system.runInterval(() => {
   if (!reportedUnreadable && players.some((player) => !player)) {
     reportedUnreadable = true;
     console.warn("[CraftedEffects] Einige Spieler sind für das Script nicht lesbar und werden übersprungen");
-  }
-  if (players.length > 0 && reportedScan < 3) {
-    reportedScan++;
-    console.log(`[CraftedEffects] Scan: ${players.length} Spieler, ${players.filter(Boolean).length} lesbar`);
   }
   for (const player of players) {
     if (!player) continue;

@@ -1,26 +1,28 @@
 import { EntityDamageCause, system, world } from "@minecraft/server";
+import { protect } from "./protection.js";
 import { distance, lookedAtTarget, normalize } from "./targets.js";
 
 // Auto-Mace phases:
-//   rise  -> launched straight up (~20 blocks)
-//   float -> slow falling at the top, waiting for the player to look at a target
+//   rise  -> launched straight up (~30 blocks)
+//   float -> 5 s slow falling at the top, waiting for the player to look at a target
 //   dive  -> dashing towards the target; on contact a mace smash is dealt
-const LAUNCH_STRENGTH = 2.1; // vertical knockback; 2.6 measured 31 blocks in GameTests, ~20 wanted
+const LAUNCH_STRENGTH = 2.55; // vertical knockback; measured in GameTests: 2.1 -> 21.8 blocks, 2.6 -> 31.3 blocks
+const SLOW_FALLING_TICKS = 100; // 5 seconds to pick a target
 const LOOK_RANGE = 40;
 const DIVE_STRENGTH = 1.8;
 const HIT_RANGE = 3.2;
 const LANDING_SMASH_RANGE = 5; // landing right next to the target still counts, like a real mace smash
-const MAX_TICKS = 260;
+const MAX_TICKS = 400;
 const MACE_ID = "minecraft:mace";
 
 const states = new Map(); // player id -> state
-const finishedAt = new Map(); // player id -> tick the Auto-Mace ended
 
 export function isInAutoMace(player) {
   return states.has(player.id);
 }
 
 export function startAutoMace(player) {
+  protect(player, "fall", MAX_TICKS + 100);
   player.applyKnockback({ x: 0, z: 0 }, LAUNCH_STRENGTH);
   playSound(player, "wind_charge.burst");
   states.set(player.id, { phase: "rise", ticks: 0, apexY: player.location.y, target: undefined });
@@ -61,7 +63,7 @@ function distanceToTarget(player, target) {
 function finish(player, reason, softLanding = true) {
   console.log(`[CraftedEffects] Auto-Mace Ende: ${reason}`);
   states.delete(player.id);
-  finishedAt.set(player.id, system.currentTick);
+  if (player.isValid) protect(player, "fall", 100); // still no fall damage right after it ends
   if (softLanding && player.isValid) {
     player.addEffect("slow_falling", 80, { amplifier: 0, showParticles: false });
   }
@@ -98,7 +100,7 @@ function tick(player, state) {
   if (state.phase === "rise") {
     if (state.ticks > 4 && velocity.y <= 0.05) {
       state.phase = "float";
-      player.addEffect("slow_falling", 200, { amplifier: 0, showParticles: false });
+      player.addEffect("slow_falling", SLOW_FALLING_TICKS, { amplifier: 0, showParticles: false });
     }
     return;
   }
@@ -158,16 +160,4 @@ export function setupAutoMace() {
       }
     }
   }, 1);
-
-  // No fall damage while an Auto-Mace is running (or right after landing).
-  world.beforeEvents.entityHurt.subscribe((event) => {
-    if (event.hurtEntity?.typeId !== "minecraft:player") return;
-    if (event.damageSource?.cause !== EntityDamageCause.fall) return;
-    if (states.has(event.hurtEntity.id) || recentlyFinished(event.hurtEntity.id)) event.cancel = true;
-  });
-}
-
-function recentlyFinished(playerId) {
-  const tickFinished = finishedAt.get(playerId);
-  return tickFinished !== undefined && system.currentTick - tickFinished < 100;
 }

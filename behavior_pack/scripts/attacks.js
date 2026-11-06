@@ -1,109 +1,209 @@
-import { EntityDamageCause, system } from "@minecraft/server";
-import { relicConfig, relicNumber } from "./config.js";
+import { EntityDamageCause, system, world } from "@minecraft/server";
+import { relicConfig, relicKey } from "./config.js";
 import { registeredSerial, serialOf } from "./registry.js";
 import { isInAutoMace, startAutoMace } from "./automace.js";
+import { protect } from "./protection.js";
 import { nearbyTargets, normalize } from "./targets.js";
 
-const cooldowns = new Map(); // "playerId:relic" -> tick when ready again
+const cooldowns = new Map(); // "playerId:relicKey" -> tick when ready again
 
-function playSound(player, sound) {
+// Tuning values. The dash and launch strengths are checked by GameTests.
+const DASH_STRENGTH = 2.7; // ~30 blocks in the looking direction
+const DASH_LIFT = 0.35; // a little lift so a horizontal dash does not grind along the ground
+const RING_MAX_RADIUS = 10;
+const RING_DAMAGE = 6; // 3 hearts
+const FORTRESS_TICKS = 60; // 3 seconds
+const COMET_COUNT = 8;
+const COMET_RING_RADIUS = 6;
+const COMET_HEIGHT = 10;
+const AEGIS_RADIUS = 4;
+const AEGIS_TICKS = 100; // 5 seconds
+
+function playSound(player, sound, location = player.location) {
   try {
-    player.dimension.playSound(sound, player.location);
+    player.dimension.playSound(sound, location);
   } catch {
     // Sound not available on this version - not important.
   }
 }
 
-function particle(player, name, location) {
+function particle(dimension, name, location) {
   try {
-    player.dimension.spawnParticle(name, location);
+    dimension.spawnParticle(name, location);
   } catch {
-    // Particle not available - not important.
+    // Particle not available or chunk not loaded - not important.
   }
 }
 
+function pushAway(from, entity, strength, lift) {
+  const away = normalize({ x: entity.location.x - from.x, y: 0, z: entity.location.z - from.z });
+  entity.applyKnockback({ x: away.x * strength, z: away.z * strength }, lift);
+}
+
+function horizontalDistance(a, b) {
+  return Math.hypot(a.x - b.x, a.z - b.z);
+}
+
+/** Runs `step(tick)` every `every` ticks until it has run `total` ticks or returns false. */
+function repeat(total, every, step) {
+  let elapsed = 0;
+  const id = system.runInterval(() => {
+    elapsed += every;
+    let keepGoing = false;
+    try {
+      keepGoing = step(elapsed) !== false;
+    } catch (error) {
+      console.warn(`[CraftedEffects] Angriff abgebrochen: ${error}`);
+    }
+    if (!keepGoing || elapsed >= total) system.clearRun(id);
+  }, every);
+}
+
+// ---------------------------------------------------------------- comets
+
+const comets = new Map(); // projectile id -> owner player id
+
+function cometImpact(projectile, dimension, location, blockBelow) {
+  const ownerId = comets.get(projectile.id);
+  if (ownerId === undefined) return;
+  comets.delete(projectile.id);
+  const owner = world.getEntity(ownerId);
+  if (owner) {
+    protect(owner, "explosion", 40);
+    protect(owner, "fire", 200);
+  }
+  dimension.createExplosion(location, 2, { breaksBlocks: true, causesFire: false, source: owner });
+  // Lava where the comet struck: the impact block if it is now free, otherwise the one above.
+  const spot = { x: Math.floor(location.x), y: Math.floor(location.y), z: Math.floor(location.z) };
+  for (const candidate of [spot, { ...spot, y: spot.y + 1 }, blockBelow ? { ...blockBelow, y: blockBelow.y + 1 } : undefined]) {
+    if (!candidate) continue;
+    const block = dimension.getBlock(candidate);
+    if (block?.isAir) {
+      block.setType("minecraft:lava");
+      break;
+    }
+  }
+}
+
+export function setupAttacks() {
+  world.afterEvents.projectileHitBlock.subscribe((event) => {
+    if (!comets.has(event.projectile?.id)) return;
+    const block = event.getBlockHit().block;
+    cometImpact(event.projectile, event.dimension, event.location, block?.location);
+  });
+  world.afterEvents.projectileHitEntity.subscribe((event) => {
+    if (!comets.has(event.projectile?.id)) return;
+    cometImpact(event.projectile, event.dimension, event.location, undefined);
+  });
+}
+
+// ---------------------------------------------------------------- attacks
+
 const ATTACKS = {
-  fireball(player) {
-    const view = player.getViewDirection();
-    const head = player.getHeadLocation();
-    const right = normalize({ x: -view.z, y: 0, z: view.x });
-    for (const offset of [-0.15, 0, 0.15]) {
-      const direction = normalize({ x: view.x + right.x * offset, y: view.y, z: view.z + right.z * offset });
-      const spawn = { x: head.x + direction.x * 1.5, y: head.y + direction.y * 1.5, z: head.z + direction.z * 1.5 };
-      const fireball = player.dimension.spawnEntity("minecraft:small_fireball", spawn);
-      const projectile = fireball.getComponent("minecraft:projectile");
-      if (projectile) {
-        projectile.owner = player;
-        projectile.shoot({ x: direction.x * 1.6, y: direction.y * 1.6, z: direction.z * 1.6 });
-      }
-    }
-    playSound(player, "mob.blaze.shoot");
-    return true;
-  },
-
-  lightning(player) {
-    const entityHit = player.getEntitiesFromViewDirection({ maxDistance: 48 })[0];
-    const blockHit = player.getBlockFromViewDirection({ maxDistance: 48 });
-    const location = entityHit?.entity.location ?? blockHit?.block.location;
-    if (!location) {
-      player.sendMessage("§7Kein Ziel in Reichweite (48 Blöcke).");
-      return false;
-    }
-    player.dimension.spawnEntity("minecraft:lightning_bolt", location);
-    return true;
-  },
-
-  shockwave(player) {
-    for (const target of nearbyTargets(player, 6)) {
-      const away = normalize({ x: target.location.x - player.location.x, y: 0, z: target.location.z - player.location.z });
-      target.applyDamage(8, { cause: EntityDamageCause.entityAttack, damagingEntity: player });
-      target.applyKnockback({ x: away.x * 2.5, z: away.z * 2.5 }, 0.6);
-    }
-    particle(player, "minecraft:huge_explosion_emitter", player.location);
-    playSound(player, "random.explode");
-    return true;
-  },
-
+  /** 30-block dash in any direction, no fall damage afterwards. */
   dash(player) {
-    const view = normalize({ ...player.getViewDirection(), y: 0 });
-    player.applyKnockback({ x: view.x * 3, z: view.z * 3 }, 0.35);
+    const view = player.getViewDirection();
+    protect(player, "fall", 200);
+    player.applyKnockback(
+      { x: view.x * DASH_STRENGTH, z: view.z * DASH_STRENGTH },
+      view.y * DASH_STRENGTH + DASH_LIFT,
+    );
     playSound(player, "wind_charge.burst");
     return true;
   },
 
-  teleport(player) {
-    const view = player.getViewDirection();
-    const start = player.location;
-    let destination;
-    for (let step = 1; step <= 16; step++) {
-      const point = { x: start.x + view.x * step, y: start.y + view.y * step, z: start.z + view.z * step };
-      const feet = player.dimension.getBlock(point);
-      const head = player.dimension.getBlock({ ...point, y: point.y + 1 });
-      if (!feet || !head || !(feet.isAir || feet.isLiquid) || !(head.isAir || head.isLiquid)) break;
-      destination = point;
-    }
-    if (!destination || !player.tryTeleport(destination, { checkForBlocks: true, keepVelocity: false })) {
-      player.sendMessage("§7Kein freier Platz zum Teleportieren.");
-      return false;
-    }
-    playSound(player, "mob.endermen.portal");
+  /** An expanding ring of particles; everything it passes takes 3 hearts of damage once. */
+  ring(player) {
+    const center = { ...player.location };
+    const dimension = player.dimension;
+    const hit = new Set();
+    playSound(player, "mob.warden.sonic_boom");
+    repeat(RING_MAX_RADIUS * 2, 1, (tick) => {
+      const radius = tick / 2;
+      const points = Math.max(8, Math.round(radius * 6));
+      for (let i = 0; i < points; i++) {
+        const angle = (i / points) * Math.PI * 2;
+        particle(dimension, "minecraft:critical_hit_emitter", {
+          x: center.x + Math.cos(angle) * radius,
+          y: center.y + 1,
+          z: center.z + Math.sin(angle) * radius,
+        });
+      }
+      if (!player.isValid) return true;
+      for (const target of nearbyTargets(player, RING_MAX_RADIUS + 2)) {
+        if (hit.has(target.id)) continue;
+        const flat = horizontalDistance(target.location, center);
+        if (flat > radius + 0.5 || Math.abs(target.location.y - center.y) > 3) continue;
+        hit.add(target.id);
+        target.applyDamage(RING_DAMAGE, { cause: EntityDamageCause.entityAttack, damagingEntity: player });
+        pushAway(center, target, 0.6, 0.2);
+      }
+      return true;
+    });
     return true;
   },
 
-  heal(player) {
-    const players = player.dimension.getPlayers({ location: player.location, maxDistance: 8 });
-    for (const friend of players.filter(Boolean)) {
-      friend.addEffect("instant_health", 1, { amplifier: 1, showParticles: true });
-      friend.addEffect("regeneration", 100, { amplifier: 1, showParticles: true });
-    }
-    playSound(player, "random.levelup");
+  /** 3 s invulnerable and slow; an explosion around you throws enemies away. */
+  fortress(player) {
+    player.addEffect("resistance", FORTRESS_TICKS, { amplifier: 4, showParticles: true });
+    player.addEffect("slowness", FORTRESS_TICKS, { amplifier: 2, showParticles: true });
+    protect(player, "explosion", FORTRESS_TICKS);
+    protect(player, "fall", FORTRESS_TICKS);
+    const center = { ...player.location };
+    player.dimension.createExplosion(center, 4, { breaksBlocks: true, causesFire: false, source: player });
+    for (const target of nearbyTargets(player, 6)) pushAway(center, target, 2.5, 0.6);
     return true;
   },
 
-  shield(player) {
-    player.addEffect("resistance", 160, { amplifier: 2, showParticles: true });
-    player.addEffect("absorption", 160, { amplifier: 1, showParticles: true });
-    playSound(player, "item.shield.block");
+  /** 8 comets in a ring 10 blocks above you; each explodes and leaves lava. */
+  comets(player) {
+    const center = player.location;
+    protect(player, "explosion", 200);
+    protect(player, "fire", 300);
+    for (let i = 0; i < COMET_COUNT; i++) {
+      const angle = (i / COMET_COUNT) * Math.PI * 2;
+      const spawn = {
+        x: center.x + Math.cos(angle) * COMET_RING_RADIUS,
+        y: center.y + COMET_HEIGHT,
+        z: center.z + Math.sin(angle) * COMET_RING_RADIUS,
+      };
+      const comet = player.dimension.spawnEntity("minecraft:small_fireball", spawn);
+      comets.set(comet.id, player.id);
+      const projectile = comet.getComponent("minecraft:projectile");
+      if (projectile) {
+        projectile.owner = player;
+        projectile.shoot({ x: 0, y: -1.2, z: 0 });
+      }
+    }
+    playSound(player, "mob.ghast.fireball");
+    return true;
+  },
+
+  /** Pushes enemies away and keeps them out of a 5 s shield that feeds and heals you. */
+  aegis(player) {
+    for (const target of nearbyTargets(player, 6)) pushAway(player.location, target, 2.5, 0.5);
+    playSound(player, "beacon.activate");
+    repeat(AEGIS_TICKS, 5, (tick) => {
+      if (!player.isValid) return false;
+      const center = player.location;
+      for (let i = 0; i < 16; i++) {
+        const angle = (i / 16) * Math.PI * 2;
+        for (const height of [0.2, 1.2, 2.2]) {
+          const ring = AEGIS_RADIUS * Math.sin(Math.acos((height - 1.2) / AEGIS_RADIUS));
+          particle(player.dimension, "minecraft:villager_happy", {
+            x: center.x + Math.cos(angle) * ring,
+            y: center.y + height,
+            z: center.z + Math.sin(angle) * ring,
+          });
+        }
+      }
+      for (const target of nearbyTargets(player, AEGIS_RADIUS)) pushAway(center, target, 1.5, 0.3);
+      if (tick % 20 === 0) {
+        player.addEffect("saturation", 20, { amplifier: 0, showParticles: false });
+        player.addEffect("instant_health", 1, { amplifier: 0, showParticles: false });
+      }
+      return true;
+    });
     return true;
   },
 
@@ -116,17 +216,17 @@ const ATTACKS = {
 
 /** Called when a player right-clicks with a relic. */
 export function useRelic(player, itemStack) {
-  const number = relicNumber(itemStack?.typeId);
-  if (!number) return;
-  const relic = relicConfig(number);
+  const key = relicKey(itemStack?.typeId);
+  if (!key) return;
+  const relic = relicConfig(key);
   if (!relic.enabled || relic.attack === "none") return;
-  if (serialOf(itemStack) === undefined || serialOf(itemStack) !== registeredSerial(number)) {
+  if (serialOf(itemStack) === undefined || serialOf(itemStack) !== registeredSerial(key)) {
     player.sendMessage("§7Dieses Relikt wird noch geprüft …");
     return;
   }
 
-  const key = `${player.id}:${number}`;
-  const readyAt = cooldowns.get(key) ?? 0;
+  const cooldownId = `${player.id}:${key}`;
+  const readyAt = cooldowns.get(cooldownId) ?? 0;
   if (system.currentTick < readyAt) {
     const seconds = Math.ceil((readyAt - system.currentTick) / 20);
     player.onScreenDisplay.setActionBar(`§c${relic.name}: noch ${seconds} s Abklingzeit`);
@@ -137,7 +237,7 @@ export function useRelic(player, itemStack) {
   if (!attack) return;
   try {
     if (attack(player)) {
-      cooldowns.set(key, system.currentTick + relic.cooldown * 20);
+      cooldowns.set(cooldownId, system.currentTick + relic.cooldown * 20);
       player.onScreenDisplay.setActionBar(`§6${relic.name}: §e${relic.attack === "automace" ? "Auto-Mace!" : "Angriff!"}`);
     }
   } catch (error) {
@@ -147,11 +247,11 @@ export function useRelic(player, itemStack) {
 
 /** Shows the remaining cooldown while the player holds a relic. */
 export function showCooldown(player, heldItem) {
-  const number = relicNumber(heldItem?.typeId);
-  if (!number) return;
-  const readyAt = cooldowns.get(`${player.id}:${number}`) ?? 0;
+  const key = relicKey(heldItem?.typeId);
+  if (!key) return;
+  const readyAt = cooldowns.get(`${player.id}:${key}`) ?? 0;
   if (system.currentTick < readyAt) {
     const seconds = Math.ceil((readyAt - system.currentTick) / 20);
-    player.onScreenDisplay.setActionBar(`§7${relicConfig(number).name}: §c${seconds} s`);
+    player.onScreenDisplay.setActionBar(`§7${relicConfig(key).name}: §c${seconds} s`);
   }
 }
