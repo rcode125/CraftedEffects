@@ -1,0 +1,45 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "craftedeffects:relic_speed_recipe"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "RFR",
+      "NBN",
+      "LTL"
+    ],
+    "key": {
+      "R": {
+        "item": "minecraft:firework_rocket"
+      },
+      "F": {
+        "item": "minecraft:flow_armor_trim_smithing_template"
+      },
+      "N": {
+        "item": "minecraft:nautilus_shell"
+      },
+      "B": {
+        "item": "minecraft:glass_bottle"
+      },
+      "L": {
+        "item": "minecraft:diamond_leggings"
+      },
+      "T": {
+        "item": "minecraft:bolt_armor_trim_smithing_template"
+      }
+    },
+    "unlock": [
+      {
+        "item": "minecraft:glass_bottle"
+      }
+    ],
+    "result": {
+      "item": "craftedeffects:relic_speed",
+      "count": 1
+    }
+  }
+}

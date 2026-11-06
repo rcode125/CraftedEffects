@@ -1,9 +1,27 @@
 {
-  "resource_pack_name": "9x Mace Addon",
+  "resource_pack_name": "CraftedEffects",
   "texture_name": "atlas.items",
   "texture_data": {
-    "9x_mace": {
-      "textures": "textures/items/9x_mace"
+    "craftedeffects_relic_speed": {
+      "textures": "textures/items/relic_speed"
+    },
+    "craftedeffects_relic_strength": {
+      "textures": "textures/items/relic_strength"
+    },
+    "craftedeffects_relic_haste": {
+      "textures": "textures/items/relic_haste"
+    },
+    "craftedeffects_relic_fire": {
+      "textures": "textures/items/relic_fire"
+    },
+    "craftedeffects_relic_health": {
+      "textures": "textures/items/relic_health"
+    },
+    "craftedeffects_relic_jump": {
+      "textures": "textures/items/relic_jump"
+    },
+    "craftedeffects_diadem": {
+      "textures": "textures/items/diadem"
     }
   }
 }

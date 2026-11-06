@@ -1,0 +1,28 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:item": {
+    "description": {
+      "identifier": "craftedeffects:relic_jump",
+      "menu_category": {
+        "category": "equipment"
+      }
+    },
+    "components": {
+      "minecraft:display_name": {
+        "value": "item.craftedeffects:relic_jump.name"
+      },
+      "minecraft:icon": {
+        "textures": {
+          "default": "craftedeffects_relic_jump"
+        }
+      },
+      "minecraft:max_stack_size": 1,
+      "minecraft:rarity": "epic",
+      "craftedeffects:relic": {},
+      "minecraft:glint": true,
+      "minecraft:allow_off_hand": {
+        "value": true
+      }
+    }
+  }
+}

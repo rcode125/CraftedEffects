@@ -1,0 +1,58 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "CraftedEffects GameTests",
+    "description": "Automatic tests for the CraftedEffects relics. Never ship this pack.",
+    "uuid": "7e759143-7c06-4003-8ae6-ab6f7ca70597",
+    "version": [
+      1,
+      0,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      26,
+      30
+    ]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "3434d4a3-85c4-4611-ace1-22f4f0a5dace",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "type": "script",
+      "language": "javascript",
+      "uuid": "d06304d9-4e17-4392-9946-d830004342e8",
+      "version": [
+        1,
+        0,
+        0
+      ],
+      "entry": "scripts/tests.js"
+    }
+  ],
+  "dependencies": [
+    {
+      "uuid": "fbec5def-8634-4464-928a-4c71b3bd97cf",
+      "version": [
+        4,
+        0,
+        0
+      ]
+    },
+    {
+      "module_name": "@minecraft/server",
+      "version": "2.9.0-beta"
+    },
+    {
+      "module_name": "@minecraft/server-gametest",
+      "version": "1.0.0-beta"
+    }
+  ]
+}

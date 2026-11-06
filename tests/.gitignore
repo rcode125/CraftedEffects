@@ -1,0 +1,4 @@
+.bds/
+node_modules/
+.bds-run.log
+.build/

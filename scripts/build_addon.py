@@ -1,410 +1,148 @@
 #!/usr/bin/env python3
-"""
-Build script for 9x Mace Addon.
-Packages Behavior Pack and Resource Pack into a single .mcaddon file.
-Validates JSON files and required assets before packaging.
-"""
+"""Generate, validate and package the CraftedEffects relic add-on."""
 
 import json
-import os
+import shutil
+import subprocess
 import sys
-import zipfile
 import uuid
+import zipfile
+from io import BytesIO
 from pathlib import Path
 
-# Configuration
-PROJECT_ROOT = Path(__file__).parent.parent
-BEHAVIOR_PACK_DIR = PROJECT_ROOT / "behavior_pack"
-RESOURCE_PACK_DIR = PROJECT_ROOT / "resource_pack"
-OUTPUT_DIR = PROJECT_ROOT / "build"
-OUTPUT_FILE = OUTPUT_DIR / "9x-Mace-Addon.mcaddon"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import generate_content as content  # noqa: E402
 
-# Required files to validate
-REQUIRED_FILES = {
-    "behavior_pack": [
-        "manifest.json",
-        "items/9x_mace.json",
-        "recipes/9x_mace_recipe.json",
-    ],
-    "resource_pack": [
-        "manifest.json",
-        "textures/item_texture.json",
-        "textures/items/9x_mace.png",
-        "texts/en_US.lang",
-    ]
-}
+ROOT = content.ROOT
+BP_DIR = content.BP_DIR
+RP_DIR = content.RP_DIR
+BUILD_DIR = ROOT / "build"
+SCRIPT_API = "2.8.0"  # stable Script API shipped with Bedrock 26.3 (2.9.0 is only beta there)
+MIN_ENGINE = [1, 26, 30]  # Bedrock 26.3 = engine 1.26.30
 
-def validate_json(filepath):
-    """Validate that a file contains valid JSON."""
-    try:
-        with open(filepath, 'r') as f:
-            json.load(f)
-        return True, None
-    except json.JSONDecodeError as e:
-        return False, f"Invalid JSON in {filepath}: {e}"
-    except Exception as e:
-        return False, f"Error reading {filepath}: {e}"
 
-def validate_uuid(uuid_str, field_name):
-    """Validate that a string is a valid UUID."""
-    try:
-        uuid.UUID(uuid_str)
-        return True, None
-    except ValueError:
-        return False, f"Invalid UUID in {field_name}: {uuid_str}"
+def load_json(path):
+    with path.open(encoding="utf-8") as stream:
+        return json.load(stream)
+
+
+def fail(message):
+    raise ValueError(message)
+
 
 def validate_manifests():
-    """Validate both manifest.json files."""
-    errors = []
-    
-    # Validate behavior pack manifest
-    bp_manifest_path = BEHAVIOR_PACK_DIR / "manifest.json"
-    valid, error = validate_json(bp_manifest_path)
-    if not valid:
-        errors.append(error)
-    else:
-        with open(bp_manifest_path, 'r') as f:
-            bp_manifest = json.load(f)
-        
-        # Check required fields
-        required_fields = ["format_version", "header", "modules", "dependencies"]
-        for field in required_fields:
-            if field not in bp_manifest:
-                errors.append(f"Behavior pack manifest missing required field: {field}")
-        
-        # Validate UUIDs
-        if "header" in bp_manifest:
-            valid, error = validate_uuid(bp_manifest["header"].get("uuid", ""), "behavior_pack.header.uuid")
-            if not valid:
-                errors.append(error)
-        
-        if "modules" in bp_manifest:
-            for i, module in enumerate(bp_manifest["modules"]):
-                valid, error = validate_uuid(module.get("uuid", ""), f"behavior_pack.modules[{i}].uuid")
-                if not valid:
-                    errors.append(error)
-        
-        if "dependencies" in bp_manifest:
-            for i, dep in enumerate(bp_manifest["dependencies"]):
-                valid, error = validate_uuid(dep.get("uuid", ""), f"behavior_pack.dependencies[{i}].uuid")
-                if not valid:
-                    errors.append(error)
-    
-    # Validate resource pack manifest
-    rp_manifest_path = RESOURCE_PACK_DIR / "manifest.json"
-    valid, error = validate_json(rp_manifest_path)
-    if not valid:
-        errors.append(error)
-    else:
-        with open(rp_manifest_path, 'r') as f:
-            rp_manifest = json.load(f)
-        
-        required_fields = ["format_version", "header", "modules"]
-        for field in required_fields:
-            if field not in rp_manifest:
-                errors.append(f"Resource pack manifest missing required field: {field}")
-        
-        if "header" in rp_manifest:
-            valid, error = validate_uuid(rp_manifest["header"].get("uuid", ""), "resource_pack.header.uuid")
-            if not valid:
-                errors.append(error)
-        
-        if "modules" in rp_manifest:
-            for i, module in enumerate(rp_manifest["modules"]):
-                valid, error = validate_uuid(module.get("uuid", ""), f"resource_pack.modules[{i}].uuid")
-                if not valid:
-                    errors.append(error)
-        
-        # Verify behavior pack references resource pack UUID
-        if "dependencies" in bp_manifest and "header" in rp_manifest:
-            rp_uuid = rp_manifest["header"]["uuid"]
-            bp_dep_uuids = [dep.get("uuid") for dep in bp_manifest.get("dependencies", [])]
-            if rp_uuid not in bp_dep_uuids:
-                errors.append(f"Behavior pack does not reference resource pack UUID: {rp_uuid}")
-    
-    return errors
+    bp = load_json(BP_DIR / "manifest.json")
+    rp = load_json(RP_DIR / "manifest.json")
+    version = bp["header"]["version"]
+    if rp["header"]["version"] != version:
+        fail("Behavior and Resource Pack must have the same version")
+    for pack in (bp, rp):
+        if pack["header"]["min_engine_version"] != MIN_ENGINE:
+            fail(f"Both packs must use min_engine_version {MIN_ENGINE}")
+        if "v" + ".".join(map(str, version)) not in pack["header"]["name"]:
+            fail("Pack name must contain the current version")
 
-def validate_item_definition():
-    """Validate the custom item definition."""
-    errors = []
-    item_path = BEHAVIOR_PACK_DIR / "items" / "9x_mace.json"
-    
-    valid, error = validate_json(item_path)
-    if not valid:
-        errors.append(error)
-        return errors
-    
-    with open(item_path, 'r') as f:
-        item_def = json.load(f)
-    
-    # Check required structure
-    if "minecraft:item" not in item_def:
-        errors.append("Item definition missing 'minecraft:item' root")
-        return errors
-    
-    item = item_def["minecraft:item"]
-    
-    # Check description
-    if "description" not in item:
-        errors.append("Item missing 'description'")
-    else:
-        desc = item["description"]
-        if "identifier" not in desc:
-            errors.append("Item description missing 'identifier'")
-        elif desc["identifier"] != "craftedeffects:9x_mace":
-            errors.append(f"Item identifier mismatch: expected 'craftedeffects:9x_mace', got '{desc['identifier']}'")
-    
-    # Check components
-    if "components" not in item:
-        errors.append("Item missing 'components'")
-    else:
-        comps = item["components"]
-        if "minecraft:max_stack_size" not in comps:
-            errors.append("Item missing 'minecraft:max_stack_size' component")
-        elif comps["minecraft:max_stack_size"] != 1:
-            errors.append(f"Item max_stack_size should be 1, got {comps['minecraft:max_stack_size']}")
-        
-        if "minecraft:display_name" not in comps:
-            errors.append("Item missing 'minecraft:display_name' component")
-        elif comps["minecraft:display_name"].get("value") != "9x Mace":
-            errors.append(f"Item display_name should be '9x Mace', got '{comps['minecraft:display_name'].get('value')}'")
-        
-        if "minecraft:icon" not in comps:
-            errors.append("Item missing 'minecraft:icon' component")
-        elif comps["minecraft:icon"].get("texture") != "9x_mace":
-            errors.append(f"Item icon texture should be '9x_mace', got '{comps['minecraft:icon'].get('texture')}'")
-    
-    return errors
+    all_uuids = [bp["header"]["uuid"], rp["header"]["uuid"]]
+    all_uuids += [m["uuid"] for m in bp["modules"] + rp["modules"]]
+    for value in all_uuids:
+        uuid.UUID(value)
+    if len(set(all_uuids)) != len(all_uuids):
+        fail("Pack header and module UUIDs must all be unique")
 
-def validate_recipe():
-    """Validate the crafting recipe."""
-    errors = []
-    recipe_path = BEHAVIOR_PACK_DIR / "recipes" / "9x_mace_recipe.json"
-    
-    valid, error = validate_json(recipe_path)
-    if not valid:
-        errors.append(error)
-        return errors
-    
-    with open(recipe_path, 'r') as f:
-        recipe = json.load(f)
-    
-    if "minecraft:recipe_shaped" not in recipe:
-        errors.append("Recipe missing 'minecraft:recipe_shaped' root")
-        return errors
-    
-    shaped = recipe["minecraft:recipe_shaped"]
-    
-    # Check pattern
-    if "pattern" not in shaped:
-        errors.append("Recipe missing 'pattern'")
-    else:
-        pattern = shaped["pattern"]
-        if len(pattern) != 3:
-            errors.append(f"Recipe pattern should have 3 rows, got {len(pattern)}")
-        for i, row in enumerate(pattern):
-            if len(row) != 3:
-                errors.append(f"Recipe pattern row {i} should have 3 chars, got {len(row)}")
-            if row != "###":
-                errors.append(f"Recipe pattern row {i} should be '###', got '{row}'")
-    
-    # Check key
-    if "key" not in shaped:
-        errors.append("Recipe missing 'key'")
-    else:
-        key = shaped["key"]
-        if "#" not in key:
-            errors.append("Recipe key missing '#' entry")
-        elif key["#"].get("item") != "minecraft:mace":
-            errors.append(f"Recipe key '#' should use 'minecraft:mace', got '{key['#'].get('item')}'")
-    
-    # Check result
-    if "result" not in shaped:
-        errors.append("Recipe missing 'result'")
-    else:
-        result = shaped["result"]
-        if result.get("item") != "craftedeffects:9x_mace":
-            errors.append(f"Recipe result item should be 'craftedeffects:9x_mace', got '{result.get('item')}'")
-        if result.get("count") != 1:
-            errors.append(f"Recipe result count should be 1, got {result.get('count')}")
-    
-    # Check tags
-    if "tags" not in shaped or "crafting_table" not in shaped.get("tags", []):
-        errors.append("Recipe missing 'crafting_table' tag")
-    
-    return errors
+    deps = bp["dependencies"]
+    if not any(d.get("uuid") == rp["header"]["uuid"] and d.get("version") == version for d in deps):
+        fail("Behavior Pack must depend on the Resource Pack with the same version")
+    if not any(d.get("module_name") == "@minecraft/server" and d.get("version") == SCRIPT_API for d in deps):
+        fail(f"Behavior Pack must use @minecraft/server {SCRIPT_API}")
+    scripts = [m for m in bp["modules"] if m["type"] == "script"]
+    if len(scripts) != 1 or scripts[0].get("entry") != "scripts/main.js":
+        fail("Script module must point to scripts/main.js")
+    return version
 
-def validate_texture_registration():
-    """Validate the item_texture.json registration."""
-    errors = []
-    texture_reg_path = RESOURCE_PACK_DIR / "textures" / "item_texture.json"
-    
-    valid, error = validate_json(texture_reg_path)
-    if not valid:
-        errors.append(error)
-        return errors
-    
-    with open(texture_reg_path, 'r') as f:
-        tex_reg = json.load(f)
-    
-    if "texture_data" not in tex_reg:
-        errors.append("item_texture.json missing 'texture_data'")
-    else:
-        tex_data = tex_reg["texture_data"]
-        if "9x_mace" not in tex_data:
-            errors.append("item_texture.json missing '9x_mace' texture entry")
-        else:
-            entry = tex_data["9x_mace"]
-            if "textures" not in entry:
-                errors.append("9x_mace texture entry missing 'textures' field")
-            elif entry["textures"] != "textures/items/9x_mace":
-                errors.append(f"9x_mace texture path should be 'textures/items/9x_mace', got '{entry['textures']}'")
-    
-    return errors
 
-def validate_lang_file():
-    """Validate the language file."""
-    errors = []
-    lang_path = RESOURCE_PACK_DIR / "texts" / "en_US.lang"
-    
-    if not lang_path.exists():
-        errors.append("en_US.lang file missing")
-        return errors
-    
-    with open(lang_path, 'r') as f:
-        content = f.read()
-    
-    if "item.craftedeffects:9x_mace.name=9x Mace" not in content:
-        errors.append("en_US.lang missing correct translation entry for 9x Mace")
-    
-    return errors
+def validate_relics():
+    textures = load_json(RP_DIR / "textures" / "item_texture.json")["texture_data"]
+    lang = (RP_DIR / "texts" / "en_US.lang").read_text(encoding="utf-8")
+    recipes_seen = set()
+    item_names = [content.relic_id(r) for r in content.RELICS] + ["diadem"]
+    expected_files = {f"{name}.json" for name in item_names}
+    for folder in ("items", "recipes"):
+        found = {p.name for p in (BP_DIR / folder).glob("*.json")}
+        if found != expected_files:
+            fail(f"{folder}/ must contain exactly the relic and diadem files, found extra/missing: {found ^ expected_files}")
 
-def check_required_files():
-    """Check that all required files exist."""
-    errors = []
-    for pack_name, files in REQUIRED_FILES.items():
-        pack_dir = BEHAVIOR_PACK_DIR if pack_name == "behavior_pack" else RESOURCE_PACK_DIR
-        for file in files:
-            filepath = pack_dir / file
-            if not filepath.exists():
-                errors.append(f"Required file missing: {pack_name}/{file}")
-    return errors
+    for name in item_names:
+        is_relic = name != "diadem"
+        full_id = f"{content.NAMESPACE}:{name}"
+        item = load_json(BP_DIR / "items" / f"{name}.json")["minecraft:item"]
+        if item["description"]["identifier"] != full_id:
+            fail(f"{name}: wrong item identifier")
+        components = item["components"]
+        if is_relic and components["minecraft:max_stack_size"] != 1:
+            fail(f"{name}: relics must not stack (needed for serial numbers)")
+        component = "relic" if is_relic else "diadem"
+        if f"{content.NAMESPACE}:{component}" not in components:
+            fail(f"{name}: missing {component} custom component")
+        texture_key = components["minecraft:icon"]["textures"]["default"]
+        if texture_key not in textures:
+            fail(f"{name}: icon {texture_key} missing in item_texture.json")
+        if not (RP_DIR / (textures[texture_key]["textures"] + ".png")).is_file():
+            fail(f"{name}: texture file missing")
+        if f"item.{full_id}.name=" not in lang:
+            fail(f"{name}: name missing in en_US.lang")
 
-def create_mcaddon():
-    """Create the .mcaddon file."""
-    OUTPUT_DIR.mkdir(exist_ok=True)
-    
-    if OUTPUT_FILE.exists():
-        OUTPUT_FILE.unlink()
-    
-    with zipfile.ZipFile(OUTPUT_FILE, 'w', zipfile.ZIP_DEFLATED) as zf:
-        # Add behavior pack files
-        for file_path in BEHAVIOR_PACK_DIR.rglob("*"):
-            if file_path.is_file() and not file_path.name.startswith('.'):
-                arcname = f"behavior_pack/{file_path.relative_to(BEHAVIOR_PACK_DIR)}"
-                zf.write(file_path, arcname)
-        
-        # Add resource pack files
-        for file_path in RESOURCE_PACK_DIR.rglob("*"):
-            if file_path.is_file() and not file_path.name.startswith('.'):
-                arcname = f"resource_pack/{file_path.relative_to(RESOURCE_PACK_DIR)}"
-                zf.write(file_path, arcname)
-    
-    print(f"Created {OUTPUT_FILE}")
-    print(f"Size: {OUTPUT_FILE.stat().st_size} bytes")
+        recipe = load_json(BP_DIR / "recipes" / f"{name}.json")["minecraft:recipe_shaped"]
+        if recipe["result"] != {"item": full_id, "count": 1}:
+            fail(f"{name}: recipe result does not match the item")
+        used = {c for row in recipe["pattern"] for c in row if c != " "}
+        if used != set(recipe["key"]):
+            fail(f"{name}: recipe pattern and key do not match ({sorted(used ^ set(recipe['key']))})")
+        signature = json.dumps([recipe["pattern"], recipe["key"]], sort_keys=True)
+        if signature in recipes_seen:
+            fail(f"{name}: recipe is identical to another item")
+        recipes_seen.add(signature)
 
-def main():
-    print("=" * 60)
-    print("9x Mace Addon - Build Script")
-    print("=" * 60)
-    
-    all_errors = []
-    
-    # Check required files exist
-    print("\n[1/6] Checking required files...")
-    errors = check_required_files()
-    all_errors.extend(errors)
-    if errors:
-        for e in errors:
-            print(f"  ERROR: {e}")
-    else:
-        print("  OK: All required files present")
-    
-    # Validate JSON syntax
-    print("\n[2/6] Validating JSON syntax...")
-    json_files = [
-        BEHAVIOR_PACK_DIR / "manifest.json",
-        BEHAVIOR_PACK_DIR / "items" / "9x_mace.json",
-        BEHAVIOR_PACK_DIR / "recipes" / "9x_mace_recipe.json",
-        RESOURCE_PACK_DIR / "manifest.json",
-        RESOURCE_PACK_DIR / "textures" / "item_texture.json",
-    ]
-    for jf in json_files:
-        valid, error = validate_json(jf)
-        if not valid:
-            all_errors.append(error)
-            print(f"  ERROR: {error}")
-        else:
-            print(f"  OK: {jf.relative_to(PROJECT_ROOT)}")
-    
-    # Validate manifests
-    print("\n[3/6] Validating manifests...")
-    errors = validate_manifests()
-    all_errors.extend(errors)
-    if errors:
-        for e in errors:
-            print(f"  ERROR: {e}")
-    else:
-        print("  OK: Manifests valid")
-    
-    # Validate item definition
-    print("\n[4/6] Validating item definition...")
-    errors = validate_item_definition()
-    all_errors.extend(errors)
-    if errors:
-        for e in errors:
-            print(f"  ERROR: {e}")
-    else:
-        print("  OK: Item definition valid")
-    
-    # Validate recipe
-    print("\n[5/6] Validating crafting recipe...")
-    errors = validate_recipe()
-    all_errors.extend(errors)
-    if errors:
-        for e in errors:
-            print(f"  ERROR: {e}")
-    else:
-        print("  OK: Crafting recipe valid")
-    
-    # Validate texture registration
-    print("\n[6/6] Validating texture registration...")
-    errors = validate_texture_registration()
-    all_errors.extend(errors)
-    if not errors:
-        errors = validate_lang_file()
-        all_errors.extend(errors)
-    if errors:
-        for e in errors:
-            print(f"  ERROR: {e}")
-    else:
-        print("  OK: Texture registration valid")
-    
-    # Summary
-    print("\n" + "=" * 60)
-    if all_errors:
-        print(f"BUILD FAILED: {len(all_errors)} error(s) found")
-        print("=" * 60)
-        sys.exit(1)
-    else:
-        print("ALL VALIDATIONS PASSED")
-        print("=" * 60)
-        
-        # Create the .mcaddon file
-        print("\nPackaging .mcaddon file...")
-        create_mcaddon()
-        print("\nBuild successful!")
-        print(f"Output: {OUTPUT_FILE}")
+    data_js = (BP_DIR / "scripts" / "data.js").read_text(encoding="utf-8")
+    if f'"version": {content.CONFIG_VERSION},' not in data_js or data_js.count('"maxLevel":') != len(content.RELICS):
+        fail("scripts/data.js is out of date - run scripts/generate_content.py")
+
+
+def validate_scripts():
+    node = shutil.which("node")
+    if not node:
+        print("Note: Node.js not found, skipping JavaScript syntax check")
+        return
+    for script in sorted((BP_DIR / "scripts").glob("*.js")):
+        result = subprocess.run([node, "--check", str(script)], capture_output=True, text=True)
+        if result.returncode != 0:
+            fail(f"{script.name} has a syntax error:\n{result.stderr}")
+
+
+def pack_directory(folder):
+    buffer = BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as pack:
+        for path in sorted(folder.rglob("*")):
+            if path.is_file() and not any(part.startswith(".") or part == "node_modules" for part in path.parts):
+                pack.write(path, path.relative_to(folder).as_posix())
+    return buffer.getvalue()
+
+
+def build():
+    content.main()
+    version = validate_manifests()
+    validate_relics()
+    validate_scripts()
+
+    BUILD_DIR.mkdir(exist_ok=True)
+    for old in BUILD_DIR.glob("*.mcaddon"):
+        old.unlink()
+    output = BUILD_DIR / f"CraftedEffects-{'.'.join(map(str, version))}.mcaddon"
+    with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as addon:
+        addon.writestr("CraftedEffects_BP.mcpack", pack_directory(BP_DIR))
+        addon.writestr("CraftedEffects_RP.mcpack", pack_directory(RP_DIR))
+    print(f"Created {output}")
+    print(f"Size: {output.stat().st_size} bytes")
+
 
 if __name__ == "__main__":
-    main()
+    build()

@@ -1,0 +1,36 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "craftedeffects:relic_jump_recipe"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "GDG",
+      "DCD",
+      "GDG"
+    ],
+    "key": {
+      "G": {
+        "item": "minecraft:gold_ingot"
+      },
+      "D": {
+        "item": "minecraft:diamond"
+      },
+      "C": {
+        "item": "minecraft:breeze_rod"
+      }
+    },
+    "unlock": [
+      {
+        "item": "minecraft:breeze_rod"
+      }
+    ],
+    "result": {
+      "item": "craftedeffects:relic_jump",
+      "count": 1
+    }
+  }
+}

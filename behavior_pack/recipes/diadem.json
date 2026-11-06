@@ -1,0 +1,36 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "craftedeffects:diadem_recipe"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "GHG",
+      "HEH",
+      "GHG"
+    ],
+    "key": {
+      "G": {
+        "item": "minecraft:gold_ingot"
+      },
+      "H": {
+        "item": "minecraft:player_head"
+      },
+      "E": {
+        "item": "minecraft:ender_eye"
+      }
+    },
+    "unlock": [
+      {
+        "item": "minecraft:ender_eye"
+      }
+    ],
+    "result": {
+      "item": "craftedeffects:diadem",
+      "count": 1
+    }
+  }
+}

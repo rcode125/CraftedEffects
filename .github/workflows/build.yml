@@ -1,4 +1,4 @@
-name: Build 9x Mace Addon
+name: Build CraftedEffects
 
 on:
   push:
@@ -12,169 +12,84 @@ permissions:
 
 jobs:
   validate-and-build:
-    name: Validate and Build
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pillow
-      
-      - name: Generate texture
-        run: |
-          cd scripts
-          python generate_texture.py --output-dir ${{ github.workspace }}
-      
-      - name: Validate project structure
-        run: |
-          echo "Checking required files..."
-          test -f behavior_pack/manifest.json || (echo "Missing behavior_pack/manifest.json" && exit 1)
-          test -f behavior_pack/items/9x_mace.json || (echo "Missing behavior_pack/items/9x_mace.json" && exit 1)
-          test -f behavior_pack/recipes/9x_mace_recipe.json || (echo "Missing behavior_pack/recipes/9x_mace_recipe.json" && exit 1)
-          test -f resource_pack/manifest.json || (echo "Missing resource_pack/manifest.json" && exit 1)
-          test -f resource_pack/textures/item_texture.json || (echo "Missing resource_pack/textures/item_texture.json" && exit 1)
-          test -f resource_pack/textures/items/9x_mace.png || (echo "Missing resource_pack/textures/items/9x_mace.png" && exit 1)
-          test -f resource_pack/texts/en_US.lang || (echo "Missing resource_pack/texts/en_US.lang" && exit 1)
-          echo "All required files present"
-      
-      - name: Validate JSON syntax
-        run: |
-          python -m json.tool behavior_pack/manifest.json > /dev/null
-          python -m json.tool behavior_pack/items/9x_mace.json > /dev/null
-          python -m json.tool behavior_pack/recipes/9x_mace_recipe.json > /dev/null
-          python -m json.tool resource_pack/manifest.json > /dev/null
-          python -m json.tool resource_pack/textures/item_texture.json > /dev/null
-          echo "All JSON files are valid"
-      
-      - name: Validate UUIDs
-        run: |
-          python3 << 'EOF'
-          import json
-          import uuid
-          
-          def check_uuid(val, path):
-              try:
-                  uuid.UUID(val)
-                  print(f"  OK: {path} = {val}")
-              except ValueError:
-                  print(f"  ERROR: {path} = {val} (invalid UUID)")
-                  exit(1)
-          
-          # Behavior pack manifest
-          with open('behavior_pack/manifest.json') as f:
-              bp = json.load(f)
-          check_uuid(bp['header']['uuid'], 'behavior_pack.header.uuid')
-          for i, m in enumerate(bp['modules']):
-              check_uuid(m['uuid'], f'behavior_pack.modules[{i}].uuid')
-          for i, d in enumerate(bp['dependencies']):
-              check_uuid(d['uuid'], f'behavior_pack.dependencies[{i}].uuid')
-          
-          # Resource pack manifest
-          with open('resource_pack/manifest.json') as f:
-              rp = json.load(f)
-          check_uuid(rp['header']['uuid'], 'resource_pack.header.uuid')
-          for i, m in enumerate(rp['modules']):
-              check_uuid(m['uuid'], f'resource_pack.modules[{i}].uuid')
-          
-          # Verify dependency matches
-          rp_uuid = rp['header']['uuid']
-          bp_dep_uuids = [d['uuid'] for d in bp['dependencies']]
-          if rp_uuid not in bp_dep_uuids:
-              print(f"  ERROR: Behavior pack does not depend on resource pack UUID {rp_uuid}")
-              exit(1)
-          print(f"  OK: Behavior pack correctly references resource pack")
-          
-          print("All UUIDs valid")
-          EOF
-      
-      - name: Validate item and recipe consistency
-        run: |
-          python3 << 'EOF'
-          import json
-          
-          # Check item identifier
-          with open('behavior_pack/items/9x_mace.json') as f:
-              item = json.load(f)
-          item_id = item['minecraft:item']['description']['identifier']
-          assert item_id == 'craftedeffects:9x_mace', f"Item ID mismatch: {item_id}"
-          print(f"  OK: Item identifier = {item_id}")
-          
-          # Check recipe result matches item
-          with open('behavior_pack/recipes/9x_mace_recipe.json') as f:
-              recipe = json.load(f)
-          result_item = recipe['minecraft:recipe_shaped']['result']['item']
-          assert result_item == item_id, f"Recipe result mismatch: {result_item} != {item_id}"
-          print(f"  OK: Recipe result = {result_item}")
-          
-          # Check recipe uses 9 maces
-          pattern = recipe['minecraft:recipe_shaped']['pattern']
-          assert len(pattern) == 3, "Pattern must have 3 rows"
-          for row in pattern:
-              assert row == '###', f"Row must be '###': {row}"
-          key = recipe['minecraft:recipe_shaped']['key']['#']['item']
-          assert key == 'minecraft:mace', f"Recipe key must use minecraft:mace: {key}"
-          print(f"  OK: Recipe uses 9x minecraft:mace in 3x3 pattern")
-          
-          # Check texture registration
-          with open('resource_pack/textures/item_texture.json') as f:
-              tex = json.load(f)
-          tex_path = tex['texture_data']['9x_mace']['textures']
-          assert tex_path == 'textures/items/9x_mace', f"Texture path mismatch: {tex_path}"
-          print(f"  OK: Texture path = {tex_path}")
-          
-          print("All consistency checks passed")
-          EOF
-      
-      - name: Run build script
-        run: |
-          python scripts/build_addon.py
-      
-      - name: Verify .mcaddon output
-        run: |
-          test -f build/9x-Mace-Addon.mcaddon || (echo "Missing output file" && exit 1)
-          echo "Output file exists"
-          
-          # Verify it's a valid zip
-          python3 -c "
-          import zipfile
-          with zipfile.ZipFile('build/9x-Mace-Addon.mcaddon', 'r') as zf:
-              files = zf.namelist()
-              print(f'Files in archive: {len(files)}')
-              # Check for required structure
-              assert any(f.startswith('behavior_pack/') for f in files), 'Missing behavior_pack/'
-              assert any(f.startswith('resource_pack/') for f in files), 'Missing resource_pack/'
-              assert 'behavior_pack/manifest.json' in files, 'Missing behavior_pack/manifest.json'
-              assert 'resource_pack/manifest.json' in files, 'Missing resource_pack/manifest.json'
-              print('Archive structure valid')
-          "
-      
-      - name: Upload .mcaddon artifact
-        uses: actions/upload-artifact@v4
+      - name: Validate and build add-on
+        run: python scripts/build_addon.py
+      - uses: actions/upload-artifact@v4
         with:
-          name: 9x-Mace-Addon
-          path: build/9x-Mace-Addon.mcaddon
+          name: CraftedEffects
+          path: build/*.mcaddon
           retention-days: 30
-      
-      - name: Build summary
+
+  gametests:
+    runs-on: ubuntu-latest
+    needs: validate-and-build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Cache Bedrock Dedicated Server
+        uses: actions/cache@v4
+        with:
+          path: tests/.bds/cache
+          key: bds-${{ runner.os }}-${{ hashFiles('tests/bds-runner.json', 'tests/gametest_pack/manifest.json') }}
+      - name: Install test runner
+        working-directory: tests
+        run: npm ci
+      - name: Run GameTests on Bedrock Dedicated Server
+        working-directory: tests
+        run: npm test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gametest-logs
+          path: |
+            tests/.bds/logs/
+            tests/.bds/result.json
+          retention-days: 14
+
+  # Public download without a GitHub account: every green run on main publishes
+  # the add-on as a GitHub Release (tag v<version> from the manifest).
+  release:
+    runs-on: ubuntu-latest
+    needs: [validate-and-build, gametests]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build add-on
+        run: python scripts/build_addon.py
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          echo "## Build Successful" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "The **9x-Mace-Addon.mcaddon** file has been built and uploaded as an artifact." >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Contents:" >> $GITHUB_STEP_SUMMARY
-          echo "- Behavior Pack: Custom item `craftedeffects:9x_mace` with 3x3 crafting recipe" >> $GITHUB_STEP_SUMMARY
-          echo "- Resource Pack: Custom 16x16 texture for the 9x Mace" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Installation:" >> $GITHUB_STEP_SUMMARY
-          echo "1. Download the artifact from this workflow run" >> $GITHUB_STEP_SUMMARY
-          echo "2. Double-click the `.mcaddon` file to import into Minecraft Bedrock" >> $GITHUB_STEP_SUMMARY
-          echo "3. Enable both packs in your world settings" >> $GITHUB_STEP_SUMMARY
+          VERSION=$(python -c "import json;print('.'.join(map(str,json.load(open('behavior_pack/manifest.json'))['header']['version'])))")
+          TAG="v$VERSION"
+          cp "build/CraftedEffects-$VERSION.mcaddon" build/CraftedEffects.mcaddon
+          cat > release-notes.md <<NOTES
+          **Download:** \`CraftedEffects-$VERSION.mcaddon\` unten unter *Assets* anklicken und mit Minecraft öffnen.
+
+          Für Minecraft Bedrock 26.3 – normale Welten und Realms. Alle Rezepte, Effekte und Befehle: [RELIKTE.md](https://github.com/${{ github.repository }}/blob/$TAG/RELIKTE.md)
+
+          Gebaut aus ${{ github.sha }}; alle GameTests auf Bedrock Dedicated Server bestanden.
+          NOTES
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" "build/CraftedEffects-$VERSION.mcaddon" build/CraftedEffects.mcaddon --clobber
+            gh release edit "$TAG" --notes-file release-notes.md
+          else
+            gh release create "$TAG" "build/CraftedEffects-$VERSION.mcaddon" build/CraftedEffects.mcaddon \
+              --title "CraftedEffects $VERSION" --notes-file release-notes.md --target "${{ github.sha }}" --latest
+          fi

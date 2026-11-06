@@ -1,0 +1,36 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "craftedeffects:relic_haste_recipe"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "PEP",
+      "EBE",
+      "EEE"
+    ],
+    "key": {
+      "P": {
+        "item": "minecraft:diamond_pickaxe"
+      },
+      "E": {
+        "item": "minecraft:emerald"
+      },
+      "B": {
+        "item": "minecraft:glass_bottle"
+      }
+    },
+    "unlock": [
+      {
+        "item": "minecraft:glass_bottle"
+      }
+    ],
+    "result": {
+      "item": "craftedeffects:relic_haste",
+      "count": 1
+    }
+  }
+}
