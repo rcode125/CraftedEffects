@@ -17,6 +17,8 @@ const NAMES = {
   jump: "Relikt des Himmelssturzes",
 };
 const DIADEM = "craftedeffects:diadem";
+// In GameTest coordinates the arena floor (structure layer 0) is at y = 1; creatures stand on y = 2.
+const FLOOR = 1;
 
 const relicId = (key) => `craftedeffects:relic_${key}`;
 
@@ -42,7 +44,7 @@ async function freshRelic(gameTest, key) {
 }
 
 function spawnPlayer(gameTest, x, z, name) {
-  return gameTest.spawnSimulatedPlayer({ x, y: 1, z }, name, GameMode.Survival);
+  return gameTest.spawnSimulatedPlayer({ x, y: FLOOR + 1, z }, name, GameMode.Survival);
 }
 
 function inventory(player) {
@@ -131,7 +133,7 @@ test("speed_effect_while_carried_and_30_block_dash", 400, async (gameTest) => {
 test("strength_ring_damage_and_diadem_levels", 400, async (gameTest) => {
   await freshRelic(gameTest, "strength");
   const player = spawnPlayer(gameTest, 5, 5, "ce_strength");
-  const pig = gameTest.spawnWithoutBehaviors("minecraft:pig", { x: 10, y: 1, z: 5 });
+  const pig = gameTest.spawnWithoutBehaviors("minecraft:pig", { x: 10, y: FLOOR + 1, z: 5 });
   const pigBefore = health(pig);
   await craft(gameTest, player, "strength");
   player.useItemInSlot(0);
@@ -178,7 +180,7 @@ test("haste_duplicate_refund_and_fortress", 400, async (gameTest) => {
   gameTest.assert(countItems(copier, "minecraft:glass_bottle") === 1, "Glasflasche nicht zurückgegeben");
   copier.disconnect();
 
-  const cow = gameTest.spawnWithoutBehaviors("minecraft:cow", { x: 5, y: 1, z: 3 }); // the test world is peaceful
+  const cow = gameTest.spawnWithoutBehaviors("minecraft:cow", { x: 5, y: FLOOR + 1, z: 3 }); // the test world is peaceful
   const cowBefore = health(cow);
   owner.useItemInSlot(0);
   await waitFor(gameTest, 40, "Bollwerk-Explosion hat die Kuh nicht getroffen", () => !cow.isValid || health(cow) < cowBefore);
@@ -203,7 +205,7 @@ test("fire_lore_comets_lava_and_admin_command", 500, async (gameTest) => {
     await gameTest.idle(1);
     for (let x = 0; x < 12 && !lava; x++) {
       for (let z = 0; z < 12 && !lava; z++) {
-        for (let y = 0; y < 4 && !lava; y++) {
+        for (let y = FLOOR; y < FLOOR + 4 && !lava; y++) {
           const type = gameTest.getBlock({ x, y, z })?.typeId;
           lava = type === "minecraft:lava" || type === "minecraft:flowing_lava";
         }
@@ -226,7 +228,7 @@ test("fire_lore_comets_lava_and_admin_command", 500, async (gameTest) => {
 test("health_shield_and_level_reset_after_loss", 600, async (gameTest) => {
   await freshRelic(gameTest, "health");
   const player = spawnPlayer(gameTest, 5, 5, "ce_health");
-  const pig = gameTest.spawnWithoutBehaviors("minecraft:pig", { x: 7, y: 1, z: 5 });
+  const pig = gameTest.spawnWithoutBehaviors("minecraft:pig", { x: 7, y: FLOOR + 1, z: 5 });
   await craft(gameTest, player, "health");
   await gameTest.idle(30);
   player.getComponent("minecraft:health").setCurrentValue(10); // direct, no damage immunity involved
@@ -242,8 +244,8 @@ test("health_shield_and_level_reset_after_loss", 600, async (gameTest) => {
   await waitFor(gameTest, 40, "Level 3 wurde nicht gesetzt", () => loreOf(inventory(player).getItem(0)).includes("3/10"));
   const relic = inventory(player).getItem(0);
   inventory(player).setItem(0, undefined);
-  gameTest.setBlockType("minecraft:lava", { x: 10, y: 1, z: 10 });
-  gameTest.spawnItem(relic, { x: 10.5, y: 2, z: 10.5 });
+  gameTest.setBlockType("minecraft:lava", { x: 10, y: FLOOR, z: 10 }); // a lava pit in the floor
+  gameTest.spawnItem(relic, { x: 10.5, y: FLOOR + 1.5, z: 10.5 });
   await gameTest.idle(120); // burn + the add-on's 3 s loss check
 
   await craft(gameTest, player, "health", 1);
@@ -257,7 +259,7 @@ test("jump_automace_30_blocks_and_smash", 500, async (gameTest) => {
   await freshRelic(gameTest, "jump");
   const player = spawnPlayer(gameTest, 2, 2, "ce_mace");
   inventory(player).setItem(4, new ItemStack("minecraft:mace", 1));
-  const target = gameTest.spawnWithoutBehaviors("minecraft:iron_golem", { x: 9, y: 1, z: 9 });
+  const target = gameTest.spawnWithoutBehaviors("minecraft:iron_golem", { x: 9, y: FLOOR + 1, z: 9 });
   const before = health(target);
   await craft(gameTest, player, "jump");
 
