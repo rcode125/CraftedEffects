@@ -224,11 +224,7 @@ const ATTACKS = {
       if (tick % 20 === 0) {
         player.addEffect("saturation", 20, { amplifier: 0, showParticles: false });
         const hp = player.getComponent("minecraft:health");
-        if (hp) {
-          const before = hp.currentValue;
-          const healed = hp.setCurrentValue(Math.min(hp.effectiveMax, before + 4)); // instant health I = 2 hearts
-          console.log(`[CraftedEffects] Lebensschild heilt: ${before} -> ${hp.currentValue} (max ${hp.effectiveMax}, ok ${healed})`);
-        }
+        if (hp) hp.setCurrentValue(Math.min(hp.effectiveMax, hp.currentValue + 4)); // instant health I = 2 hearts
         particle(player.dimension, "minecraft:heart_particle", { ...player.location, y: player.location.y + 2 });
       }
       return true;
@@ -266,7 +262,6 @@ export function useRelic(player, itemStack) {
   const attack = ATTACKS[relic.attack];
   if (!attack) return;
   try {
-    console.log(`[CraftedEffects] ${player.name} benutzt ${relic.name}: ${relic.attack}`);
     if (attack(player)) {
       cooldowns.set(cooldownId, system.currentTick + relic.cooldown * 20);
       player.onScreenDisplay.setActionBar(`§6${relic.name}: §e${relic.attack === "automace" ? "Auto-Mace!" : "Angriff!"}`);

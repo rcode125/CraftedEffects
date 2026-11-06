@@ -115,7 +115,6 @@ test("speed_effect_while_carried_and_30_block_dash", 400, async (gameTest) => {
   let farthest = 0;
   for (let tick = 0; tick < 80; tick++) {
     farthest = Math.max(farthest, flatDistance(player.location, start));
-    if (tick < 4) console.warn(`[CE-TEST] Dash Tick ${tick}: Geschwindigkeit ${JSON.stringify(player.getVelocity())}`);
     await gameTest.idle(1);
   }
   console.warn(`[CE-TEST] Speed-Dash Weite: ${farthest.toFixed(1)} Blöcke`);
