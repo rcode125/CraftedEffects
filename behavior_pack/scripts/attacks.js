@@ -8,10 +8,10 @@ import { nearbyTargets, normalize } from "./targets.js";
 const cooldowns = new Map(); // "playerId:relicKey" -> tick when ready again
 
 // Tuning values. The dash and launch strengths are checked by GameTests.
-const DASH_SPEED = 2.5; // blocks per tick while dashing
-const DASH_TICKS = 10; // pushed for this many ticks, then glides out: ~30 blocks in total
-const DASH_HOP = 0.45; // first lift off the ground; ground friction would eat a push from standing
-const DASH_GLIDE = 0.08; // per-tick lift that roughly cancels gravity on a level dash
+const DASH_STEP = 3; // blocks per tick
+const DASH_TICKS = 10; // 10 x 3 = 30 blocks
+// The dash moves the player by teleporting a few blocks every tick: sideways knockback
+// on players is damped to a fraction (measured in GameTests: 2.5 -> 0.2 blocks/tick).
 const RING_MAX_RADIUS = 10;
 const RING_DAMAGE = 6; // 3 hearts
 const FORTRESS_TICKS = 60; // 3 seconds
@@ -59,6 +59,20 @@ function repeat(total, every, step) {
     }
     if (!keepGoing || elapsed >= total) system.clearRun(id);
   }, every);
+}
+
+/** Where the player ends up after moving `length` blocks, or undefined if the way is blocked. */
+function freeSpotAlong(dimension, from, direction, length) {
+  let last;
+  for (let travelled = 0.5; travelled <= length + 0.01; travelled += 0.5) {
+    const spot = { x: from.x + direction.x * travelled, y: from.y + direction.y * travelled, z: from.z + direction.z * travelled };
+    const feet = dimension.getBlock(spot);
+    const head = dimension.getBlock({ ...spot, y: spot.y + 1 });
+    const passable = (block) => block && (block.isAir || block.isLiquid);
+    if (!passable(feet) || !passable(head)) break;
+    last = spot;
+  }
+  return last;
 }
 
 // ---------------------------------------------------------------- comets
@@ -116,12 +130,12 @@ const ATTACKS = {
     const view = player.getViewDirection(); // fixed at the start: the dash keeps its direction
     protect(player, "fall", 200);
     playSound(player, "wind_charge.burst");
-    // Pushed every tick like the Auto-Mace dive (a single push is eaten by ground friction).
-    player.applyKnockback({ x: 0, z: 0 }, Math.max(DASH_HOP, view.y * DASH_SPEED));
-    console.log(`[CraftedEffects] Dash Richtung ${JSON.stringify(view)}`);
     repeat(DASH_TICKS, 1, () => {
       if (!player.isValid) return false;
-      player.applyKnockback({ x: view.x * DASH_SPEED, z: view.z * DASH_SPEED }, view.y * DASH_SPEED + DASH_GLIDE);
+      const next = freeSpotAlong(player.dimension, player.location, view, DASH_STEP);
+      if (!next) return false; // wall ahead: the dash ends here
+      player.teleport(next, { keepVelocity: false, checkForBlocks: false });
+      particle(player.dimension, "minecraft:wind_explosion_emitter", next);
       return true;
     });
     return true;

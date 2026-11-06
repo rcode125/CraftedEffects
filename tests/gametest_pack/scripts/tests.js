@@ -3,7 +3,7 @@
 //
 // Tests run in parallel and every relic exists only once per world, so each test
 // owns one relic and checks several things with it one after another.
-import { EquipmentSlot, GameMode, ItemStack, ItemTypes } from "@minecraft/server";
+import { EquipmentSlot, GameMode, ItemStack, ItemTypes, world } from "@minecraft/server";
 import { LookDuration, registerAsync } from "@minecraft/server-gametest";
 
 const TAG = "craftedeffects";
@@ -20,8 +20,14 @@ const DIADEM = "craftedeffects:diadem";
 
 const relicId = (key) => `craftedeffects:relic_${key}`;
 
+// Log every bit of damage a test player takes, so failures show the cause.
+world.afterEvents.entityHurt.subscribe(({ hurtEntity, damage, damageSource }) => {
+  if (hurtEntity?.typeId !== "minecraft:player" || !hurtEntity.nameTag?.startsWith("ce_")) return;
+  console.warn(`[CE-TEST] ${hurtEntity.nameTag} nimmt ${damage} Schaden durch ${damageSource.cause} (${damageSource.damagingEntity?.typeId ?? "-"})`);
+});
+
 function test(name, maxTicks, body) {
-  registerAsync("ce", name, body).structureName(ARENA).maxTicks(maxTicks).tag(TAG).padding(8);
+  registerAsync("ce", name, body).structureName(ARENA).maxTicks(maxTicks).tag(TAG).padding(24); // explosions must not reach the neighbouring tests
 }
 
 /** Runs an add-on admin command, the same way an operator would. */
