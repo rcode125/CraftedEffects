@@ -1,4 +1,4 @@
-import { EntityDamageCause, system, world } from "@minecraft/server";
+import { EntityDamageCause, system } from "@minecraft/server";
 import { relicConfig, relicKey } from "./config.js";
 import { registeredSerial, serialOf } from "./registry.js";
 import { isInAutoMace, startAutoMace } from "./automace.js";
@@ -10,7 +10,8 @@ const cooldowns = new Map(); // "playerId:relicKey" -> tick when ready again
 // Tuning values. The dash and launch strengths are checked by GameTests.
 const DASH_SPEED = 2.5; // blocks per tick while dashing
 const DASH_TICKS = 10; // pushed for this many ticks, then glides out: ~30 blocks in total
-const DASH_LIFT = 0.1; // a little lift so a horizontal dash does not grind along the ground
+const DASH_HOP = 0.45; // first lift off the ground; ground friction would eat a push from standing
+const DASH_GLIDE = 0.08; // per-tick lift that roughly cancels gravity on a level dash
 const RING_MAX_RADIUS = 10;
 const RING_DAMAGE = 6; // 3 hearts
 const FORTRESS_TICKS = 60; // 3 seconds
@@ -62,40 +63,48 @@ function repeat(total, every, step) {
 
 // ---------------------------------------------------------------- comets
 
-const comets = new Map(); // projectile id -> owner player id
+// Comets are simulated by the script (vanilla fireballs cannot be spawned by scripts):
+// a burning point falls a little faster every tick and explodes on the first block or creature.
+const COMET_MAX_TICKS = 80;
 
-function cometImpact(projectile, dimension, location, blockBelow) {
-  const ownerId = comets.get(projectile.id);
-  if (ownerId === undefined) return;
-  comets.delete(projectile.id);
-  const owner = world.getEntity(ownerId);
-  if (owner) {
+function launchComet(owner, start) {
+  const dimension = owner.dimension;
+  const position = { ...start };
+  let speed = 0.4;
+  repeat(COMET_MAX_TICKS, 1, () => {
+    speed = Math.min(1.5, speed + 0.1);
+    const steps = Math.ceil(speed / 0.5); // check every half block so fast comets do not skip blocks
+    for (let i = 0; i < steps; i++) {
+      position.y -= speed / steps;
+      particle(dimension, "minecraft:basic_flame_particle", position);
+      particle(dimension, "minecraft:lava_particle", position);
+      const block = dimension.getBlock(position);
+      if (!block) return false; // left the loaded world
+      const hitCreature = dimension
+        .getEntities({ location: position, maxDistance: 1.5 })
+        .some((entity) => entity.id !== owner.id && entity.getComponent("minecraft:health"));
+      if (!block.isAir || hitCreature) {
+        cometImpact(owner, dimension, { ...position }, block.isAir ? block : block.above());
+        return false;
+      }
+    }
+    return true;
+  });
+}
+
+function cometImpact(owner, dimension, location, lavaBlock) {
+  if (owner.isValid) {
     protect(owner, "explosion", 40);
     protect(owner, "fire", 200);
   }
-  dimension.createExplosion(location, 2, { breaksBlocks: true, causesFire: false, source: owner });
-  // Lava where the comet struck: the impact block if it is now free, otherwise the one above.
-  const spot = { x: Math.floor(location.x), y: Math.floor(location.y), z: Math.floor(location.z) };
-  for (const candidate of [spot, { ...spot, y: spot.y + 1 }, blockBelow ? { ...blockBelow, y: blockBelow.y + 1 } : undefined]) {
-    if (!candidate) continue;
-    const block = dimension.getBlock(candidate);
-    if (block?.isAir) {
+  dimension.createExplosion(location, 2, { breaksBlocks: true, causesFire: false, source: owner.isValid ? owner : undefined });
+  // Lava where the comet struck (the explosion may have cleared the spot).
+  for (const block of [lavaBlock, dimension.getBlock(location), lavaBlock?.below()]) {
+    if (block?.isValid && block.isAir) {
       block.setType("minecraft:lava");
       break;
     }
   }
-}
-
-export function setupAttacks() {
-  world.afterEvents.projectileHitBlock.subscribe((event) => {
-    if (!comets.has(event.projectile?.id)) return;
-    const block = event.getBlockHit().block;
-    cometImpact(event.projectile, event.dimension, event.location, block?.location);
-  });
-  world.afterEvents.projectileHitEntity.subscribe((event) => {
-    if (!comets.has(event.projectile?.id)) return;
-    cometImpact(event.projectile, event.dimension, event.location, undefined);
-  });
 }
 
 // ---------------------------------------------------------------- attacks
@@ -107,9 +116,10 @@ const ATTACKS = {
     protect(player, "fall", 200);
     playSound(player, "wind_charge.burst");
     // Pushed every tick like the Auto-Mace dive (a single push is eaten by ground friction).
+    player.applyKnockback({ x: 0, z: 0 }, Math.max(DASH_HOP, view.y * DASH_SPEED));
     repeat(DASH_TICKS, 1, () => {
       if (!player.isValid) return false;
-      player.applyKnockback({ x: view.x * DASH_SPEED, z: view.z * DASH_SPEED }, view.y * DASH_SPEED + DASH_LIFT);
+      player.applyKnockback({ x: view.x * DASH_SPEED, z: view.z * DASH_SPEED }, view.y * DASH_SPEED + DASH_GLIDE);
       return true;
     });
     return true;
@@ -170,13 +180,7 @@ const ATTACKS = {
         y: center.y + COMET_HEIGHT,
         z: center.z + Math.sin(angle) * COMET_RING_RADIUS,
       };
-      const comet = player.dimension.spawnEntity("minecraft:fireball", spawn); // small_fireball is not summonable
-      comets.set(comet.id, player.id);
-      const projectile = comet.getComponent("minecraft:projectile");
-      if (projectile) {
-        projectile.owner = player;
-        projectile.shoot({ x: 0, y: -1.2, z: 0 });
-      }
+      launchComet(player, spawn);
     }
     playSound(player, "mob.ghast.fireball");
     return true;

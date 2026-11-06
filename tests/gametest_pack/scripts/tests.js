@@ -171,10 +171,10 @@ test("haste_duplicate_refund_and_fortress", 400, async (gameTest) => {
   gameTest.assert(countItems(copier, "minecraft:glass_bottle") === 1, "Glasflasche nicht zurückgegeben");
   copier.disconnect();
 
-  const zombie = gameTest.spawnWithoutBehaviors("minecraft:zombie", { x: 5, y: 1, z: 3 });
-  const zombieBefore = health(zombie);
+  const cow = gameTest.spawnWithoutBehaviors("minecraft:cow", { x: 5, y: 1, z: 3 }); // the test world is peaceful
+  const cowBefore = health(cow);
   owner.useItemInSlot(0);
-  await waitFor(gameTest, 40, "Bollwerk-Explosion hat den Zombie nicht getroffen", () => !zombie.isValid || health(zombie) < zombieBefore);
+  await waitFor(gameTest, 40, "Bollwerk-Explosion hat die Kuh nicht getroffen", () => !cow.isValid || health(cow) < cowBefore);
   gameTest.assert(owner.getEffect("resistance")?.amplifier === 4, "Resistenz V fehlt");
   await gameTest.idle(20);
   gameTest.assert(health(owner) >= 20, `Spieler hat Schaden genommen (${health(owner)} HP)`);
@@ -222,7 +222,7 @@ test("health_shield_and_level_reset_after_loss", 600, async (gameTest) => {
   const pig = gameTest.spawnWithoutBehaviors("minecraft:pig", { x: 7, y: 1, z: 5 });
   await craft(gameTest, player, "health");
   await gameTest.idle(30);
-  player.applyDamage(6);
+  player.getComponent("minecraft:health").setCurrentValue(10); // direct, no damage immunity involved
   const hurt = health(player);
   const pigStart = flatDistance(pig.location, player.location);
   player.useItemInSlot(0);

@@ -1,7 +1,7 @@
 import { system, world } from "@minecraft/server";
 import { scanPlayer, watchForLoss } from "./registry.js";
 import { applyRelicEffects, forgetPlayer } from "./effects.js";
-import { setupAttacks, showCooldown, useRelic } from "./attacks.js";
+import { showCooldown, useRelic } from "./attacks.js";
 import { setupAutoMace } from "./automace.js";
 import { registerCommands } from "./commands.js";
 import { onDiademUse } from "./diadem.js";
@@ -31,7 +31,6 @@ system.beforeEvents.startup.subscribe(({ itemComponentRegistry, customCommandReg
 
 watchForLoss();
 setupProtection();
-setupAttacks();
 setupAutoMace();
 
 const activeRelics = new Map(); // player id -> relic keys currently carried
