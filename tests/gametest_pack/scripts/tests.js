@@ -100,13 +100,14 @@ test("speed_effect_while_carried_and_30_block_dash", 400, async (gameTest) => {
   // Dash: 30 blocks in the looking direction, no fall damage.
   inventory(player).setItem(20, undefined);
   player.setItem(relic, 0, true);
-  player.lookAtLocation(gameTest.worldLocation({ x: 2, y: 2, z: 60 }), LookDuration.Continuous);
+  player.setRotation({ x: 0, y: 0 }); // look straight ahead (south), no steering command
   await gameTest.idle(5);
   const start = { ...player.location };
   player.useItemInSlot(0);
   let farthest = 0;
   for (let tick = 0; tick < 80; tick++) {
     farthest = Math.max(farthest, flatDistance(player.location, start));
+    if (tick < 4) console.warn(`[CE-TEST] Dash Tick ${tick}: Geschwindigkeit ${JSON.stringify(player.getVelocity())}`);
     await gameTest.idle(1);
   }
   console.warn(`[CE-TEST] Speed-Dash Weite: ${farthest.toFixed(1)} Blöcke`);
@@ -228,7 +229,7 @@ test("health_shield_and_level_reset_after_loss", 600, async (gameTest) => {
   player.useItemInSlot(0);
   await gameTest.idle(40);
   gameTest.assert(flatDistance(pig.location, player.location) > pigStart + 1, "Schwein wurde nicht weggestoßen");
-  gameTest.assert(health(player) > hurt, "Lebensschild hat nicht geheilt");
+  gameTest.assert(health(player) > hurt, `Lebensschild hat nicht geheilt (${hurt} -> ${health(player)} HP)`);
 
   // Raise the level, lose the relic in lava, craft it again: back to level 1.
   command(gameTest, "ce:level health 3");

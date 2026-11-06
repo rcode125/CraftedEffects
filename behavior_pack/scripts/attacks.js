@@ -97,7 +97,8 @@ function cometImpact(owner, dimension, location, lavaBlock) {
     protect(owner, "explosion", 40);
     protect(owner, "fire", 200);
   }
-  dimension.createExplosion(location, 2, { breaksBlocks: true, causesFire: false, source: owner.isValid ? owner : undefined });
+  // No "source": protect() already keeps the owner safe, and passing the player fails for some player types.
+  dimension.createExplosion(location, 2, { breaksBlocks: true, causesFire: false });
   // Lava where the comet struck (the explosion may have cleared the spot).
   for (const block of [lavaBlock, dimension.getBlock(location), lavaBlock?.below()]) {
     if (block?.isValid && block.isAir) {
@@ -117,6 +118,7 @@ const ATTACKS = {
     playSound(player, "wind_charge.burst");
     // Pushed every tick like the Auto-Mace dive (a single push is eaten by ground friction).
     player.applyKnockback({ x: 0, z: 0 }, Math.max(DASH_HOP, view.y * DASH_SPEED));
+    console.log(`[CraftedEffects] Dash Richtung ${JSON.stringify(view)}`);
     repeat(DASH_TICKS, 1, () => {
       if (!player.isValid) return false;
       player.applyKnockback({ x: view.x * DASH_SPEED, z: view.z * DASH_SPEED }, view.y * DASH_SPEED + DASH_GLIDE);
@@ -163,7 +165,7 @@ const ATTACKS = {
     protect(player, "explosion", FORTRESS_TICKS);
     protect(player, "fall", FORTRESS_TICKS);
     const center = { ...player.location };
-    player.dimension.createExplosion(center, 4, { breaksBlocks: true, causesFire: false, source: player });
+    player.dimension.createExplosion(center, 4, { breaksBlocks: true, causesFire: false });
     for (const target of nearbyTargets(player, 6)) pushAway(center, target, 2.5, 0.6);
     return true;
   },
@@ -208,7 +210,11 @@ const ATTACKS = {
       if (tick % 20 === 0) {
         player.addEffect("saturation", 20, { amplifier: 0, showParticles: false });
         const hp = player.getComponent("minecraft:health");
-        if (hp) hp.setCurrentValue(Math.min(hp.effectiveMax, hp.currentValue + 4)); // instant health I = 2 hearts
+        if (hp) {
+          const before = hp.currentValue;
+          const healed = hp.setCurrentValue(Math.min(hp.effectiveMax, before + 4)); // instant health I = 2 hearts
+          console.log(`[CraftedEffects] Lebensschild heilt: ${before} -> ${hp.currentValue} (max ${hp.effectiveMax}, ok ${healed})`);
+        }
         particle(player.dimension, "minecraft:heart_particle", { ...player.location, y: player.location.y + 2 });
       }
       return true;
