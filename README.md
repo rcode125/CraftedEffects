@@ -10,14 +10,14 @@ Add-on für Minecraft **Bedrock Edition 26.3**, für **normale Welten und Realms
 
 ## ⬇️ Download (ohne GitHub-Konto)
 
-**[CraftedEffects.mcaddon herunterladen](https://github.com/rcode125/CraftedEffects/releases/latest/download/CraftedEffects.mcaddon)** – immer die neueste getestete Version. Ältere Versionen gibt es unter [Releases](https://github.com/rcode125/CraftedEffects/releases).
+**[Neueste Version herunterladen](https://github.com/rcode125/CraftedEffects/releases/latest)** – dort unter *Assets* die einzige Datei `CraftedEffects-<version>.mcaddon` anklicken. Ältere Versionen gibt es unter [Releases](https://github.com/rcode125/CraftedEffects/releases).
 
 👉 **Alle Rezepte, Effekte, Angriffe und Befehle stehen in [RELIKTE.md](RELIKTE.md).**
 
 ## Installation – normale Welt
 
 1. Alte Versionen (Eternal Elixir, 9x Mace) in der Welt deaktivieren und unter *Einstellungen → Speicher* löschen.
-2. Die heruntergeladene `CraftedEffects.mcaddon` öffnen (oder selbst gebaut: `build/CraftedEffects-4.1.0.mcaddon`); Minecraft importiert beide Packs.
+2. Die heruntergeladene `CraftedEffects-<version>.mcaddon` öffnen (oder selbst gebaut: `build/CraftedEffects-4.1.0.mcaddon`); Minecraft importiert beide Packs.
 3. Welt bearbeiten → **Verhaltenspakete**: *CraftedEffects Behavior Pack v4.1.0* aktivieren (das Ressourcenpaket wird automatisch mit aktiviert).
 4. Es werden **keine Experimente** und **keine Cheats** benötigt.
 
