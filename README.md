@@ -109,7 +109,7 @@ python3 pixelstation/vorbereiten.py            # am PC mit Internet -> ~/Pixelst
 
 1. Ordner `~/Pixelstation` auf den Pi kopieren, dort `bash start.sh` ausführen.
 2. Blockbench öffnet die Texturen nacheinander: pixeln, **Strg+S**, Fenster schließen → nächste Textur.
-3. Ordner zurück auf den PC, darin `python3 zurueck_ins_addon.py` ausführen → geänderte Texturen landen in `art/items/`, das `.mcaddon` wird automatisch gebaut.
+3. Ordner zurück auf den PC, darin `python3 zurueck_ins_addon.py` ausführen → geänderte Texturen landen in `art/items/`, das `.mcaddon` wird automatisch gebaut und die Texturen werden automatisch committet und gepusht (`--ohne-git` schaltet das ab).
 
 PNGs in `art/items/` haben Vorrang vor den generierten Texturen. Blockbench gibt es offiziell nicht für Linux-ARM64; `vorbereiten.py` kombiniert den offiziellen Blockbench-Programmcode mit der offiziellen Electron-ARM64-Laufzeit (beide per Prüfsumme kontrolliert). Details und Fehlerhilfe: `pixelstation/vorlage/LIESMICH.txt`.
 

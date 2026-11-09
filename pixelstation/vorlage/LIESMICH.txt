@@ -36,7 +36,9 @@ Alles Nötige liegt in diesem Ordner. Auf dem Raspberry Pi braucht es KEIN Inter
        python3 zurueck_ins_addon.py
 
    Die geänderten Texturen werden automatisch ins Add-on übernommen und das fertige
-   .mcaddon wird gebaut (Pfad steht am Ende der Ausgabe).
+   .mcaddon wird gebaut (Pfad steht am Ende der Ausgabe). Danach werden die Texturen
+   automatisch committet und auf GitHub gepusht (nur die Texturordner, sonst nichts).
+   Ohne Git: python3 zurueck_ins_addon.py --ohne-git
    Liegt das Add-on woanders:  python3 zurueck_ins_addon.py /pfad/zu/CraftedEffects
 
 
