@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Generate every relic file of the add-on from one table.
 
-Writes item and recipe JSON, item textures, language files, the script data
+Writes item and recipe JSON, item textures (a PNG in art/items/ replaces the
+generated one), language files, the script data
 module (behavior_pack/scripts/data.js) and the player guide RELIKTE.md.
 Edit the tables below, then run this script (build_addon.py runs it too).
 """
@@ -15,6 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 BP_DIR = ROOT / "behavior_pack"
 RP_DIR = ROOT / "resource_pack"
+ART_DIR = ROOT / "art" / "items"  # hand-drawn textures (e.g. from the Pixelstation) win over generated ones
 
 NAMESPACE = "craftedeffects"
 ITEM_FORMAT = "1.21.90"
@@ -278,7 +280,8 @@ def generate_packs():
                    recipe_json(full_id, source["pattern"], source["ingredients"], unlock))
         texture_path = RP_DIR / "textures" / "items" / f"{item_name}.png"
         texture_path.parent.mkdir(parents=True, exist_ok=True)
-        texture_path.write_bytes(texture)
+        custom = ART_DIR / f"{item_name}.png"
+        texture_path.write_bytes(custom.read_bytes() if custom.is_file() else texture)
         texture_data[texture_key] = {"textures": f"textures/items/{item_name}"}
         lang_lines.append(f"item.{full_id}.name={display}")
 

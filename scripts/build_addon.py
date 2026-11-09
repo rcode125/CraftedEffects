@@ -122,7 +122,8 @@ def pack_directory(folder):
     buffer = BytesIO()
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as pack:
         for path in sorted(folder.rglob("*")):
-            if path.is_file() and not any(part.startswith(".") or part == "node_modules" for part in path.parts):
+            parts = path.relative_to(folder).parts  # only look inside the pack, not at the checkout location
+            if path.is_file() and not any(part.startswith(".") or part == "node_modules" for part in parts):
                 pack.write(path, path.relative_to(folder).as_posix())
     return buffer.getvalue()
 
