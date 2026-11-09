@@ -99,6 +99,20 @@ python3 scripts/build_addon.py
 | `targets.js` | Zielauswahl (PvP-Regel, keine Items/Rüstungsständer) |
 | `data.js` | generiert – nicht von Hand bearbeiten |
 
+## Texturen auf dem Raspberry Pi 5 pixeln (Pixelstation)
+
+Ein tragbarer Ordner, mit dem du die Item-Texturen **offline** auf einem Raspberry Pi 5 in Blockbench zeichnest:
+
+```bash
+python3 pixelstation/vorbereiten.py            # am PC mit Internet -> ~/Pixelstation (ca. 120 MB)
+```
+
+1. Ordner `~/Pixelstation` auf den Pi kopieren, dort `bash start.sh` ausführen.
+2. Blockbench öffnet die Texturen nacheinander: pixeln, **Strg+S**, Fenster schließen → nächste Textur.
+3. Ordner zurück auf den PC, darin `python3 zurueck_ins_addon.py` ausführen → geänderte Texturen landen in `art/items/`, das `.mcaddon` wird automatisch gebaut.
+
+PNGs in `art/items/` haben Vorrang vor den generierten Texturen. Blockbench gibt es offiziell nicht für Linux-ARM64; `vorbereiten.py` kombiniert den offiziellen Blockbench-Programmcode mit der offiziellen Electron-ARM64-Laufzeit (beide per Prüfsumme kontrolliert). Details und Fehlerhilfe: `pixelstation/vorlage/LIESMICH.txt`.
+
 ## Automatische Tests (echter Bedrock-Server)
 
 Die GameTests in `tests/` laufen mit [bds-runner](https://github.com/bedrock-core/bds-runner) auf einem echten Bedrock Dedicated Server **1.26.30.5** (= Bedrock 26.3, festgelegt in `tests/bds-runner.json`). Das Test-Pack `tests/gametest_pack` wird nie mit dem Add-on ausgeliefert. Nur in der Testwelt werden die Beta-APIs eingeschaltet.

@@ -1,0 +1,53 @@
+PIXELSTATION – Texturen für CraftedEffects auf dem Raspberry Pi 5 pixeln
+=======================================================================
+
+Alles Nötige liegt in diesem Ordner. Auf dem Raspberry Pi braucht es KEIN Internet.
+
+1) AUF DEN RASPBERRY PI
+   Den ganzen Ordner auf den Pi kopieren (z. B. per USB-Stick) – oder direkt vom Stick starten.
+
+2) AUF DEM RASPBERRY PI STARTEN
+   Terminal in diesem Ordner öffnen und eingeben:
+
+       bash start.sh
+
+   (Oder im Dateimanager Doppelklick auf start.sh -> "Im Terminal ausführen".)
+   Beim allerersten Start wird Blockbench einmalig eingerichtet (ca. 1 Minute).
+
+3) PIXELN
+   Blockbench öffnet die erste Textur.
+     - pixeln
+     - Strg+S drücken (speichert direkt in die Datei, ohne Nachfrage)
+     - Fenster schließen
+   -> die nächste Textur öffnet sich automatisch.
+
+   Abbrechen: Im Terminal Strg+C. Beim nächsten "bash start.sh" geht es bei der
+   nächsten noch nicht bearbeiteten Textur weiter.
+     bash start.sh neu          alles nochmal von vorn
+     bash start.sh relic_fire   nur diese eine Textur öffnen
+
+   Texturen:  relic_speed (Wind), relic_strength (Stärke), relic_haste (Bergmann),
+              relic_fire (Glut), relic_health (Leben), relic_jump (Himmelssturz), diadem
+   Größe: 16x16 Pixel lassen (Minecraft-Item-Stil).
+
+4) ZURÜCK AM PC
+   Ordner zurück auf den PC kopieren, Terminal im Ordner öffnen:
+
+       python3 zurueck_ins_addon.py
+
+   Die geänderten Texturen werden automatisch ins Add-on übernommen und das fertige
+   .mcaddon wird gebaut (Pfad steht am Ende der Ausgabe).
+   Liegt das Add-on woanders:  python3 zurueck_ins_addon.py /pfad/zu/CraftedEffects
+
+
+BLOCKBENCH STARTET NICHT?
+   - Raspberry Pi OS muss die 64-Bit-Version sein (Befehl "uname -m" zeigt "aarch64").
+   - Fehlermeldung steht in der versteckten Datei .blockbench.log in diesem Ordner.
+   - Fehlen Bibliotheken (z. B. "libnss3.so" oder "libgbm.so.1"), einmalig mit Internet:
+         sudo apt install libnss3 libgbm1 libasound2
+   - Stürzt Blockbench sofort ab, liegt es manchmal am Pi-5-Kernel mit 16K-Speicherseiten.
+     Abhilfe: in /boot/firmware/config.txt die Zeile  kernel=kernel8.img  ergänzen und
+     neu starten.
+
+Blockbench (https://www.blockbench.net) ist freie Software von JannisX11 (GPL-3.0).
+Hier: offizieller Blockbench-Programmcode + offizielle Electron-Laufzeit für ARM64.
