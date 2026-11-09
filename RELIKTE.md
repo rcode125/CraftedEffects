@@ -6,27 +6,28 @@
 
 - Jedes der 6 Relikte existiert **nur einmal pro Welt**. Wer ein bereits existierendes Relikt noch einmal craftet, bekommt die Zutaten zurück.
 - Liegt ein Relikt **irgendwo im Inventar, in der Hotbar oder in der Zweithand**, hast du dauerhaft seinen Effekt. Mehrere Relikte wirken gleichzeitig.
-- **Rechtsklick** (am Handy: Tippen/Halten) mit dem Relikt in der Hand löst den **Spezialangriff** aus. Danach läuft die Abklingzeit (Anzeige über der Hotbar).
-- Ein Relikt startet auf **Level 1**. Mit dem **Diadem** steigt es bis zum Maximallevel. Das Level verstärkt nur den Dauer-Effekt.
+- Ein Relikt startet auf **Level 1**. Mit dem **Diadem** steigt es bis zum Maximallevel. Das Level verstärkt den Dauer-Effekt.
+- Der **Spezialangriff** wird erst auf dem **Maximallevel** freigeschaltet. Dann löst ein **Rechtsklick** (am Handy: Tippen/Halten) mit dem Relikt in der Hand ihn aus. Danach läuft die Abklingzeit (Anzeige über der Hotbar).
 - Wird ein Relikt zerstört (Lava, Feuer, Kaktus, Void, Despawn), meldet das der Chat. Es kann **wieder gecraftet** werden und beginnt dann wieder bei Level 1.
 - ⚠️ Die Explosionen von **Bollwerk** und **Kometenhagel** zerstören Blöcke und die Kometen hinterlassen Lava – Vorsicht in der Nähe von Bauten.
 
 ## Übersicht
 
-| Relikt | Dauer-Effekt | Max. Level | Spezialangriff | Abklingzeit | Rezept |
-|---|---|---|---|---|---|
-| Relikt des Windes | Schnelligkeit | 3 (III) | Dash | 30 s | fertig |
-| Relikt der Stärke | Stärke | 3 (III) | Kraftring | 30 s | vorläufig |
-| Relikt des Bergmanns | Eile | 5 (V) | Bollwerk | 90 s | vorläufig |
-| Relikt der Glut | Feuerresistenz | 1 (I) | Kometenhagel | 120 s | vorläufig |
-| Relikt des Lebens | Gesundheitsschub | 10 (X) = 30 Herzen | Lebensschild | 90 s | vorläufig |
-| Relikt des Himmelssturzes | Sprungkraft | 4 (IV) | Auto-Mace | 30 s | vorläufig |
+| Relikt | Dauer-Effekt | Max. Level (= Spezialangriff frei) | Spezialangriff | Abklingzeit |
+|---|---|---|---|---|
+| Relikt des Windes | Schnelligkeit | 3 (III) | Dash | 30 s |
+| Relikt der Stärke | Stärke | 3 (III) | Kraftring | 30 s |
+| Relikt des Bergmanns | Eile | 5 (V) | Bollwerk | 90 s |
+| Relikt der Glut | Feuerresistenz | 1 (I) | Kometenhagel | 120 s |
+| Relikt des Lebens | Gesundheitsschub | 5 (V) = 30 Herzen | Lebensschild | 90 s |
+| Relikt des Himmelssturzes | Sprungkraft | 4 (IV) | Auto-Mace | 30 s |
 
 ## Relikte im Detail
 
 ### Relikt des Windes
 
 - **Dauer-Effekt:** Schnelligkeit (Level 1 bis 3)
+- **Spezialangriff ab Level 3**
 - **Spezialangriff – Dash:** Schleudert dich 30 Blöcke in Blickrichtung (auch nach oben oder unten). Danach 5 Sekunden kein Fallschaden.
 - **Abklingzeit:** 30 Sekunden
 - **Item-ID:** `craftedeffects:relic_speed`
@@ -42,87 +43,82 @@ Zutaten insgesamt: 2× Feuerwerksrakete, 1× Flow-Rüstungsbesatz, 2× Nautiluss
 ### Relikt der Stärke
 
 - **Dauer-Effekt:** Stärke (Level 1 bis 3)
+- **Spezialangriff ab Level 3**
 - **Spezialangriff – Kraftring:** Ein Partikelring breitet sich von dir aus (bis 10 Blöcke). Jedes getroffene Wesen bekommt 3 Herzen Schaden.
 - **Abklingzeit:** 30 Sekunden
 - **Item-ID:** `craftedeffects:relic_strength`
 
-> ⏳ **Vorläufiges Rezept** – das endgültige Rezept folgt.
-
 | | Links | Mitte | Rechts |
 |---|---|---|---|
-| **Oben** | Diamant | Lohenrute | Diamant |
-| **Mitte** | Lohenrute | Glasflasche | Lohenrute |
-| **Unten** | Diamant | Lohenrute | Diamant |
+| **Oben** | Diamantaxt | Ward-Rüstungsbesatz | Diamantschwert |
+| **Mitte** | Ghast-Träne | Glasflasche | Ghast-Träne |
+| **Unten** | Endkristall | Dreizack | Endkristall |
 
-Zutaten insgesamt: 4× Diamant, 4× Lohenrute, 1× Glasflasche
+Zutaten insgesamt: 1× Diamantaxt, 1× Ward-Rüstungsbesatz, 1× Diamantschwert, 2× Ghast-Träne, 1× Glasflasche, 2× Endkristall, 1× Dreizack
 
 ### Relikt des Bergmanns
 
 - **Dauer-Effekt:** Eile (Level 1 bis 5)
+- **Spezialangriff ab Level 5**
 - **Spezialangriff – Bollwerk:** 3 Sekunden Resistenz V (unverwundbar) und Langsamkeit. Eine Explosion um dich schleudert Gegner weg, macht Schaden und zerstört Blöcke. Du selbst bekommst keinen Schaden.
 - **Abklingzeit:** 90 Sekunden
 - **Item-ID:** `craftedeffects:relic_haste`
 
-> ⏳ **Vorläufiges Rezept** – das endgültige Rezept folgt.
-
 | | Links | Mitte | Rechts |
 |---|---|---|---|
-| **Oben** | Diamant-Spitzhacke | Smaragd | Diamant-Spitzhacke |
-| **Mitte** | Smaragd | Glasflasche | Smaragd |
-| **Unten** | Smaragd | Smaragd | Smaragd |
+| **Oben** | Diamant-Spitzhacke | Golderz | Diamant-Spitzhacke |
+| **Mitte** | Plattenfragment | Glasflasche | Plattenfragment |
+| **Unten** | TNT | Golderz | TNT |
 
-Zutaten insgesamt: 2× Diamant-Spitzhacke, 6× Smaragd, 1× Glasflasche
+Zutaten insgesamt: 2× Diamant-Spitzhacke, 2× Golderz, 2× Plattenfragment, 1× Glasflasche, 2× TNT
 
 ### Relikt der Glut
 
 - **Dauer-Effekt:** Feuerresistenz (Level 1 bis 1)
+- **Spezialangriff ab Level 1**
 - **Spezialangriff – Kometenhagel:** 8 Kometen erscheinen im Ring 10 Blöcke über dir und stürzen herab. Beim Aufprall explodieren sie und hinterlassen Lava. Du selbst bekommst keinen Schaden.
 - **Abklingzeit:** 120 Sekunden
 - **Item-ID:** `craftedeffects:relic_fire`
 
-> ⏳ **Vorläufiges Rezept** – das endgültige Rezept folgt.
-
 | | Links | Mitte | Rechts |
 |---|---|---|---|
-| **Oben** | Goldbarren | Diamant | Goldbarren |
-| **Mitte** | Diamant | Magmacreme | Diamant |
-| **Unten** | Goldbarren | Diamant | Goldbarren |
+| **Oben** | Feuerkugel | Lohenrute | Feuerkugel |
+| **Mitte** | Witherskelett-Schädel | Glasflasche | Witherskelett-Schädel |
+| **Unten** | Lavaeimer | Lohenrute | Lavaeimer |
 
-Zutaten insgesamt: 4× Goldbarren, 4× Diamant, 1× Magmacreme
+Zutaten insgesamt: 2× Feuerkugel, 2× Lohenrute, 2× Witherskelett-Schädel, 1× Glasflasche, 2× Lavaeimer
 
 ### Relikt des Lebens
 
-- **Dauer-Effekt:** Gesundheitsschub (Level 1 bis 10)
+- **Dauer-Effekt:** Gesundheitsschub (Level 1 bis 5) – Herzen insgesamt je Level: 20 → 24 → 26 → 28 → 30
+- **Spezialangriff ab Level 5**
 - **Spezialangriff – Lebensschild:** Stößt Gegner in deiner Nähe weg und erzeugt 5 Sekunden lang ein Schild um dich, das Gegner fernhält. Im Schild bekommst du jede Sekunde Sättigung und Sofortheilung.
 - **Abklingzeit:** 90 Sekunden
 - **Item-ID:** `craftedeffects:relic_health`
 
-> ⏳ **Vorläufiges Rezept** – das endgültige Rezept folgt.
-
 | | Links | Mitte | Rechts |
 |---|---|---|---|
-| **Oben** | Goldbarren | Diamant | Goldbarren |
-| **Mitte** | Diamant | Goldener Apfel | Diamant |
-| **Unten** | Goldbarren | Diamant | Goldbarren |
+| **Oben** | Diamantbrustpanzer | Verzaubertes Buch (Schutz empfohlen) | Diamantbrustpanzer |
+| **Mitte** | Totem der Unsterblichkeit | Glasflasche | Totem der Unsterblichkeit |
+| **Unten** | Goldener Apfel | Unheilvolle Flasche | Goldener Apfel |
 
-Zutaten insgesamt: 4× Goldbarren, 4× Diamant, 1× Goldener Apfel
+Zutaten insgesamt: 2× Diamantbrustpanzer, 1× Verzaubertes Buch (Schutz empfohlen), 2× Totem der Unsterblichkeit, 1× Glasflasche, 2× Goldener Apfel, 1× Unheilvolle Flasche
 
 ### Relikt des Himmelssturzes
 
 - **Dauer-Effekt:** Sprungkraft (Level 1 bis 4)
+- **Spezialangriff ab Level 4**
 - **Spezialangriff – Auto-Mace:** Schleudert dich 30 Blöcke hoch, dann 5 Sekunden sanfter Fall. Schaust du auf einen Gegner, wirst du zu ihm gedasht. Liegt eine Mace in der Hotbar, wird zu ihr gewechselt und beim Aufprall Smash-Schaden nach Fallhöhe ausgeteilt. Kein Fallschaden.
 - **Abklingzeit:** 30 Sekunden
 - **Item-ID:** `craftedeffects:relic_jump`
 
-> ⏳ **Vorläufiges Rezept** – das endgültige Rezept folgt.
-
 | | Links | Mitte | Rechts |
 |---|---|---|---|
-| **Oben** | Goldbarren | Diamant | Goldbarren |
-| **Mitte** | Diamant | Breeze-Rute | Diamant |
-| **Unten** | Goldbarren | Diamant | Goldbarren |
+| **Oben** | Windkugel | Echoscherbe | Windkugel |
+| **Mitte** | Hasenpfote | Glasflasche | Hasenpfote |
+| **Unten** | Diamantstiefel | Echoscherbe | Diamantstiefel |
 
-Zutaten insgesamt: 4× Goldbarren, 4× Diamant, 1× Breeze-Rute
+Zutaten insgesamt: 2× Windkugel, 2× Echoscherbe, 2× Hasenpfote, 1× Glasflasche, 2× Diamantstiefel
 
 ## Diadem
 
@@ -167,7 +163,7 @@ Nur Operatoren (auf Realms: Spieler mit Operator-Rechten) können diese Befehle 
 | `strength` | Stärke | Mehr Nahkampfschaden. |
 | `jump_boost` | Sprungkraft | Höher springen, weniger Fallschaden. |
 | `fire_resistance` | Feuerresistenz | Immun gegen Feuer und Lava. |
-| `health_boost` | Gesundheitsschub | Mehr maximale Herzen (+2 Herzen pro Level). |
+| `health_boost` | Gesundheitsschub | Mehr maximale Herzen. |
 | `regeneration` | Regeneration | Leben regeneriert sich laufend. |
 | `resistance` | Resistenz | Weniger Schaden aus allen Quellen. |
 | `water_breathing` | Wasseratmung | Unter Wasser atmen. |

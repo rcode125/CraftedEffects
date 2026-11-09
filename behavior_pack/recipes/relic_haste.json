@@ -8,19 +8,25 @@
       "crafting_table"
     ],
     "pattern": [
-      "PEP",
-      "EBE",
-      "EEE"
+      "POP",
+      "FBF",
+      "XOX"
     ],
     "key": {
       "P": {
         "item": "minecraft:diamond_pickaxe"
       },
-      "E": {
-        "item": "minecraft:emerald"
+      "O": {
+        "item": "minecraft:gold_ore"
+      },
+      "F": {
+        "item": "minecraft:disc_fragment_5"
       },
       "B": {
         "item": "minecraft:glass_bottle"
+      },
+      "X": {
+        "item": "minecraft:tnt"
       }
     },
     "unlock": [

@@ -251,6 +251,14 @@ export function useRelic(player, itemStack) {
     return;
   }
 
+  if (relic.level < relic.maxLevel) {
+    const missing = relic.maxLevel - relic.level;
+    player.onScreenDisplay.setActionBar(
+      `§7${relic.name}: Spezialangriff ab Level ${relic.maxLevel} – noch ${missing} ${missing === 1 ? "Diadem" : "Diademe"}`,
+    );
+    return;
+  }
+
   const cooldownId = `${player.id}:${key}`;
   const readyAt = cooldowns.get(cooldownId) ?? 0;
   if (system.currentTick < readyAt) {

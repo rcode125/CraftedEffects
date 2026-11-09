@@ -8,24 +8,30 @@
       "crafting_table"
     ],
     "pattern": [
-      "GDG",
-      "DCD",
-      "GDG"
+      "WEW",
+      "RBR",
+      "DED"
     ],
     "key": {
-      "G": {
-        "item": "minecraft:gold_ingot"
+      "W": {
+        "item": "minecraft:wind_charge"
+      },
+      "E": {
+        "item": "minecraft:echo_shard"
+      },
+      "R": {
+        "item": "minecraft:rabbit_foot"
+      },
+      "B": {
+        "item": "minecraft:glass_bottle"
       },
       "D": {
-        "item": "minecraft:diamond"
-      },
-      "C": {
-        "item": "minecraft:breeze_rod"
+        "item": "minecraft:diamond_boots"
       }
     },
     "unlock": [
       {
-        "item": "minecraft:breeze_rod"
+        "item": "minecraft:glass_bottle"
       }
     ],
     "result": {

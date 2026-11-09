@@ -20,10 +20,15 @@ export function getConfig() {
     const raw = world.getDynamicProperty(CONFIG_KEY);
     if (typeof raw === "string") {
       const saved = JSON.parse(raw);
-      // Settings from an older add-on version describe other relics: start fresh.
+      cache.pvp = saved.pvp !== false;
       if (saved.version === DATA.version) {
-        cache.pvp = saved.pvp !== false;
         for (const key of RELIC_KEYS) Object.assign(cache.relics[key], saved.relics?.[key] ?? {});
+      } else {
+        // Older add-on version: new defaults, but relics keep their level (within the new maximum).
+        for (const key of RELIC_KEYS) {
+          const level = saved.relics?.[key]?.level;
+          if (typeof level === "number") cache.relics[key].level = Math.max(1, Math.min(cache.relics[key].maxLevel, level));
+        }
       }
     }
   } catch (error) {
@@ -74,6 +79,14 @@ const ROMAN = [
   { value: 1, letter: "I" },
 ];
 
+/** Effect amplifier of a relic at its current level (health boost has its own steps). */
+export function amplifierFor(key) {
+  const relic = relicConfig(key);
+  const steps = DATA.relics[key].amplifiers;
+  if (steps && relic.effect === DATA.relics[key].effect) return steps[Math.min(steps.length, relic.level) - 1];
+  return Math.max(0, Math.min(254, relic.level - 1));
+}
+
 export function roman(number) {
   let rest = number;
   let out = "";
@@ -86,9 +99,11 @@ export function roman(number) {
   return out;
 }
 
-export function effectLabel(relic) {
+export function effectLabel(relic, key) {
   if (relic.effect === "none") return DATA.effects.none;
-  return `${DATA.effects[relic.effect] ?? relic.effect} ${roman(relic.level)}`;
+  const name = DATA.effects[relic.effect] ?? relic.effect;
+  if (relic.effect === "health_boost" && key) return `${name} (${10 + 2 * (amplifierFor(key) + 1)} Herzen)`;
+  return `${name} ${roman(relic.level)}`;
 }
 
 export function attackLabel(relic) {
@@ -102,9 +117,11 @@ export function relicDisplay(key) {
   return {
     nameTag: `§d${relic.name}`,
     lore: [
-      `§7Effekt: §a${effectLabel(relic)}`,
+      `§7Effekt: §a${effectLabel(relic, key)}`,
       `§7Level: §e${relic.level}/${relic.maxLevel}`,
-      `§7Angriff: §c${attackLabel(relic)}`,
+      relic.level >= relic.maxLevel
+        ? `§7Angriff: §c${attackLabel(relic)}`
+        : `§7Angriff: §8${attackLabel(relic)} – ab Level ${relic.maxLevel}`,
       relic.enabled ? "§8Einzigartig – nur einmal pro Welt" : "§4Deaktiviert",
     ],
   };

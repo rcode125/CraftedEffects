@@ -6,7 +6,7 @@ import { relicConfig, relicDisplay, relicKey, relicTypeId, saveConfig } from "./
 // can only exist once. Every real relic carries a serial number; the registry
 // stores the serial of the one valid copy.
 
-const REGISTRY_KEY = `ce:registry_v${DATA.version}`; // a new relic table starts a new registry
+const REGISTRY_KEY = "ce:registry_v4"; // relics of 4.x worlds stay valid across updates
 const SERIAL_PROPERTY = "ce:serial";
 const LOSS_CHECK_DELAY_TICKS = 60;
 

@@ -4,7 +4,7 @@ Add-on für Minecraft **Bedrock Edition 26.3**, für **normale Welten und Realms
 
 - **6 craftbare Relikte**, jedes existiert **nur einmal pro Welt**
 - **Dauer-Effekt**, solange das Relikt irgendwo im Inventar, in der Hotbar oder in der Zweithand liegt
-- **Spezialangriff** per Rechtsklick: Dash, Kraftring, Bollwerk, Kometenhagel, Lebensschild, **Auto-Mace**
+- **Spezialangriff** per Rechtsklick ab dem **Maximallevel**: Dash, Kraftring, Bollwerk, Kometenhagel, Lebensschild, **Auto-Mace**
 - **Diadem**: hebt ein Relikt um 1 Level bis zum Maximum
 - **Admin-Befehle** (`/ce:…`), um jedes Relikt im Spiel umzukonfigurieren
 
@@ -17,14 +17,14 @@ Add-on für Minecraft **Bedrock Edition 26.3**, für **normale Welten und Realms
 ## Installation – normale Welt
 
 1. Alte Versionen (Eternal Elixir, 9x Mace) in der Welt deaktivieren und unter *Einstellungen → Speicher* löschen.
-2. Die heruntergeladene `CraftedEffects.mcaddon` öffnen (oder selbst gebaut: `build/CraftedEffects-4.0.0.mcaddon`); Minecraft importiert beide Packs.
-3. Welt bearbeiten → **Verhaltenspakete**: *CraftedEffects Behavior Pack v4.0.0* aktivieren (das Ressourcenpaket wird automatisch mit aktiviert).
+2. Die heruntergeladene `CraftedEffects.mcaddon` öffnen (oder selbst gebaut: `build/CraftedEffects-4.1.0.mcaddon`); Minecraft importiert beide Packs.
+3. Welt bearbeiten → **Verhaltenspakete**: *CraftedEffects Behavior Pack v4.1.0* aktivieren (das Ressourcenpaket wird automatisch mit aktiviert).
 4. Es werden **keine Experimente** und **keine Cheats** benötigt.
 
 ## Installation – Realm
 
 1. Das `.mcaddon` wie oben importieren.
-2. *Realm bearbeiten → Verhaltenspakete* → *CraftedEffects Behavior Pack v4.0.0* aktivieren und bestätigen. Alternativ: das Add-on in einer lokalen Welt aktivieren und diese über *Welt ersetzen* hochladen.
+2. *Realm bearbeiten → Verhaltenspakete* → *CraftedEffects Behavior Pack v4.1.0* aktivieren und bestätigen. Alternativ: das Add-on in einer lokalen Welt aktivieren und diese über *Welt ersetzen* hochladen.
 3. Admin-Befehle funktionieren für Spieler mit **Operator**-Rechten (Realm-Einstellungen → Mitglieder → Operator).
 
 ## Kurzüberblick
@@ -35,10 +35,10 @@ Add-on für Minecraft **Bedrock Edition 26.3**, für **normale Welten und Realms
 | Relikt der Stärke | Stärke (3) | Kraftring: 3 Herzen Schaden an allem, was er trifft | 30 s |
 | Relikt des Bergmanns | Eile (5) | Bollwerk: 3 s unverwundbar + Explosion um dich | 90 s |
 | Relikt der Glut | Feuerresistenz (1) | Kometenhagel: 8 Kometen, Explosionen und Lava | 120 s |
-| Relikt des Lebens | Gesundheitsschub (10 = 30 Herzen) | Lebensschild: stößt Gegner weg, heilt und sättigt 5 s | 90 s |
+| Relikt des Lebens | Gesundheitsschub (5 = 30 Herzen) | Lebensschild: stößt Gegner weg, heilt und sättigt 5 s | 90 s |
 | Relikt des Himmelssturzes | Sprungkraft (4) | Auto-Mace: 30 Blöcke hoch, Dash aufs Ziel, Mace-Smash | 30 s |
 
-Die genauen Rezepte stehen in [RELIKTE.md](RELIKTE.md). Das Rezept des Relikts des Windes und das Diadem sind fertig, die übrigen Rezepte sind **vorläufig**.
+Die genauen Rezepte stehen in [RELIKTE.md](RELIKTE.md). Der **Spezialangriff** wird erst freigeschaltet, wenn das Relikt sein **Maximallevel** erreicht hat (Zahl in Klammern). Beim Gesundheitsschub steigen die Herzen pro Level: 20 → 24 → 26 → 28 → 30.
 
 > ⚠️ Bollwerk und Kometenhagel zerstören Blöcke, die Kometen hinterlassen Lava. Der Auslöser selbst bekommt keinen Schaden – andere Spieler und deren Bauten schon.
 
