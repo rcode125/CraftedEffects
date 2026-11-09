@@ -1,0 +1,73 @@
+name: Release CraftedEffects
+
+# Runs after a green "Build CraftedEffects" run on main (build + GameTests passed)
+# and publishes exactly ONE file: CraftedEffects-<version>.mcaddon.
+on:
+  workflow_run:
+    workflows: [Build CraftedEffects]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push')
+    env:
+      SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SHA }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build add-on
+        run: python scripts/build_addon.py
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          VERSION=$(python -c "import json;print('.'.join(map(str,json.load(open('behavior_pack/manifest.json'))['header']['version'])))")
+          TAG="v$VERSION"
+          FILE="CraftedEffects-$VERSION.mcaddon"
+
+          # Exactly one .mcaddon must come out of the build.
+          COUNT=$(find build -maxdepth 1 -name '*.mcaddon' | wc -l)
+          if [ "$COUNT" -ne 1 ] || [ ! -f "build/$FILE" ]; then
+            echo "::error::Expected exactly build/$FILE, found:"; ls -la build; exit 1
+          fi
+
+          cat > release-notes.md <<NOTES
+          **Download:** \`$FILE\` unten unter *Assets* anklicken und mit Minecraft öffnen.
+          Das ist die einzige Add-on-Datei dieses Releases (die „Source code“-Archive brauchst du nicht).
+
+          Für Minecraft Bedrock 26.3 – normale Welten und Realms. Alle Rezepte, Effekte und Befehle: [RELIKTE.md](https://github.com/${{ github.repository }}/blob/$TAG/RELIKTE.md)
+
+          Gebaut aus $SHA; alle GameTests auf Bedrock Dedicated Server bestanden.
+          NOTES
+
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            # Remove every other .mcaddon asset (e.g. the old CraftedEffects.mcaddon copy).
+            gh release view "$TAG" --json assets -q '.assets[].name' \
+              | grep '\.mcaddon$' | grep -vxF "$FILE" \
+              | while read -r OLD; do gh release delete-asset "$TAG" "$OLD" --yes; done || true
+            gh release upload "$TAG" "build/$FILE" --clobber
+            gh release edit "$TAG" --notes-file release-notes.md --title "CraftedEffects $VERSION" --latest
+          else
+            gh release create "$TAG" "build/$FILE" \
+              --title "CraftedEffects $VERSION" --notes-file release-notes.md --target "$SHA" --latest
+          fi
