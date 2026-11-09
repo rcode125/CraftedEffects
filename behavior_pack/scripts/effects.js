@@ -1,4 +1,4 @@
-import { relicConfig } from "./config.js";
+import { amplifierFor, relicConfig } from "./config.js";
 
 // Effects are given with a long duration and refreshed before they run low.
 // Night vision flickers below 10 seconds, so we always stay above that.
@@ -13,7 +13,7 @@ export function applyRelicEffects(player, activeRelics) {
   for (const key of activeRelics) {
     const relic = relicConfig(key);
     if (relic.effect === "none") continue;
-    const amplifier = Math.max(0, Math.min(254, relic.level - 1)); // level 10 health boost = amplifier 9
+    const amplifier = amplifierFor(key);
     wanted.set(relic.effect, Math.max(wanted.get(relic.effect) ?? 0, amplifier));
   }
 

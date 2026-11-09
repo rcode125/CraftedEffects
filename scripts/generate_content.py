@@ -19,7 +19,7 @@ RP_DIR = ROOT / "resource_pack"
 NAMESPACE = "craftedeffects"
 ITEM_FORMAT = "1.21.90"
 RECIPE_FORMAT = "1.20.10"
-CONFIG_VERSION = 4  # bump when the relic table changes, so old world settings are reset
+CONFIG_VERSION = 5  # bump when the relic table changes; old world settings are migrated (levels kept)
 
 # Item ids used in recipes -> German name (for RELIKTE.md)
 ITEM_NAMES = {
@@ -39,6 +39,26 @@ ITEM_NAMES = {
     "minecraft:breeze_rod": "Breeze-Rute",
     "minecraft:player_head": "Spielerkopf",
     "minecraft:ender_eye": "Enderauge",
+    "minecraft:diamond_axe": "Diamantaxt",
+    "minecraft:diamond_sword": "Diamantschwert",
+    "minecraft:ward_armor_trim_smithing_template": "Ward-Rüstungsbesatz",
+    "minecraft:ghast_tear": "Ghast-Träne",
+    "minecraft:end_crystal": "Endkristall",
+    "minecraft:trident": "Dreizack",
+    "minecraft:gold_ore": "Golderz",
+    "minecraft:disc_fragment_5": "Plattenfragment",
+    "minecraft:tnt": "TNT",
+    "minecraft:fire_charge": "Feuerkugel",
+    "minecraft:wither_skeleton_skull": "Witherskelett-Schädel",
+    "minecraft:lava_bucket": "Lavaeimer",
+    "minecraft:diamond_chestplate": "Diamantbrustpanzer",
+    "minecraft:enchanted_book": "Verzaubertes Buch (Schutz empfohlen)",
+    "minecraft:totem_of_undying": "Totem der Unsterblichkeit",
+    "minecraft:ominous_bottle": "Unheilvolle Flasche",
+    "minecraft:wind_charge": "Windkugel",
+    "minecraft:echo_shard": "Echoscherbe",
+    "minecraft:rabbit_foot": "Hasenpfote",
+    "minecraft:diamond_boots": "Diamantstiefel",
 }
 
 # Effects an admin can assign: id -> (German name, description)
@@ -49,7 +69,7 @@ EFFECTS = {
     "strength": ("Stärke", "Mehr Nahkampfschaden."),
     "jump_boost": ("Sprungkraft", "Höher springen, weniger Fallschaden."),
     "fire_resistance": ("Feuerresistenz", "Immun gegen Feuer und Lava."),
-    "health_boost": ("Gesundheitsschub", "Mehr maximale Herzen (+2 Herzen pro Level)."),
+    "health_boost": ("Gesundheitsschub", "Mehr maximale Herzen."),
     "regeneration": ("Regeneration", "Leben regeneriert sich laufend."),
     "resistance": ("Resistenz", "Weniger Schaden aus allen Quellen."),
     "water_breathing": ("Wasseratmung", "Unter Wasser atmen."),
@@ -88,11 +108,12 @@ ATTACKS = {
 
 FRAME = {"G": "minecraft:gold_ingot", "D": "minecraft:diamond"}
 
-# The 6 relics. "placeholder": the recipe is temporary until the final one is known.
+# The 6 relics, recipes as on the design sheets (read row by row, top to bottom).
+# "amplifiers": effect amplifier per level, when it is not simply level - 1.
 RELICS = [
     {
         "key": "speed", "name": "Relikt des Windes", "effect": "speed", "max_level": 3,
-        "attack": "dash", "cooldown": 30, "colour": (90, 230, 230), "placeholder": False,
+        "attack": "dash", "cooldown": 30, "colour": (90, 230, 230),
         "pattern": ["RFR", "NBN", "LTL"],
         "ingredients": {
             "R": "minecraft:firework_rocket", "F": "minecraft:flow_armor_trim_smithing_template",
@@ -102,30 +123,51 @@ RELICS = [
     },
     {
         "key": "strength", "name": "Relikt der Stärke", "effect": "strength", "max_level": 3,
-        "attack": "ring", "cooldown": 30, "colour": (200, 40, 40), "placeholder": True,
-        "pattern": ["DLD", "LBL", "DLD"],
-        "ingredients": {"D": "minecraft:diamond", "L": "minecraft:blaze_rod", "B": "minecraft:glass_bottle"},
+        "attack": "ring", "cooldown": 30, "colour": (200, 40, 40),
+        "pattern": ["AWS", "TBT", "CDC"],
+        "ingredients": {
+            "A": "minecraft:diamond_axe", "W": "minecraft:ward_armor_trim_smithing_template",
+            "S": "minecraft:diamond_sword", "T": "minecraft:ghast_tear", "B": "minecraft:glass_bottle",
+            "C": "minecraft:end_crystal", "D": "minecraft:trident",
+        },
     },
     {
         "key": "haste", "name": "Relikt des Bergmanns", "effect": "haste", "max_level": 5,
-        "attack": "fortress", "cooldown": 90, "colour": (250, 210, 40), "placeholder": True,
-        "pattern": ["PEP", "EBE", "EEE"],
-        "ingredients": {"P": "minecraft:diamond_pickaxe", "E": "minecraft:emerald", "B": "minecraft:glass_bottle"},
+        "attack": "fortress", "cooldown": 90, "colour": (250, 210, 40),
+        "pattern": ["POP", "FBF", "XOX"],
+        "ingredients": {
+            "P": "minecraft:diamond_pickaxe", "O": "minecraft:gold_ore", "F": "minecraft:disc_fragment_5",
+            "B": "minecraft:glass_bottle", "X": "minecraft:tnt",
+        },
     },
     {
         "key": "fire", "name": "Relikt der Glut", "effect": "fire_resistance", "max_level": 1,
-        "attack": "comets", "cooldown": 120, "colour": (255, 120, 20), "placeholder": True,
-        "pattern": ["GDG", "DCD", "GDG"], "ingredients": {**FRAME, "C": "minecraft:magma_cream"},
+        "attack": "comets", "cooldown": 120, "colour": (255, 120, 20),
+        "pattern": ["CRC", "SBS", "LRL"],
+        "ingredients": {
+            "C": "minecraft:fire_charge", "R": "minecraft:blaze_rod", "S": "minecraft:wither_skeleton_skull",
+            "B": "minecraft:glass_bottle", "L": "minecraft:lava_bucket",
+        },
     },
     {
-        "key": "health", "name": "Relikt des Lebens", "effect": "health_boost", "max_level": 10,
-        "attack": "aegis", "cooldown": 90, "colour": (255, 105, 180), "placeholder": True,
-        "pattern": ["GDG", "DCD", "GDG"], "ingredients": {**FRAME, "C": "minecraft:golden_apple"},
+        # 30 hearts at the top: 20 -> 24 -> 26 -> 28 -> 30 hearts in total (health boost works in 2-heart steps)
+        "key": "health", "name": "Relikt des Lebens", "effect": "health_boost", "max_level": 5,
+        "amplifiers": [4, 6, 7, 8, 9],
+        "attack": "aegis", "cooldown": 90, "colour": (255, 105, 180),
+        "pattern": ["CPC", "TBT", "AOA"],
+        "ingredients": {
+            "C": "minecraft:diamond_chestplate", "P": "minecraft:enchanted_book", "T": "minecraft:totem_of_undying",
+            "B": "minecraft:glass_bottle", "A": "minecraft:golden_apple", "O": "minecraft:ominous_bottle",
+        },
     },
     {
         "key": "jump", "name": "Relikt des Himmelssturzes", "effect": "jump_boost", "max_level": 4,
-        "attack": "automace", "cooldown": 30, "colour": (120, 200, 255), "placeholder": True,
-        "pattern": ["GDG", "DCD", "GDG"], "ingredients": {**FRAME, "C": "minecraft:breeze_rod"},
+        "attack": "automace", "cooldown": 30, "colour": (120, 200, 255),
+        "pattern": ["WEW", "RBR", "DED"],
+        "ingredients": {
+            "W": "minecraft:wind_charge", "E": "minecraft:echo_shard", "R": "minecraft:rabbit_foot",
+            "B": "minecraft:glass_bottle", "D": "minecraft:diamond_boots",
+        },
     },
 ]
 
@@ -134,6 +176,12 @@ DIADEM = {
     "pattern": ["GHG", "HEH", "GHG"],
     "ingredients": {"G": "minecraft:gold_ingot", "H": "minecraft:player_head", "E": "minecraft:ender_eye"},
 }
+
+
+def hearts(relic, level):
+    """Total hearts with a health boost relic at this level (10 normal + 2 per amplifier step)."""
+    amplifier = (relic.get("amplifiers") or list(range(relic["max_level"])))[level - 1]
+    return 10 + 2 * (amplifier + 1)
 
 
 def relic_id(relic):
@@ -310,6 +358,7 @@ def generate_script_data():
                 "effect": r["effect"],
                 "level": 1,
                 "maxLevel": r["max_level"],
+                "amplifiers": r.get("amplifiers"),
                 "attack": r["attack"],
                 "cooldown": r["cooldown"],
                 "enabled": True,
@@ -348,38 +397,36 @@ def generate_guide():
         "",
         "- Jedes der 6 Relikte existiert **nur einmal pro Welt**. Wer ein bereits existierendes Relikt noch einmal craftet, bekommt die Zutaten zurück.",
         "- Liegt ein Relikt **irgendwo im Inventar, in der Hotbar oder in der Zweithand**, hast du dauerhaft seinen Effekt. Mehrere Relikte wirken gleichzeitig.",
-        "- **Rechtsklick** (am Handy: Tippen/Halten) mit dem Relikt in der Hand löst den **Spezialangriff** aus. Danach läuft die Abklingzeit (Anzeige über der Hotbar).",
-        "- Ein Relikt startet auf **Level 1**. Mit dem **Diadem** steigt es bis zum Maximallevel. Das Level verstärkt nur den Dauer-Effekt.",
+        "- Ein Relikt startet auf **Level 1**. Mit dem **Diadem** steigt es bis zum Maximallevel. Das Level verstärkt den Dauer-Effekt.",
+        "- Der **Spezialangriff** wird erst auf dem **Maximallevel** freigeschaltet. Dann löst ein **Rechtsklick** (am Handy: Tippen/Halten) mit dem Relikt in der Hand ihn aus. Danach läuft die Abklingzeit (Anzeige über der Hotbar).",
         "- Wird ein Relikt zerstört (Lava, Feuer, Kaktus, Void, Despawn), meldet das der Chat. Es kann **wieder gecraftet** werden und beginnt dann wieder bei Level 1.",
         "- ⚠️ Die Explosionen von **Bollwerk** und **Kometenhagel** zerstören Blöcke und die Kometen hinterlassen Lava – Vorsicht in der Nähe von Bauten.",
         "",
         "## Übersicht",
         "",
-        "| Relikt | Dauer-Effekt | Max. Level | Spezialangriff | Abklingzeit | Rezept |",
-        "|---|---|---|---|---|---|",
+        "| Relikt | Dauer-Effekt | Max. Level (= Spezialangriff frei) | Spezialangriff | Abklingzeit |",
+        "|---|---|---|---|---|",
     ]
     for r in RELICS:
         effect = EFFECTS[r["effect"]][0]
         max_text = f"{r['max_level']} ({roman(r['max_level'])})"
         if r["effect"] == "health_boost":
-            max_text += f" = {10 + 2 * r['max_level']} Herzen"
-        lines.append(
-            f"| {r['name']} | {effect} | {max_text} | {ATTACKS[r['attack']][0]} | {r['cooldown']} s "
-            f"| {'vorläufig' if r['placeholder'] else 'fertig'} |"
-        )
+            max_text += f" = {hearts(r, r['max_level'])} Herzen"
+        lines.append(f"| {r['name']} | {effect} | {max_text} | {ATTACKS[r['attack']][0]} | {r['cooldown']} s |")
     lines += ["", "## Relikte im Detail", ""]
     for r in RELICS:
         lines += [
             f"### {r['name']}",
             "",
-            f"- **Dauer-Effekt:** {EFFECTS[r['effect']][0]} (Level 1 bis {r['max_level']})",
+            f"- **Dauer-Effekt:** {EFFECTS[r['effect']][0]} (Level 1 bis {r['max_level']})"
+            + (" – Herzen insgesamt je Level: " + " → ".join(str(hearts(r, lvl)) for lvl in range(1, r["max_level"] + 1))
+               if r["effect"] == "health_boost" else ""),
+            f"- **Spezialangriff ab Level {r['max_level']}**",
             f"- **Spezialangriff – {ATTACKS[r['attack']][0]}:** {ATTACKS[r['attack']][1]}",
             f"- **Abklingzeit:** {r['cooldown']} Sekunden",
             f"- **Item-ID:** `{NAMESPACE}:{relic_id(r)}`",
             "",
         ]
-        if r["placeholder"]:
-            lines += ["> ⏳ **Vorläufiges Rezept** – das endgültige Rezept folgt.", ""]
         lines += [crafting_grid(r["pattern"], r["ingredients"]), ""]
     lines += [
         "## Diadem",

@@ -8,24 +8,30 @@
       "crafting_table"
     ],
     "pattern": [
-      "GDG",
-      "DCD",
-      "GDG"
+      "CRC",
+      "SBS",
+      "LRL"
     ],
     "key": {
-      "G": {
-        "item": "minecraft:gold_ingot"
-      },
-      "D": {
-        "item": "minecraft:diamond"
-      },
       "C": {
-        "item": "minecraft:magma_cream"
+        "item": "minecraft:fire_charge"
+      },
+      "R": {
+        "item": "minecraft:blaze_rod"
+      },
+      "S": {
+        "item": "minecraft:wither_skeleton_skull"
+      },
+      "B": {
+        "item": "minecraft:glass_bottle"
+      },
+      "L": {
+        "item": "minecraft:lava_bucket"
       }
     },
     "unlock": [
       {
-        "item": "minecraft:magma_cream"
+        "item": "minecraft:glass_bottle"
       }
     ],
     "result": {

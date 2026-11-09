@@ -8,24 +8,33 @@
       "crafting_table"
     ],
     "pattern": [
-      "GDG",
-      "DCD",
-      "GDG"
+      "CPC",
+      "TBT",
+      "AOA"
     ],
     "key": {
-      "G": {
-        "item": "minecraft:gold_ingot"
-      },
-      "D": {
-        "item": "minecraft:diamond"
-      },
       "C": {
+        "item": "minecraft:diamond_chestplate"
+      },
+      "P": {
+        "item": "minecraft:enchanted_book"
+      },
+      "T": {
+        "item": "minecraft:totem_of_undying"
+      },
+      "B": {
+        "item": "minecraft:glass_bottle"
+      },
+      "A": {
         "item": "minecraft:golden_apple"
+      },
+      "O": {
+        "item": "minecraft:ominous_bottle"
       }
     },
     "unlock": [
       {
-        "item": "minecraft:golden_apple"
+        "item": "minecraft:glass_bottle"
       }
     ],
     "result": {

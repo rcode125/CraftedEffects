@@ -46,7 +46,7 @@ const COMMANDS = [
       const lines = RELIC_KEYS.map((key) => {
         const relic = relicConfig(key);
         const state = relic.enabled ? relicStatus(key) : "deaktiviert";
-        return `§e${key}§r ${relic.name}: §a${effectLabel(relic)}§r (Level ${relic.level}/${relic.maxLevel}), §c${attackLabel(relic)}§r – §7${state}`;
+        return `§e${key}§r ${relic.name}: §a${effectLabel(relic, key)}§r (Level ${relic.level}/${relic.maxLevel}), §c${attackLabel(relic)}§r – §7${state}`;
       });
       lines.push(`§7PvP: ${getConfig().pvp ? "an" : "aus"}`);
       return ok(lines.join("\n"));

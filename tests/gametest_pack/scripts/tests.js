@@ -90,6 +90,14 @@ function loreOf(item) {
   return item?.getLore().join(" ") ?? "";
 }
 
+/** Special attacks need the maximum level: raise the relic in `slot` to it like an admin would. */
+async function maxLevel(gameTest, player, key, max, slot = 0) {
+  command(gameTest, `ce:level ${key} ${max}`);
+  await waitFor(gameTest, 40, `${NAMES[key]} hat Level ${max} nicht erreicht`, () =>
+    loreOf(inventory(player).getItem(slot)).includes(`${max}/${max}`),
+  );
+}
+
 // ---------------------------------------------------------------- speed
 
 test("speed_effect_while_carried_and_30_block_dash", 400, async (gameTest) => {
@@ -108,6 +116,7 @@ test("speed_effect_while_carried_and_30_block_dash", 400, async (gameTest) => {
   // Dash: 30 blocks in the looking direction, no fall damage.
   inventory(player).setItem(20, undefined);
   player.setItem(relic, 0, true);
+  await maxLevel(gameTest, player, "speed", 3);
   player.setRotation({ x: 0, y: 0 }); // look straight ahead (south), no steering command
   await gameTest.idle(5);
   const start = { ...player.location };
@@ -135,9 +144,11 @@ test("strength_ring_damage_and_diadem_levels", 400, async (gameTest) => {
   const pig = gameTest.spawnWithoutBehaviors("minecraft:pig", { x: 10, y: FLOOR + 1, z: 5 });
   const pigBefore = health(pig);
   await craft(gameTest, player, "strength");
+
+  // Below the maximum level the special attack is locked.
   player.useItemInSlot(0);
-  await waitFor(gameTest, 40, "Kraftring hat das Schwein nicht getroffen", () => !pig.isValid || health(pig) < pigBefore);
-  gameTest.assert(!pig.isValid || pigBefore - health(pig) >= 5.9, `Kraftring machte ${pigBefore - health(pig)} statt 6 Schaden`);
+  await gameTest.idle(30);
+  gameTest.assert(health(pig) === pigBefore, "Spezialangriff lief schon auf Level 1");
 
   // Diadem: relic in the offhand, diadem in the hand.
   const equippable = player.getComponent("minecraft:equippable");
@@ -161,6 +172,15 @@ test("strength_ring_damage_and_diadem_levels", 400, async (gameTest) => {
   player.useItemInSlot(1); // already at the maximum: nothing may be used up
   await gameTest.idle(10);
   gameTest.assert(countItems(player, DIADEM) === 1, "Diadem wurde am Maximallevel verbraucht");
+
+  // At the maximum level the ring works.
+  const maxed = equippable.getEquipment(EquipmentSlot.Offhand);
+  equippable.setEquipment(EquipmentSlot.Offhand, undefined);
+  player.setItem(maxed, 0, true);
+  await gameTest.idle(15);
+  player.useItemInSlot(0);
+  await waitFor(gameTest, 40, "Kraftring hat das Schwein nicht getroffen", () => !pig.isValid || health(pig) < pigBefore);
+  gameTest.assert(!pig.isValid || pigBefore - health(pig) >= 5.9, `Kraftring machte ${pigBefore - health(pig)} statt 6 Schaden`);
   gameTest.succeed();
 });
 
@@ -175,12 +195,13 @@ test("haste_duplicate_refund_and_fortress", 400, async (gameTest) => {
   copier.setItem(new ItemStack(relicId("haste"), 1), 0, true);
   await waitFor(gameTest, 40, "Zweites Exemplar wurde nicht entfernt", () => countItems(copier, relicId("haste")) === 0);
   gameTest.assert(countItems(copier, "minecraft:diamond_pickaxe") === 2, "2 Diamant-Spitzhacken nicht zurückgegeben");
-  gameTest.assert(countItems(copier, "minecraft:emerald") === 6, "6 Smaragde nicht zurückgegeben");
+  gameTest.assert(countItems(copier, "minecraft:tnt") === 2, "2 TNT nicht zurückgegeben");
   gameTest.assert(countItems(copier, "minecraft:glass_bottle") === 1, "Glasflasche nicht zurückgegeben");
   copier.disconnect();
 
   const cow = gameTest.spawnWithoutBehaviors("minecraft:cow", { x: 5, y: FLOOR + 1, z: 3 }); // the test world is peaceful
   const cowBefore = health(cow);
+  await maxLevel(gameTest, owner, "haste", 5);
   owner.useItemInSlot(0);
   await waitFor(gameTest, 40, "Bollwerk-Explosion hat die Kuh nicht getroffen", () => !cow.isValid || health(cow) < cowBefore);
   gameTest.assert(owner.getEffect("resistance")?.amplifier === 4, "Resistenz V fehlt");
@@ -229,6 +250,7 @@ test("health_shield_and_level_reset_after_loss", 600, async (gameTest) => {
   const player = spawnPlayer(gameTest, 5, 5, "ce_health");
   const pig = gameTest.spawnWithoutBehaviors("minecraft:pig", { x: 7, y: FLOOR + 1, z: 5 });
   await craft(gameTest, player, "health");
+  await maxLevel(gameTest, player, "health", 5);
   await gameTest.idle(30);
   player.getComponent("minecraft:health").setCurrentValue(10); // direct, no damage immunity involved
   const hurt = health(player);
@@ -240,7 +262,9 @@ test("health_shield_and_level_reset_after_loss", 600, async (gameTest) => {
 
   // Raise the level, lose the relic in lava, craft it again: back to level 1.
   command(gameTest, "ce:level health 3");
-  await waitFor(gameTest, 40, "Level 3 wurde nicht gesetzt", () => loreOf(inventory(player).getItem(0)).includes("3/10"));
+  await waitFor(gameTest, 40, "Level 3 wurde nicht gesetzt", () => loreOf(inventory(player).getItem(0)).includes("3/5"));
+  const lore = loreOf(inventory(player).getItem(0));
+  gameTest.assert(lore.includes("26 Herzen"), `Level 3 sollte 26 Herzen geben: ${lore}`);
   const relic = inventory(player).getItem(0);
   inventory(player).setItem(0, undefined);
   gameTest.setBlockType("minecraft:lava", { x: 10, y: FLOOR, z: 10 }); // a lava pit in the floor
@@ -248,7 +272,7 @@ test("health_shield_and_level_reset_after_loss", 600, async (gameTest) => {
   await gameTest.idle(120); // burn + the add-on's 3 s loss check
 
   await craft(gameTest, player, "health", 1);
-  gameTest.assert(loreOf(inventory(player).getItem(1)).includes("1/10"), "Neu gecraftetes Relikt ist nicht auf Level 1");
+  gameTest.assert(loreOf(inventory(player).getItem(1)).includes("1/5"), "Neu gecraftetes Relikt ist nicht auf Level 1");
   gameTest.succeed();
 });
 
@@ -261,6 +285,7 @@ test("jump_automace_30_blocks_and_smash", 500, async (gameTest) => {
   const target = gameTest.spawnWithoutBehaviors("minecraft:iron_golem", { x: 9, y: FLOOR + 1, z: 9 });
   const before = health(target);
   await craft(gameTest, player, "jump");
+  await maxLevel(gameTest, player, "jump", 4);
 
   const startY = player.location.y;
   let apex = startY;
