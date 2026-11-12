@@ -7,7 +7,7 @@
 - Jedes der 6 Relikte existiert **nur einmal pro Welt**. Wer ein bereits existierendes Relikt noch einmal craftet, bekommt die Zutaten zurück.
 - Liegt ein Relikt **irgendwo im Inventar, in der Hotbar oder in der Zweithand**, hast du dauerhaft seinen Effekt. Mehrere Relikte wirken gleichzeitig.
 - Ein Relikt startet auf **Level 1**. Mit dem **Diadem** steigt es bis zum Maximallevel. Das Level verstärkt den Dauer-Effekt.
-- Der **Spezialangriff** wird erst auf dem **Maximallevel** freigeschaltet. Dann löst ein **Rechtsklick** (am Handy: Tippen/Halten) mit dem Relikt in der Hand ihn aus. Danach läuft die Abklingzeit (Anzeige über der Hotbar).
+- Der **Spezialangriff** wird erst auf dem **Maximallevel** freigeschaltet. Dann löst ein **Rechtsklick** (am Handy: Tippen/Halten) mit dem Relikt in der Hand ihn aus. Danach läuft die Abklingzeit – sichtbar als Balken auf dem Item, wie bei einer Windkugel.
 - Wird ein Relikt zerstört (Lava, Feuer, Kaktus, Void, Despawn), meldet das der Chat. Es kann **wieder gecraftet** werden und beginnt dann wieder bei Level 1.
 - ⚠️ Die Explosionen von **Bollwerk** und **Kometenhagel** zerstören Blöcke und die Kometen hinterlassen Lava – Vorsicht in der Nähe von Bauten.
 
@@ -15,16 +15,16 @@
 
 | Relikt | Dauer-Effekt | Max. Level (= Spezialangriff frei) | Spezialangriff | Abklingzeit |
 |---|---|---|---|---|
-| Relikt des Windes | Schnelligkeit | 3 (III) | Dash | 30 s |
-| Relikt der Stärke | Stärke | 3 (III) | Kraftring | 30 s |
-| Relikt des Bergmanns | Eile | 5 (V) | Bollwerk | 90 s |
-| Relikt der Glut | Feuerresistenz | 1 (I) | Kometenhagel | 120 s |
-| Relikt des Lebens | Gesundheitsschub | 5 (V) = 30 Herzen | Lebensschild | 90 s |
-| Relikt des Himmelssturzes | Sprungkraft | 4 (IV) | Auto-Mace | 30 s |
+| Effekt Speed | Schnelligkeit | 3 (III) | Dash | 30 s |
+| Effekt Strength | Stärke | 3 (III) | Kraftring | 30 s |
+| Effekt Haste | Eile | 5 (V) | Bollwerk | 90 s |
+| Effekt Fire | Feuerresistenz | 1 (I) | Kometenhagel | 120 s |
+| Effekt Heal | Gesundheitsschub | 5 (V) = 30 Herzen | Lebensschild | 90 s |
+| Effekt Jump | Sprungkraft | 4 (IV) | Auto-Mace | 30 s |
 
 ## Relikte im Detail
 
-### Relikt des Windes
+### Effekt Speed
 
 - **Dauer-Effekt:** Schnelligkeit (Level 1 bis 3)
 - **Spezialangriff ab Level 3**
@@ -40,7 +40,7 @@
 
 Zutaten insgesamt: 2× Feuerwerksrakete, 1× Flow-Rüstungsbesatz, 2× Nautilusschale, 1× Glasflasche, 2× Diamanthose, 1× Bolt-Rüstungsbesatz
 
-### Relikt der Stärke
+### Effekt Strength
 
 - **Dauer-Effekt:** Stärke (Level 1 bis 3)
 - **Spezialangriff ab Level 3**
@@ -56,7 +56,7 @@ Zutaten insgesamt: 2× Feuerwerksrakete, 1× Flow-Rüstungsbesatz, 2× Nautiluss
 
 Zutaten insgesamt: 1× Diamantaxt, 1× Ward-Rüstungsbesatz, 1× Diamantschwert, 2× Ghast-Träne, 1× Glasflasche, 2× Endkristall, 1× Dreizack
 
-### Relikt des Bergmanns
+### Effekt Haste
 
 - **Dauer-Effekt:** Eile (Level 1 bis 5)
 - **Spezialangriff ab Level 5**
@@ -72,7 +72,7 @@ Zutaten insgesamt: 1× Diamantaxt, 1× Ward-Rüstungsbesatz, 1× Diamantschwert,
 
 Zutaten insgesamt: 2× Diamant-Spitzhacke, 2× Golderz, 2× Plattenfragment, 1× Glasflasche, 2× TNT
 
-### Relikt der Glut
+### Effekt Fire
 
 - **Dauer-Effekt:** Feuerresistenz (Level 1 bis 1)
 - **Spezialangriff ab Level 1**
@@ -88,7 +88,7 @@ Zutaten insgesamt: 2× Diamant-Spitzhacke, 2× Golderz, 2× Plattenfragment, 1×
 
 Zutaten insgesamt: 2× Feuerkugel, 2× Lohenrute, 2× Witherskelett-Schädel, 1× Glasflasche, 2× Lavaeimer
 
-### Relikt des Lebens
+### Effekt Heal
 
 - **Dauer-Effekt:** Gesundheitsschub (Level 1 bis 5) – Herzen insgesamt je Level: 20 → 24 → 26 → 28 → 30
 - **Spezialangriff ab Level 5**
@@ -104,7 +104,7 @@ Zutaten insgesamt: 2× Feuerkugel, 2× Lohenrute, 2× Witherskelett-Schädel, 1�
 
 Zutaten insgesamt: 2× Diamantbrustpanzer, 1× Verzaubertes Buch (Schutz empfohlen), 2× Totem der Unsterblichkeit, 1× Glasflasche, 2× Goldener Apfel, 1× Unheilvolle Flasche
 
-### Relikt des Himmelssturzes
+### Effekt Jump
 
 - **Dauer-Effekt:** Sprungkraft (Level 1 bis 4)
 - **Spezialangriff ab Level 4**
@@ -146,7 +146,7 @@ Nur Operatoren (auf Realms: Spieler mit Operator-Rechten) können diese Befehle 
 | `/ce:level <relikt> <level>` | Setzt das Level, z. B. `/ce:level speed 3`. |
 | `/ce:effect <relikt> <effekt> <level>` | Ändert den Dauer-Effekt, z. B. `/ce:effect speed night_vision 1`. |
 | `/ce:attack <relikt> <angriff> [abklingzeit]` | Ändert den Spezialangriff, z. B. `/ce:attack speed automace 20`. |
-| `/ce:name <relikt> <name>` | Benennt ein Relikt um, z. B. `/ce:name speed "Relikt des Sturms"`. |
+| `/ce:name <relikt> <name>` | Benennt ein Relikt um, z. B. `/ce:name speed "Effekt Sturm"`. |
 | `/ce:enable <relikt> <true\|false>` | Schaltet ein Relikt an oder aus (aus = nicht craftbar, keine Wirkung). |
 | `/ce:free <relikt>` | Gibt ein Relikt frei, damit es neu gecraftet werden kann. Die alte Kopie wird ungültig. |
 | `/ce:give <relikt> [spieler]` | Gibt ein Relikt direkt (nur wenn es gerade frei ist). |

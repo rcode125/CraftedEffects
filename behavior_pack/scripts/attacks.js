@@ -1,11 +1,29 @@
 import { EntityDamageCause, system } from "@minecraft/server";
-import { relicConfig, relicKey } from "./config.js";
+import { RELIC_KEYS, relicConfig, relicKey } from "./config.js";
 import { registeredSerial, serialOf } from "./registry.js";
 import { isInAutoMace, startAutoMace } from "./automace.js";
 import { protect } from "./protection.js";
 import { nearbyTargets, normalize } from "./targets.js";
 
 const cooldowns = new Map(); // "playerId:relicKey" -> tick when ready again
+
+/** Item cooldown category of a relic (set in the item JSON by generate_content.py). */
+const cooldownCategory = (key) => `craftedeffects_${key}`;
+
+function ticksLeft(player, key) {
+  return Math.max(0, (cooldowns.get(`${player.id}:${key}`) ?? 0) - system.currentTick);
+}
+
+/**
+ * Makes the cooldown sweep on the item (like on a wind charge) match the real cooldown.
+ * Also clears a sweep the game started on its own, e.g. for a use that triggered no attack.
+ */
+function syncCooldown(player, key) {
+  const left = ticksLeft(player, key);
+  if (Math.abs(player.getItemCooldown(cooldownCategory(key)) - left) > 2) {
+    player.startItemCooldown(cooldownCategory(key), left);
+  }
+}
 
 // Tuning values. The dash and launch strengths are checked by GameTests.
 const DASH_STEP = 3; // blocks per tick
@@ -256,14 +274,14 @@ export function useRelic(player, itemStack) {
     player.onScreenDisplay.setActionBar(
       `§7${relic.name}: Spezialangriff ab Level ${relic.maxLevel} – noch ${missing} ${missing === 1 ? "Diadem" : "Diademe"}`,
     );
+    syncCooldown(player, key);
     return;
   }
 
   const cooldownId = `${player.id}:${key}`;
-  const readyAt = cooldowns.get(cooldownId) ?? 0;
-  if (system.currentTick < readyAt) {
-    const seconds = Math.ceil((readyAt - system.currentTick) / 20);
-    player.onScreenDisplay.setActionBar(`§c${relic.name}: noch ${seconds} s Abklingzeit`);
+  if (ticksLeft(player, key) > 0) {
+    player.onScreenDisplay.setActionBar(`§c${relic.name}: noch ${Math.ceil(ticksLeft(player, key) / 20)} s Abklingzeit`);
+    syncCooldown(player, key);
     return;
   }
 
@@ -277,15 +295,12 @@ export function useRelic(player, itemStack) {
   } catch (error) {
     console.warn(`[CraftedEffects] Angriff ${relic.attack} fehlgeschlagen: ${error}`);
   }
+  syncCooldown(player, key);
 }
 
-/** Shows the remaining cooldown while the player holds a relic. */
-export function showCooldown(player, heldItem) {
-  const key = relicKey(heldItem?.typeId);
-  if (!key) return;
-  const readyAt = cooldowns.get(`${player.id}:${key}`) ?? 0;
-  if (system.currentTick < readyAt) {
-    const seconds = Math.ceil((readyAt - system.currentTick) / 20);
-    player.onScreenDisplay.setActionBar(`§7${relicConfig(key).name}: §c${seconds} s`);
+/** Keeps the cooldown sweeps of a player's relics running, e.g. after rejoining the world. */
+export function showCooldowns(player) {
+  for (const key of RELIC_KEYS) {
+    if (ticksLeft(player, key) > 0) syncCooldown(player, key);
   }
 }

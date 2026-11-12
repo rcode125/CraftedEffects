@@ -31,12 +31,12 @@ Add-on für Minecraft **Bedrock Edition 26.3**, für **normale Welten und Realms
 
 | Relikt | Effekt (max. Level) | Spezialangriff | Abklingzeit |
 |---|---|---|---|
-| Relikt des Windes | Schnelligkeit (3) | Dash 30 Blöcke in Blickrichtung, kein Fallschaden | 30 s |
-| Relikt der Stärke | Stärke (3) | Kraftring: 3 Herzen Schaden an allem, was er trifft | 30 s |
-| Relikt des Bergmanns | Eile (5) | Bollwerk: 3 s unverwundbar + Explosion um dich | 90 s |
-| Relikt der Glut | Feuerresistenz (1) | Kometenhagel: 8 Kometen, Explosionen und Lava | 120 s |
-| Relikt des Lebens | Gesundheitsschub (5 = 30 Herzen) | Lebensschild: stößt Gegner weg, heilt und sättigt 5 s | 90 s |
-| Relikt des Himmelssturzes | Sprungkraft (4) | Auto-Mace: 30 Blöcke hoch, Dash aufs Ziel, Mace-Smash | 30 s |
+| Effekt Speed | Schnelligkeit (3) | Dash 30 Blöcke in Blickrichtung, kein Fallschaden | 30 s |
+| Effekt Strength | Stärke (3) | Kraftring: 3 Herzen Schaden an allem, was er trifft | 30 s |
+| Effekt Haste | Eile (5) | Bollwerk: 3 s unverwundbar + Explosion um dich | 90 s |
+| Effekt Fire | Feuerresistenz (1) | Kometenhagel: 8 Kometen, Explosionen und Lava | 120 s |
+| Effekt Heal | Gesundheitsschub (5 = 30 Herzen) | Lebensschild: stößt Gegner weg, heilt und sättigt 5 s | 90 s |
+| Effekt Jump | Sprungkraft (4) | Auto-Mace: 30 Blöcke hoch, Dash aufs Ziel, Mace-Smash | 30 s |
 
 Die genauen Rezepte stehen in [RELIKTE.md](RELIKTE.md). Der **Spezialangriff** wird erst freigeschaltet, wenn das Relikt sein **Maximallevel** erreicht hat (Zahl in Klammern). Beim Gesundheitsschub steigen die Herzen pro Level: 20 → 24 → 26 → 28 → 30.
 

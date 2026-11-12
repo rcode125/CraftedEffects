@@ -22,6 +22,10 @@
       "minecraft:glint": true,
       "minecraft:allow_off_hand": {
         "value": true
+      },
+      "minecraft:cooldown": {
+        "category": "craftedeffects_health",
+        "duration": 90
       }
     }
   }
