@@ -23,6 +23,9 @@ export function getConfig() {
       cache.pvp = saved.pvp !== false;
       if (saved.version === DATA.version) {
         for (const key of RELIC_KEYS) Object.assign(cache.relics[key], saved.relics?.[key] ?? {});
+      } else if (saved.version === 5) {
+        // Version 5 only had other relic names ("Relikt des Windes", ...): keep every setting, take the new names.
+        for (const key of RELIC_KEYS) Object.assign(cache.relics[key], saved.relics?.[key] ?? {}, { name: DATA.relics[key].name });
       } else {
         // Older add-on version: new defaults, but relics keep their level (within the new maximum).
         for (const key of RELIC_KEYS) {

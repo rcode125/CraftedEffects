@@ -21,7 +21,7 @@ ART_DIR = ROOT / "art" / "items"  # hand-drawn textures (e.g. from the Pixelstat
 NAMESPACE = "craftedeffects"
 ITEM_FORMAT = "1.21.90"
 RECIPE_FORMAT = "1.20.10"
-CONFIG_VERSION = 5  # bump when the relic table changes; old world settings are migrated (levels kept)
+CONFIG_VERSION = 6  # bump when the relic table changes; old world settings are migrated (levels kept)
 
 # Item ids used in recipes -> German name (for RELIKTE.md)
 ITEM_NAMES = {
@@ -114,7 +114,7 @@ FRAME = {"G": "minecraft:gold_ingot", "D": "minecraft:diamond"}
 # "amplifiers": effect amplifier per level, when it is not simply level - 1.
 RELICS = [
     {
-        "key": "speed", "name": "Relikt des Windes", "effect": "speed", "max_level": 3,
+        "key": "speed", "name": "Effekt Speed", "effect": "speed", "max_level": 3,
         "attack": "dash", "cooldown": 30, "colour": (90, 230, 230),
         "pattern": ["RFR", "NBN", "LTL"],
         "ingredients": {
@@ -124,7 +124,7 @@ RELICS = [
         },
     },
     {
-        "key": "strength", "name": "Relikt der Stärke", "effect": "strength", "max_level": 3,
+        "key": "strength", "name": "Effekt Strength", "effect": "strength", "max_level": 3,
         "attack": "ring", "cooldown": 30, "colour": (200, 40, 40),
         "pattern": ["AWS", "TBT", "CDC"],
         "ingredients": {
@@ -134,7 +134,7 @@ RELICS = [
         },
     },
     {
-        "key": "haste", "name": "Relikt des Bergmanns", "effect": "haste", "max_level": 5,
+        "key": "haste", "name": "Effekt Haste", "effect": "haste", "max_level": 5,
         "attack": "fortress", "cooldown": 90, "colour": (250, 210, 40),
         "pattern": ["POP", "FBF", "XOX"],
         "ingredients": {
@@ -143,7 +143,7 @@ RELICS = [
         },
     },
     {
-        "key": "fire", "name": "Relikt der Glut", "effect": "fire_resistance", "max_level": 1,
+        "key": "fire", "name": "Effekt Fire", "effect": "fire_resistance", "max_level": 1,
         "attack": "comets", "cooldown": 120, "colour": (255, 120, 20),
         "pattern": ["CRC", "SBS", "LRL"],
         "ingredients": {
@@ -153,7 +153,7 @@ RELICS = [
     },
     {
         # 30 hearts at the top: 20 -> 24 -> 26 -> 28 -> 30 hearts in total (health boost works in 2-heart steps)
-        "key": "health", "name": "Relikt des Lebens", "effect": "health_boost", "max_level": 5,
+        "key": "health", "name": "Effekt Heal", "effect": "health_boost", "max_level": 5,
         "amplifiers": [4, 6, 7, 8, 9],
         "attack": "aegis", "cooldown": 90, "colour": (255, 105, 180),
         "pattern": ["CPC", "TBT", "AOA"],
@@ -163,7 +163,7 @@ RELICS = [
         },
     },
     {
-        "key": "jump", "name": "Relikt des Himmelssturzes", "effect": "jump_boost", "max_level": 4,
+        "key": "jump", "name": "Effekt Jump", "effect": "jump_boost", "max_level": 4,
         "attack": "automace", "cooldown": 30, "colour": (120, 200, 255),
         "pattern": ["WEW", "RBR", "DED"],
         "ingredients": {
@@ -188,6 +188,11 @@ def hearts(relic, level):
 
 def relic_id(relic):
     return f"relic_{relic['key']}"
+
+
+def cooldown_category(relic):
+    """Item cooldown category of a relic; attacks.js builds the same name."""
+    return f"{NAMESPACE}_{relic['key']}"
 
 
 def write_json(path, data):
@@ -273,7 +278,7 @@ def diadem_texture():
 
 # ---------------------------------------------------------------- packs
 
-def item_json(full_id, texture_key, custom_component, stack, glint):
+def item_json(full_id, texture_key, custom_component, stack, glint, cooldown=None):
     components = {
         "minecraft:display_name": {"value": f"item.{full_id}.name"},
         "minecraft:icon": {"textures": {"default": texture_key}},
@@ -285,6 +290,10 @@ def item_json(full_id, texture_key, custom_component, stack, glint):
         components["minecraft:glint"] = True
     if custom_component == "relic":
         components["minecraft:allow_off_hand"] = {"value": True}  # needed for the offhand + diadem
+    if cooldown:
+        # Draws the cooldown sweep over the item, like on a wind charge. The script starts it
+        # (attacks.js) with the admin-configured duration; the duration here is only the default.
+        components["minecraft:cooldown"] = {"category": cooldown[0], "duration": cooldown[1]}
     return {
         "format_version": ITEM_FORMAT,
         "minecraft:item": {
@@ -322,7 +331,9 @@ def generate_packs():
     for item_name, display, texture, component, stack, glint, source in entries:
         full_id = f"{NAMESPACE}:{item_name}"
         texture_key = f"{NAMESPACE}_{item_name}"
-        write_json(BP_DIR / "items" / f"{item_name}.json", item_json(full_id, texture_key, component, stack, glint))
+        cooldown = (cooldown_category(source), source["cooldown"]) if component == "relic" else None
+        write_json(BP_DIR / "items" / f"{item_name}.json",
+                   item_json(full_id, texture_key, component, stack, glint, cooldown))
         unlock = source["ingredients"][source["pattern"][1][1]]  # the centre ingredient unlocks the recipe
         write_json(BP_DIR / "recipes" / f"{item_name}.json",
                    recipe_json(full_id, source["pattern"], source["ingredients"], unlock))
@@ -401,7 +412,7 @@ def generate_guide():
         "- Jedes der 6 Relikte existiert **nur einmal pro Welt**. Wer ein bereits existierendes Relikt noch einmal craftet, bekommt die Zutaten zurück.",
         "- Liegt ein Relikt **irgendwo im Inventar, in der Hotbar oder in der Zweithand**, hast du dauerhaft seinen Effekt. Mehrere Relikte wirken gleichzeitig.",
         "- Ein Relikt startet auf **Level 1**. Mit dem **Diadem** steigt es bis zum Maximallevel. Das Level verstärkt den Dauer-Effekt.",
-        "- Der **Spezialangriff** wird erst auf dem **Maximallevel** freigeschaltet. Dann löst ein **Rechtsklick** (am Handy: Tippen/Halten) mit dem Relikt in der Hand ihn aus. Danach läuft die Abklingzeit (Anzeige über der Hotbar).",
+        "- Der **Spezialangriff** wird erst auf dem **Maximallevel** freigeschaltet. Dann löst ein **Rechtsklick** (am Handy: Tippen/Halten) mit dem Relikt in der Hand ihn aus. Danach läuft die Abklingzeit – sichtbar als Balken auf dem Item, wie bei einer Windkugel.",
         "- Wird ein Relikt zerstört (Lava, Feuer, Kaktus, Void, Despawn), meldet das der Chat. Es kann **wieder gecraftet** werden und beginnt dann wieder bei Level 1.",
         "- ⚠️ Die Explosionen von **Bollwerk** und **Kometenhagel** zerstören Blöcke und die Kometen hinterlassen Lava – Vorsicht in der Nähe von Bauten.",
         "",
@@ -456,7 +467,7 @@ def generate_guide():
         "| `/ce:level <relikt> <level>` | Setzt das Level, z. B. `/ce:level speed 3`. |",
         "| `/ce:effect <relikt> <effekt> <level>` | Ändert den Dauer-Effekt, z. B. `/ce:effect speed night_vision 1`. |",
         "| `/ce:attack <relikt> <angriff> [abklingzeit]` | Ändert den Spezialangriff, z. B. `/ce:attack speed automace 20`. |",
-        "| `/ce:name <relikt> <name>` | Benennt ein Relikt um, z. B. `/ce:name speed \"Relikt des Sturms\"`. |",
+        "| `/ce:name <relikt> <name>` | Benennt ein Relikt um, z. B. `/ce:name speed \"Effekt Sturm\"`. |",
         "| `/ce:enable <relikt> <true\\|false>` | Schaltet ein Relikt an oder aus (aus = nicht craftbar, keine Wirkung). |",
         "| `/ce:free <relikt>` | Gibt ein Relikt frei, damit es neu gecraftet werden kann. Die alte Kopie wird ungültig. |",
         "| `/ce:give <relikt> [spieler]` | Gibt ein Relikt direkt (nur wenn es gerade frei ist). |",
