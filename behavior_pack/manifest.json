@@ -1,14 +1,14 @@
 {
   "format_version": 2,
   "header": {
-    "name": "CraftedEffects Behavior Pack v4.1.0",
-    "description": "12 einzigartige Relikte mit Dauer-Effekt und Spezialangriff",
+    "name": "CraftedEffects Behavior Pack v5.0.0",
+    "description": "7 einzigartige Relikte mit Dauer-Effekt und Spezialangriff",
     "uuid": "fbec5def-8634-4464-928a-4c71b3bd97cf",
     "version": [
-      4,
-      1,
-      0
-    ],
+        5,
+        0,
+        0
+      ],
     "min_engine_version": [
       1,
       26,
@@ -20,8 +20,8 @@
       "type": "data",
       "uuid": "8c9f35b1-e05f-460f-9c3a-8ffed4624c44",
       "version": [
-        4,
-        1,
+        5,
+        0,
         0
       ]
     },
@@ -30,8 +30,8 @@
       "language": "javascript",
       "uuid": "1548cba2-af9d-4891-a9e5-13896ba0d217",
       "version": [
-        4,
-        1,
+        5,
+        0,
         0
       ],
       "entry": "scripts/main.js"
@@ -41,8 +41,8 @@
     {
       "uuid": "5c7487c1-bbba-4a3a-a6aa-b7ca89e41cd5",
       "version": [
-        4,
-        1,
+        5,
+        0,
         0
       ]
     },

@@ -18,7 +18,7 @@ const IGNORED_TYPES = new Set([
 /** True if the attacker may damage this entity (living, not self, PvP rules). */
 export function isValidTarget(attacker, entity) {
   if (!entity?.isValid || entity.id === attacker.id) return false;
-  if (IGNORED_TYPES.has(entity.typeId)) return false;
+  if (IGNORED_TYPES.has(entity.typeId) || entity.typeId.startsWith("craftedeffects:")) return false;
   if (!entity.getComponent("minecraft:health")) return false;
   if (entity.typeId === "minecraft:player") {
     if (!getConfig().pvp) return false;
@@ -48,4 +48,20 @@ export function normalize(vector) {
 
 export function distance(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+}
+
+/** The target the player looks at, otherwise the closest valid target within `radius`. */
+export function lookedAtOrNearest(player, maxDistance, radius) {
+  const looked = lookedAtTarget(player, maxDistance);
+  if (looked) return looked;
+  let best;
+  let bestDistance = Infinity;
+  for (const entity of nearbyTargets(player, radius)) {
+    const d = distance(entity.location, player.location);
+    if (d < bestDistance) {
+      bestDistance = d;
+      best = entity;
+    }
+  }
+  return best;
 }

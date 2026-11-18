@@ -23,9 +23,6 @@ export function getConfig() {
       cache.pvp = saved.pvp !== false;
       if (saved.version === DATA.version) {
         for (const key of RELIC_KEYS) Object.assign(cache.relics[key], saved.relics?.[key] ?? {});
-      } else if (saved.version === 5) {
-        // Version 5 only had other relic names ("Relikt des Windes", ...): keep every setting, take the new names.
-        for (const key of RELIC_KEYS) Object.assign(cache.relics[key], saved.relics?.[key] ?? {}, { name: DATA.relics[key].name });
       } else {
         // Older add-on version: new defaults, but relics keep their level (within the new maximum).
         for (const key of RELIC_KEYS) {
@@ -82,7 +79,7 @@ const ROMAN = [
   { value: 1, letter: "I" },
 ];
 
-/** Effect amplifier of a relic at its current level (health boost has its own steps). */
+/** Effect amplifier of a relic at its current level (health boost has its own steps; -1 = no effect). */
 export function amplifierFor(key) {
   const relic = relicConfig(key);
   const steps = DATA.relics[key].amplifiers;
@@ -106,6 +103,7 @@ export function effectLabel(relic, key) {
   if (relic.effect === "none") return DATA.effects.none;
   const name = DATA.effects[relic.effect] ?? relic.effect;
   if (relic.effect === "health_boost" && key) return `${name} (${10 + 2 * (amplifierFor(key) + 1)} Herzen)`;
+  if (key && DATA.relics[key].amplifiers && relic.effect === DATA.relics[key].effect) return name; // no stronger levels
   return `${name} ${roman(relic.level)}`;
 }
 
@@ -114,17 +112,36 @@ export function attackLabel(relic) {
   return relic.attack === "none" ? name : `${name} (${relic.cooldown} s)`;
 }
 
+export function boostLabel(relic) {
+  if (relic.boost === "none") return DATA.boosts.none;
+  let name = DATA.boosts[relic.boost] ?? relic.boost;
+  if (relic.boost === "effect") {
+    const effect = DATA.effects[relic.boostEffect] ?? relic.boostEffect;
+    name = relic.boostEffect === "health_boost"
+      ? `${effect} (${10 + 2 * (relic.boostAmplifier + 1)} Herzen)`
+      : `${effect} ${roman(relic.boostAmplifier + 1)}`;
+  }
+  return `${name} ${relic.boostDuration} s (${relic.boostCooldown} s)`;
+}
+
+/** Switches the permanent effect of a relic on or off. */
+export function setEffectOn(key, on) {
+  relicConfig(key).effectOn = on;
+  saveConfig();
+}
+
 /** Name and lore an existing relic item should show. */
 export function relicDisplay(key) {
   const relic = relicConfig(key);
   return {
     nameTag: `§d${relic.name}`,
     lore: [
-      `§7Effekt: §a${effectLabel(relic, key)}`,
+      relic.effectOn ? `§7Wirkung: §a${effectLabel(relic, key)}` : `§7Wirkung: §8aus §7(${effectLabel(relic, key)})`,
       `§7Level: §e${relic.level}/${relic.maxLevel}`,
       relic.level >= relic.maxLevel
         ? `§7Angriff: §c${attackLabel(relic)}`
         : `§7Angriff: §8${attackLabel(relic)} – ab Level ${relic.maxLevel}`,
+      `§7Boost: §b${boostLabel(relic)}`,
       relic.enabled ? "§8Einzigartig – nur einmal pro Welt" : "§4Deaktiviert",
     ],
   };

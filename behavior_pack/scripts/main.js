@@ -1,14 +1,18 @@
 import { system, world } from "@minecraft/server";
-import { scanPlayer, watchForLoss } from "./registry.js";
+import { scanPlayer, setupRegistry } from "./registry.js";
 import { applyRelicEffects, forgetPlayer } from "./effects.js";
-import { showCooldowns, useRelic } from "./attacks.js";
+import { setupAttacks } from "./attacks.js";
+import { onRelicUse, setupBoosts } from "./boosts.js";
 import { setupAutoMace } from "./automace.js";
+import { setupFx } from "./fx.js";
+import { setupWater } from "./water.js";
 import { registerCommands } from "./commands.js";
 import { onDiademUse } from "./diadem.js";
 import { setupProtection } from "./protection.js";
 
 const RELIC_COMPONENT = "craftedeffects:relic";
 const DIADEM_COMPONENT = "craftedeffects:diadem";
+const STEALING_COMPONENT = "craftedeffects:stealing";
 const SCAN_INTERVAL_TICKS = 10;
 const EFFECT_INTERVAL_TICKS = 20;
 
@@ -16,22 +20,28 @@ system.beforeEvents.startup.subscribe(({ itemComponentRegistry, customCommandReg
   itemComponentRegistry.registerCustomComponent(RELIC_COMPONENT, {
     onUse({ source, itemStack }) {
       system.run(() => {
-        if (source?.isValid) useRelic(source, itemStack);
+        if (source?.isValid) onRelicUse(source, itemStack);
       });
     },
   });
+  // The Stealing works through the death event (registry.js); the component only marks the item.
+  itemComponentRegistry.registerCustomComponent(STEALING_COMPONENT, {});
   itemComponentRegistry.registerCustomComponent(DIADEM_COMPONENT, {
     onUse({ source }) {
       onDiademUse(source);
     },
   });
   const commands = registerCommands(customCommandRegistry);
-  console.log(`[CraftedEffects] geladen: Relikte, Diadem und ${commands} Befehle registriert`);
+  console.log(`[CraftedEffects] geladen: Effekte, Diadem, Stealing und ${commands} Befehle registriert`);
 });
 
-watchForLoss();
+setupRegistry();
 setupProtection();
+setupAttacks();
+setupBoosts();
 setupAutoMace();
+setupFx();
+setupWater();
 
 const activeRelics = new Map(); // player id -> relic keys currently carried
 let reportedUnreadable = false;
@@ -59,7 +69,6 @@ system.runInterval(() => {
     if (!player) continue;
     try {
       applyRelicEffects(player, activeRelics.get(player.id) ?? []);
-      showCooldowns(player);
     } catch {
       // Player is dead or still loading; the next run catches up.
     }

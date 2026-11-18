@@ -1,0 +1,48 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "craftedeffects:relic_water_recipe"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "PSP",
+      "CBC",
+      "OWT"
+    ],
+    "key": {
+      "P": {
+        "item": "minecraft:prismarine_shard"
+      },
+      "S": {
+        "item": "minecraft:sponge"
+      },
+      "C": {
+        "item": "minecraft:conduit"
+      },
+      "B": {
+        "item": "minecraft:glass_bottle"
+      },
+      "O": {
+        "item": "minecraft:coast_armor_trim_smithing_template"
+      },
+      "W": {
+        "item": "minecraft:water_bucket"
+      },
+      "T": {
+        "item": "minecraft:tide_armor_trim_smithing_template"
+      }
+    },
+    "unlock": [
+      {
+        "item": "minecraft:glass_bottle"
+      }
+    ],
+    "result": {
+      "item": "craftedeffects:relic_water",
+      "count": 1
+    }
+  }
+}

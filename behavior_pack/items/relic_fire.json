@@ -23,9 +23,9 @@
       "minecraft:allow_off_hand": {
         "value": true
       },
-      "minecraft:cooldown": {
-        "category": "craftedeffects_fire",
-        "duration": 120
+      "minecraft:use_modifiers": {
+        "use_duration": 5,
+        "movement_modifier": 1.0
       }
     }
   }

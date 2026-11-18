@@ -20,8 +20,14 @@
     "craftedeffects_relic_jump": {
       "textures": "textures/items/relic_jump"
     },
+    "craftedeffects_relic_water": {
+      "textures": "textures/items/relic_water"
+    },
     "craftedeffects_diadem": {
       "textures": "textures/items/diadem"
+    },
+    "craftedeffects_stealing": {
+      "textures": "textures/items/stealing"
     }
   }
 }
