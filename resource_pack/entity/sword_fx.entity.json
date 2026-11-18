@@ -1,0 +1,20 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "craftedeffects:sword_fx",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/items/netherite_sword"
+      },
+      "geometry": {
+        "default": "geometry.craftedeffects.sword_fx"
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ]
+    }
+  }
+}

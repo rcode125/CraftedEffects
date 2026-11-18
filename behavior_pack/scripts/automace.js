@@ -1,4 +1,5 @@
-import { EntityDamageCause, system, world } from "@minecraft/server";
+import { EntityDamageCause, InputMode, system, world } from "@minecraft/server";
+import { DATA } from "./data.js";
 import { protect } from "./protection.js";
 import { distance, lookedAtTarget, normalize } from "./targets.js";
 
@@ -14,8 +15,11 @@ const HIT_RANGE = 3.2;
 const LANDING_SMASH_RANGE = 5; // landing right next to the target still counts, like a real mace smash
 const MAX_TICKS = 400;
 const MACE_ID = "minecraft:mace";
+const DASH_HIT_DAMAGE = 8; // without a mace: a plain dash hit (4 hearts)
+const SNAP_RANGE = 5; // close to the target the dive locks on so it never misses
 
 const states = new Map(); // player id -> state
+let ownHit = false; // true while the Auto-Mace itself deals damage (not blocked)
 
 export function isInAutoMace(player) {
   return states.has(player.id);
@@ -26,6 +30,36 @@ export function startAutoMace(player) {
   player.applyKnockback({ x: 0, z: 0 }, LAUNCH_STRENGTH);
   playSound(player, "wind_charge.burst");
   states.set(player.id, { phase: "rise", ticks: 0, apexY: player.location.y, target: undefined });
+}
+
+function isTouch(player) {
+  try {
+    return player.inputInfo.lastInputModeUsed === InputMode.Touch;
+  } catch {
+    return false;
+  }
+}
+
+/** Touch players have no crosshair: the HUD shows one while this invisible title is active. */
+function showCrosshair(player, show) {
+  try {
+    if (show) {
+      player.onScreenDisplay.setTitle(DATA.crosshairTitle, { fadeInDuration: 0, stayDuration: SLOW_FALLING_TICKS + 20, fadeOutDuration: 0 });
+    } else {
+      player.onScreenDisplay.setTitle("§r", { fadeInDuration: 0, stayDuration: 1, fadeOutDuration: 0 });
+    }
+  } catch {
+    // Not important.
+  }
+}
+
+function hit(target, damage, cause, player) {
+  ownHit = true;
+  try {
+    return target.applyDamage(damage, { cause, damagingEntity: player });
+  } finally {
+    ownHit = false;
+  }
 }
 
 function playSound(player, sound) {
@@ -62,7 +96,9 @@ function distanceToTarget(player, target) {
 
 function finish(player, reason, softLanding = true) {
   console.log(`[CraftedEffects] Auto-Mace Ende: ${reason}`);
+  const state = states.get(player.id);
   states.delete(player.id);
+  if (state?.crosshair && player.isValid) showCrosshair(player, false);
   if (player.isValid) protect(player, "fall", 100); // still no fall damage right after it ends
   if (softLanding && player.isValid) {
     player.addEffect("slow_falling", 80, { amplifier: 0, showParticles: false });
@@ -74,10 +110,9 @@ function smash(player, state) {
   const fallDistance = state.apexY - target.location.y;
   const damage = smashDamage(fallDistance);
   // Some targets reject the maceSmash cause; fall back to a normal attack then.
-  const hit =
-    target.applyDamage(damage, { cause: EntityDamageCause.maceSmash, damagingEntity: player }) ||
-    target.applyDamage(damage, { cause: EntityDamageCause.entityAttack, damagingEntity: player });
-  console.log(`[CraftedEffects] Auto-Mace Smash: ${damage} Schaden, angekommen: ${hit}`);
+  const landed =
+    hit(target, damage, EntityDamageCause.maceSmash, player) || hit(target, damage, EntityDamageCause.entityAttack, player);
+  console.log(`[CraftedEffects] Auto-Mace Smash: ${damage} Schaden, angekommen: ${landed}`);
   const away = normalize({ x: target.location.x - player.location.x, y: 0, z: target.location.z - player.location.z });
   target.applyKnockback({ x: away.x * 1.2, z: away.z * 1.2 }, 0.5);
   try {
@@ -101,6 +136,10 @@ function tick(player, state) {
     if (state.ticks > 4 && velocity.y <= 0.05) {
       state.phase = "float";
       player.addEffect("slow_falling", SLOW_FALLING_TICKS, { amplifier: 0, showParticles: false });
+      if (isTouch(player)) {
+        state.crosshair = true;
+        showCrosshair(player, true);
+      }
     }
     return;
   }
@@ -115,6 +154,10 @@ function tick(player, state) {
     const slot = maceHotbarSlot(player);
     state.hasMace = slot >= 0;
     if (state.hasMace) player.selectedSlotIndex = slot;
+    if (state.crosshair) {
+      state.crosshair = false;
+      showCrosshair(player, false);
+    }
     playSound(player, "wind_charge.burst");
   }
 
@@ -123,13 +166,29 @@ function tick(player, state) {
     if (!target?.isValid) return finish(player, "Ziel verschwunden");
     const velocity = player.getVelocity();
     const speed = Math.hypot(velocity.x, velocity.y, velocity.z);
-    const gap = distanceToTarget(player, target);
+    let gap = distanceToTarget(player, target);
+    if (gap <= SNAP_RANGE + speed && gap > HIT_RANGE) {
+      // Lock on: land right next to the target instead of flying past it.
+      const toPlayer = normalize({ x: player.location.x - target.location.x, y: 0, z: player.location.z - target.location.z });
+      player.teleport(
+        { x: target.location.x + toPlayer.x * 1.2, y: target.location.y + 0.2, z: target.location.z + toPlayer.z * 1.2 },
+        { keepVelocity: false, facingLocation: target.getHeadLocation() },
+      );
+      gap = HIT_RANGE;
+    }
     const arrived = gap <= HIT_RANGE + speed; // reached now or within the next tick
     const landedNextToTarget = player.isOnGround && state.ticks > 10 && gap <= LANDING_SMASH_RANGE;
     if (arrived || landedNextToTarget) {
       const maceHeld = state.hasMace && maceHotbarSlot(player) === player.selectedSlotIndex;
-      if (maceHeld) smash(player, state);
-      return finish(player, maceHeld ? `Treffer (${gap.toFixed(1)} Blöcke)` : "am Ziel, keine Mace in der Hand");
+      if (maceHeld) {
+        smash(player, state);
+      } else {
+        hit(target, DASH_HIT_DAMAGE, EntityDamageCause.entityAttack, player);
+        const away = normalize({ x: target.location.x - player.location.x, y: 0, z: target.location.z - player.location.z });
+        target.applyKnockback({ x: away.x * 1.0, z: away.z * 1.0 }, 0.4);
+        playSound(player, "random.explode");
+      }
+      return finish(player, maceHeld ? `Treffer (${gap.toFixed(1)} Blöcke)` : "Dash-Treffer ohne Mace");
     }
     if (player.isOnGround && state.ticks > 10) {
       return finish(player, `gelandet, ${gap.toFixed(1)} Blöcke vom Ziel`);
@@ -145,6 +204,13 @@ function tick(player, state) {
 }
 
 export function setupAutoMace() {
+  // While the Auto-Mace runs the player cannot hit normally; only the dash/smash counts.
+  world.beforeEvents.entityHurt.subscribe((event) => {
+    if (ownHit) return;
+    const attacker = event.damageSource?.damagingEntity;
+    if (attacker && states.has(attacker.id) && event.damageSource.cause === EntityDamageCause.entityAttack) event.cancel = true;
+  });
+
   system.runInterval(() => {
     for (const [playerId, state] of states) {
       const player = world.getEntity(playerId);

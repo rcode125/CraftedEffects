@@ -1,0 +1,957 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.craftedeffects.shield_dome",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 8,
+        "visible_bounds_height": 6,
+        "visible_bounds_offset": [
+          0,
+          2,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "root",
+          "pivot": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "shield0",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            0,
+            0.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield1",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            0,
+            30.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield2",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            0,
+            60.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield3",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            0,
+            90.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield4",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            0,
+            120.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield5",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            0,
+            150.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield6",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            0,
+            180.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield7",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            0,
+            210.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield8",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            0,
+            240.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield9",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            0,
+            270.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield10",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            0,
+            300.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield11",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            0,
+            330.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield12",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            -32,
+            15.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield13",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            -32,
+            51.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield14",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            -32,
+            87.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield15",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            -32,
+            123.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield16",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            -32,
+            159.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield17",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            -32,
+            195.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield18",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            -32,
+            231.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield19",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            -32,
+            267.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield20",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            -32,
+            303.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield21",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            -32,
+            339.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield22",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            -60,
+            15.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield23",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            -60,
+            75.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield24",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            -60,
+            135.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield25",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            -60,
+            195.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield26",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            -60,
+            255.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield27",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            -60,
+            315.0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "shield28",
+          "parent": "root",
+          "pivot": [
+            0,
+            12,
+            0
+          ],
+          "rotation": [
+            -90,
+            0,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6,
+                1,
+                -41
+              ],
+              "size": [
+                12,
+                22,
+                1
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

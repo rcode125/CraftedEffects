@@ -1,25 +1,19 @@
-import { EquipmentSlot, system } from "@minecraft/server";
-import { relicConfig, relicKey, setLevel } from "./config.js";
-import { registeredSerial, serialOf } from "./registry.js";
+import { system } from "@minecraft/server";
+import { relicConfig, setLevel } from "./config.js";
+import { carriedRelic } from "./registry.js";
 
 export const DIADEM_ID = "craftedeffects:diadem";
 
-/** Right-click with the diadem: the relic in the offhand gains one level; the diadem is used up. */
+/** Right-click with the diadem: the relic in the inventory, hotbar or offhand gains one level; the diadem is used up. */
 export function useDiadem(player) {
-  const equippable = player.getComponent("minecraft:equippable");
-  const relicItem = equippable?.getEquipment(EquipmentSlot.Offhand);
-  const key = relicKey(relicItem?.typeId);
-  if (!key) {
-    player.sendMessage("§7Lege ein Relikt in die Zweithand und benutze dann das Diadem.");
+  const found = carriedRelic(player);
+  if (!found) {
+    player.onScreenDisplay.setActionBar("§7Du hast kein Relikt, das das Diadem verbessern könnte.");
     return;
   }
-  const relic = relicConfig(key);
-  if (serialOf(relicItem) === undefined || serialOf(relicItem) !== registeredSerial(key)) {
-    player.sendMessage("§7Dieses Relikt wird noch geprüft …");
-    return;
-  }
+  const relic = relicConfig(found.key);
   if (relic.level >= relic.maxLevel) {
-    player.sendMessage(`§e${relic.name} ist schon auf dem Maximallevel ${relic.maxLevel}.`);
+    player.onScreenDisplay.setActionBar(`§e${relic.name} ist schon auf dem Maximallevel ${relic.maxLevel}.`);
     return;
   }
 
@@ -34,8 +28,9 @@ export function useDiadem(player) {
     slot.setItem(undefined);
   }
 
-  const level = setLevel(key, relic.level + 1);
+  const level = setLevel(found.key, relic.level + 1);
   player.sendMessage(`§6${relic.name} ist jetzt auf Level §e${level}/${relic.maxLevel}§6!`);
+  if (level >= relic.maxLevel) player.sendMessage("§6Der Spezialangriff ist freigeschaltet!");
   try {
     player.dimension.playSound("random.levelup", player.location);
   } catch {

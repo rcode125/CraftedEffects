@@ -1,0 +1,20 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "craftedeffects:shield_dome",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/shield"
+      },
+      "geometry": {
+        "default": "geometry.craftedeffects.shield_dome"
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ]
+    }
+  }
+}

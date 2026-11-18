@@ -1,7 +1,9 @@
-import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, system, world } from "@minecraft/server";
+import { CommandPermissionLevel, CustomCommandParamType, CustomCommandStatus, ItemStack, system, world } from "@minecraft/server";
 import { DATA } from "./data.js";
-import { RELIC_KEYS, attackLabel, effectLabel, getConfig, isRelicKey, relicConfig, resetConfig, saveConfig, setLevel } from "./config.js";
-import { freeRelic, isRelicFree, newRelicItem, relicStatus } from "./registry.js";
+import {
+  RELIC_KEYS, attackLabel, boostLabel, effectLabel, getConfig, isRelicKey, relicConfig, resetConfig, saveConfig, setLevel,
+} from "./config.js";
+import { STEALING_ID, freeRelic, isRelicFree, newRelicItem, relicStatus } from "./registry.js";
 
 const RELIC_ENUM = "ce:relic";
 const EFFECT_ENUM = "ce:effecttype";
@@ -46,7 +48,8 @@ const COMMANDS = [
       const lines = RELIC_KEYS.map((key) => {
         const relic = relicConfig(key);
         const state = relic.enabled ? relicStatus(key) : "deaktiviert";
-        return `§e${key}§r ${relic.name}: §a${effectLabel(relic, key)}§r (Level ${relic.level}/${relic.maxLevel}), §c${attackLabel(relic)}§r – §7${state}`;
+        const effect = relic.effectOn === false ? `§8${effectLabel(relic, key)} (aus)` : `§a${effectLabel(relic, key)}`;
+        return `§e${key}§r ${relic.name}: ${effect}§r (Level ${relic.level}/${relic.maxLevel}), §c${attackLabel(relic)}§r, §bBoost ${boostLabel(relic)}§r – §7${state}`;
       });
       lines.push(`§7PvP: ${getConfig().pvp ? "an" : "aus"}`);
       return ok(lines.join("\n"));
@@ -92,6 +95,44 @@ const COMMANDS = [
     },
   },
   {
+    name: "ce:boost",
+    description: "Setzt Dauer und Abklingzeit des Boost-Ups eines Relikts",
+    mandatoryParameters: [
+      RELIC_PARAM,
+      { name: "dauer", type: CustomCommandParamType.Integer },
+      { name: "abklingzeit", type: CustomCommandParamType.Integer },
+    ],
+    run(_origin, key, duration, cooldown) {
+      if (!isRelicKey(key)) return unknownRelic();
+      if (duration < 1 || duration > 600) return fail("Dauer muss zwischen 1 und 600 Sekunden liegen.");
+      if (cooldown < 0 || cooldown > 3600) return fail("Abklingzeit muss zwischen 0 und 3600 Sekunden liegen.");
+      return update(key, { boostDuration: duration, boostCooldown: cooldown },
+        `${relicConfig(key).name}: Boost ${duration} s, Abklingzeit ${cooldown} s.`);
+    },
+  },
+  {
+    name: "ce:toggle",
+    description: "Schaltet den Dauer-Effekt eines Relikts an oder aus",
+    mandatoryParameters: [RELIC_PARAM, { name: "an", type: CustomCommandParamType.Boolean }],
+    run(_origin, key, on) {
+      return update(key, { effectOn: on }, `Dauer-Effekt von ${key} ist jetzt ${on ? "an" : "aus"}.`);
+    },
+  },
+  {
+    name: "ce:stealing",
+    description: "Gibt ein Stealing (stiehlt beim Kill das Relikt)",
+    optionalParameters: [{ name: "spieler", type: CustomCommandParamType.PlayerSelector }],
+    run(origin, players) {
+      const target = players?.[0] ?? (origin.sourceEntity?.typeId === "minecraft:player" ? origin.sourceEntity : undefined);
+      if (!target) return fail("Kein Spieler angegeben.");
+      later(() => {
+        const leftover = target.getComponent("minecraft:inventory")?.container?.addItem(new ItemStack(STEALING_ID, 1));
+        if (leftover) target.dimension.spawnItem(leftover, target.location);
+      });
+      return ok(`Stealing geht an ${target.name}.`);
+    },
+  },
+  {
     name: "ce:name",
     description: "Benennt ein Relikt um",
     mandatoryParameters: [RELIC_PARAM, { name: "name", type: CustomCommandParamType.String }],
@@ -130,7 +171,7 @@ const COMMANDS = [
       const target = players?.[0] ?? (origin.sourceEntity?.typeId === "minecraft:player" ? origin.sourceEntity : undefined);
       if (!target) return fail("Kein Spieler angegeben.");
       later(() => {
-        const item = newRelicItem(key, target.name);
+        const item = newRelicItem(key, target);
         const leftover = target.getComponent("minecraft:inventory")?.container?.addItem(item);
         if (leftover) target.dimension.spawnItem(leftover, target.location);
       });

@@ -2,10 +2,13 @@
 
 Add-on für Minecraft **Bedrock Edition 26.3**, für **normale Welten und Realms**.
 
-- **6 craftbare Relikte**, jedes existiert **nur einmal pro Welt**
-- **Dauer-Effekt**, solange das Relikt irgendwo im Inventar, in der Hotbar oder in der Zweithand liegt
-- **Spezialangriff** per Rechtsklick ab dem **Maximallevel**: Dash, Kraftring, Bollwerk, Kometenhagel, Lebensschild, **Auto-Mace**
-- **Diadem**: hebt ein Relikt um 1 Level bis zum Maximum
+- **7 craftbare Relikte**, jedes existiert **nur einmal pro Welt** – und **jeder Spieler kann nur eins haben**
+- **Dauer-Effekt**, solange das Relikt irgendwo im Inventar, in der Hotbar oder in der Zweithand liegt (per Schleichen + 5 s Halten an/aus)
+- **Spezialangriff** per Rechtsklick ab dem **Maximallevel**: Dash, Kraftring, Bollwerk, Kometenhagel, Lebensschild, **Auto-Mace**, Wasserblase
+- **Boost-Up** per Schleichen + Rechtsklick ab Level 1
+- Relikte **verbrennen und explodieren nicht**; nur das Void oder 5 Minuten außerhalb eines Inventars zerstören sie
+- **Diadem**: hebt dein Relikt um 1 Level bis zum Maximum
+- **Stealing**: Waffe, die beim Kill das Relikt des Gegners stiehlt
 - **Admin-Befehle** (`/ce:…`), um jedes Relikt im Spiel umzukonfigurieren
 
 ## ⬇️ Download (ohne GitHub-Konto)
@@ -17,59 +20,71 @@ Add-on für Minecraft **Bedrock Edition 26.3**, für **normale Welten und Realms
 ## Installation – normale Welt
 
 1. Alte Versionen (Eternal Elixir, 9x Mace) in der Welt deaktivieren und unter *Einstellungen → Speicher* löschen.
-2. Die heruntergeladene `CraftedEffects-<version>.mcaddon` öffnen (oder selbst gebaut: `build/CraftedEffects-4.1.0.mcaddon`); Minecraft importiert beide Packs.
-3. Welt bearbeiten → **Verhaltenspakete**: *CraftedEffects Behavior Pack v4.1.0* aktivieren (das Ressourcenpaket wird automatisch mit aktiviert).
+2. Die heruntergeladene `CraftedEffects-<version>.mcaddon` öffnen (oder selbst gebaut: `build/CraftedEffects-5.0.0.mcaddon`); Minecraft importiert beide Packs.
+3. Welt bearbeiten → **Verhaltenspakete**: *CraftedEffects Behavior Pack v5.0.0* aktivieren (das Ressourcenpaket wird automatisch mit aktiviert).
 4. Es werden **keine Experimente** und **keine Cheats** benötigt.
 
 ## Installation – Realm
 
 1. Das `.mcaddon` wie oben importieren.
-2. *Realm bearbeiten → Verhaltenspakete* → *CraftedEffects Behavior Pack v4.1.0* aktivieren und bestätigen. Alternativ: das Add-on in einer lokalen Welt aktivieren und diese über *Welt ersetzen* hochladen.
+2. *Realm bearbeiten → Verhaltenspakete* → *CraftedEffects Behavior Pack v5.0.0* aktivieren und bestätigen. Alternativ: das Add-on in einer lokalen Welt aktivieren und diese über *Welt ersetzen* hochladen.
 3. Admin-Befehle funktionieren für Spieler mit **Operator**-Rechten (Realm-Einstellungen → Mitglieder → Operator).
 
 ## Kurzüberblick
 
-| Relikt | Effekt (max. Level) | Spezialangriff | Abklingzeit |
-|---|---|---|---|
-| Relikt des Windes | Schnelligkeit (3) | Dash 30 Blöcke in Blickrichtung, kein Fallschaden | 30 s |
-| Relikt der Stärke | Stärke (3) | Kraftring: 3 Herzen Schaden an allem, was er trifft | 30 s |
-| Relikt des Bergmanns | Eile (5) | Bollwerk: 3 s unverwundbar + Explosion um dich | 90 s |
-| Relikt der Glut | Feuerresistenz (1) | Kometenhagel: 8 Kometen, Explosionen und Lava | 120 s |
-| Relikt des Lebens | Gesundheitsschub (5 = 30 Herzen) | Lebensschild: stößt Gegner weg, heilt und sättigt 5 s | 90 s |
-| Relikt des Himmelssturzes | Sprungkraft (4) | Auto-Mace: 30 Blöcke hoch, Dash aufs Ziel, Mace-Smash | 30 s |
+| Relikt | Effekt (max. Level) | Spezialangriff | Abkl. | Boost-Up (Schleichen + Klick) | Abkl. |
+|---|---|---|---|---|---|
+| Speedeffect | Schnelligkeit (3) | Dash 30 Blöcke wie ein Riptide-Dreizack | 60 s | Schnelligkeit VI, 30 s | 120 s |
+| Strengtheffect | Stärke (2) | Ring aus Netherite-Schwertern, 3 Herzen Schaden (auch durch Netherite) | 30 s | Stärke III, 10 s | 120 s |
+| Hasteeffect | Eile (5) | Bollwerk: 3 s unverwundbar + Explosion wie ein Respawn-Anker (zerstört auch Obsidian und Bedrock) | 60 s | 3×3-Abbau, 20 s | 120 s |
+| Fireresistanceeffect | Feuerresistenz (2) | Kometenhagel: 8 Kometen, große Explosionen, fließende Lava | 120 s | Ultraschnell in Lava/Feuer, Gegner im 5-Block-Umkreis brennen, 20 s | 120 s |
+| Healtheffect | Gesundheitsschub (5 = 30 Herzen) | Lebensschild: Kuppel aus Schilden, Regeneration III, Gegner fliegen 20 Blöcke weg | 90 s | 60 Herzen, 20 s | 120 s |
+| Jumpboosteffect | Sprungkraft (4) | Auto-Mace: 30 Blöcke hoch, genauer Dash aufs Ziel, Mace-Smash | 60 s | Sprungkraft VI, 15 s | 120 s |
+| Waterbreathingeffect | Wasseratmung (3) | Wasserblase: hält den Gegner 10 s fest und macht Schaden | 60 s | Regen, 30 s | 120 s |
 
-Die genauen Rezepte stehen in [RELIKTE.md](RELIKTE.md). Der **Spezialangriff** wird erst freigeschaltet, wenn das Relikt sein **Maximallevel** erreicht hat (Zahl in Klammern). Beim Gesundheitsschub steigen die Herzen pro Level: 20 → 24 → 26 → 28 → 30.
+Die genauen Rezepte stehen in [RELIKTE.md](RELIKTE.md). Der **Spezialangriff** wird erst freigeschaltet, wenn das Relikt sein **Maximallevel** erreicht hat (Zahl in Klammern); der **Boost-Up** geht ab Level 1. Beim Gesundheitsschub steigen die Herzen pro Level: 10 → 16 → 20 → 26 → 30 (Gesundheitsschub geht nur in 2-Herz-Schritten).
 
-> ⚠️ Bollwerk und Kometenhagel zerstören Blöcke, die Kometen hinterlassen Lava. Der Auslöser selbst bekommt keinen Schaden – andere Spieler und deren Bauten schon.
+> ⚠️ Bollwerk und Kometenhagel zerstören Blöcke, das Bollwerk sogar Bedrock (auch den Weltboden – Void-Gefahr!). Die Kometen hinterlassen fließende Lava. Der Auslöser selbst bekommt keinen Schaden – andere Spieler und deren Bauten schon.
+
+## Steuerung
+
+| Relikt in der Hand | Wirkung |
+|---|---|
+| Rechtsklick (Handy: Tippen) | Spezialangriff |
+| Schleichen + kurzer Rechtsklick | Boost-Up |
+| Schleichen + Rechtsklick 5 s halten | Dauer-Effekt an/aus |
 
 ## Diadem
 
-Relikt in die **Zweithand**, Diadem in die Haupthand, **Rechtsklick** → das Relikt steigt um 1 Level, das Diadem ist verbraucht. Am Maximallevel passiert nichts. Wird ein Relikt zerstört und neu gecraftet, beginnt es wieder bei Level 1.
+Diadem in die Hand, **Rechtsklick** → dein Relikt (irgendwo im Inventar, in der Hotbar oder Zweithand) steigt um 1 Level, das Diadem ist verbraucht. Ohne Relikt oder am Maximallevel passiert nichts. Spielerköpfe für das Rezept lässt jeder Spieler fallen, den ein anderer Spieler besiegt.
 
-## So funktioniert die Einzigartigkeit
+## Besitz, Verlust und Stealing
 
-- Beim Craften bekommt das Relikt eine Seriennummer und wird für die Welt registriert.
-- Craftet jemand ein Relikt, das schon existiert, wird die Kopie entfernt und die Zutaten kommen zurück.
-- Duplikate (z. B. aus dem Kreativ-Inventar oder durch Glitches) werden automatisch entfernt.
-- Verbrennt, despawnt oder fällt ein Relikt in die Leere, wird es freigegeben und im Chat angekündigt.
-- Ein Relikt in einer Truhe bleibt registriert. Wer offline ist, behält sein Relikt.
+- Beim Craften bekommt das Relikt eine Seriennummer und wird für die Welt registriert. Duplikate werden automatisch entfernt.
+- Jeder Spieler kann **nur ein Relikt** haben. Ein zweites zu craften gibt die Zutaten zurück; hebst du ein zweites auf, wird getauscht (dein altes fällt auf den Boden).
+- Relikte **verbrennen und explodieren nicht** – aus Lava, Feuer, Kaktus oder Explosionen tauchen sie auf sicherem Boden wieder auf. Nur das **Void** zerstört sie sofort.
+- Liegt ein Relikt **5 Minuten außerhalb eines Spieler-Inventars** (Boden, Truhe, Endertruhe, Fass, Shulkerkiste …), verfällt es und kann neu gecraftet werden. Wer offline ist, behält sein Relikt.
+- Beim **Tod** behältst du dein Relikt. Nur wer dich mit dem **Stealing** tötet, bekommt es (das Stealing ist danach verbraucht). Das Stealing gibt es vorerst nur per `/ce:stealing`, das Rezept folgt.
 - Notfalls gibt ein Admin ein Relikt mit `/ce:free <relikt>` frei, z. B. `/ce:free speed`.
 
 ## Auto-Mace
 
-1. Rechtsklick → du wirst etwa 30 Blöcke hochgeschleudert und bekommst oben 5 Sekunden *Sanfter Fall*.
-2. Schaust du einen Spieler oder Mob an (bis 40 Blöcke), wirst du zu ihm gedasht.
-3. Liegt eine **Mace in der Hotbar**, wechselt das Add-on automatisch zu ihr und teilt beim Aufprall Smash-Schaden nach Fallhöhe aus (Vanilla-Formel).
-4. Während und kurz nach der Auto-Mace bekommst du keinen Fallschaden.
+1. Rechtsklick → du wirst etwa 30 Blöcke hochgeschleudert und bekommst oben 5 Sekunden *Sanfter Fall*. Am Handy/Tablet erscheint ein Fadenkreuz.
+2. Schaust du einen Spieler oder Mob an (bis 40 Blöcke), wirst du genau zu ihm gedasht.
+3. Liegt eine **Mace in der Hotbar**, wechselt das Add-on automatisch zu ihr und teilt beim Aufprall Smash-Schaden nach Fallhöhe aus (Vanilla-Formel). Ohne Mace gibt es normalen Dash-Schaden.
+4. Während der Auto-Mace kannst du nicht normal zuschlagen und bekommst keinen Fallschaden.
 
 ## Spieltest-Checkliste
 
 - [ ] Relikt craften → Name und Beschreibung erscheinen, Chat meldet „… hat … erschaffen!“
 - [ ] Effekt ist aktiv, solange das Relikt im Inventar liegt, und verschwindet beim Ablegen in eine Truhe
-- [ ] Dasselbe Relikt erneut craften → wird entfernt, Zutaten kommen zurück
-- [ ] Relikt in Lava werfen → Chat meldet die Zerstörung, danach ist es wieder craftbar
-- [ ] Alle Angriffe testen; Auto-Mace mit und ohne Mace in der Hotbar
-- [ ] Diadem: Relikt in der Zweithand steigt um 1 Level, am Maximum wird nichts verbraucht
+- [ ] Schleichen + kurzer Klick → Boost; Schleichen + 5 s Halten → Effekt aus/an
+- [ ] Dasselbe Relikt erneut craften → wird entfernt, Zutaten kommen zurück; zweites Relikt aufheben → Tausch
+- [ ] Relikt in Lava werfen → taucht daneben wieder auf; ins Void werfen → Chat meldet die Zerstörung
+- [ ] Relikt 5 Minuten in eine Truhe legen → verfällt
+- [ ] Sterben → Relikt kommt nach dem Respawn zurück; mit Stealing getötet → Relikt beim Mörder
+- [ ] Alle Angriffe testen; Auto-Mace mit und ohne Mace in der Hotbar, am Tablet mit Fadenkreuz
+- [ ] Diadem: Relikt im Inventar steigt um 1 Level, am Maximum wird nichts verbraucht
 - [ ] `/ce:list` und `/ce:level speed 3` als Operator → funktioniert; als normaler Spieler → nicht erlaubt
 - [ ] Welt bzw. Realm neu starten → Einstellungen und Registrierung bleiben erhalten
 
@@ -89,11 +104,14 @@ python3 scripts/build_addon.py
 |---|---|
 | `main.js` | Startpunkt: registriert Item-Komponenten und Befehle, startet die Intervalle |
 | `config.js` | Admin-Konfiguration, gespeichert in der Welt |
-| `registry.js` | Einzigartigkeit: Seriennummern, Duplikate, Verlust-Erkennung |
+| `registry.js` | Einzigartigkeit, ein Relikt pro Spieler, Unzerstörbarkeit, 5-Minuten-Verfall, Tod und Stealing |
 | `effects.js` | Dauer-Effekte aus dem Inventar |
 | `attacks.js` | Spezialangriffe und Abklingzeiten |
+| `boosts.js` | Steuerung (Klick, Schleichen + Klick, 5 s Halten), Boost-Ups, Abklingzeit-Anzeige |
 | `automace.js` | Auto-Mace-Ablauf |
-| `diadem.js` | Diadem: Relikt in der Zweithand +1 Level |
+| `diadem.js` | Diadem: Relikt im Inventar +1 Level |
+| `fx.js` | Effekt-Entities (Schwert-Ring, Schild-Kuppel) |
+| `water.js` | Waterbreathingeffect: Verzauberungen beim Halten, schnelleres Schwimmen |
 | `protection.js` | Kein Schaden durch eigene Angriffe (Fall, Explosion, Lava) |
 | `commands.js` | `/ce:`-Befehle |
 | `targets.js` | Zielauswahl (PvP-Regel, keine Items/Rüstungsständer) |

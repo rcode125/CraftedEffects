@@ -64,15 +64,26 @@ def validate_relics():
     textures = load_json(RP_DIR / "textures" / "item_texture.json")["texture_data"]
     lang = (RP_DIR / "texts" / "en_US.lang").read_text(encoding="utf-8")
     recipes_seen = set()
-    item_names = [content.relic_id(r) for r in content.RELICS] + ["diadem"]
-    expected_files = {f"{name}.json" for name in item_names}
-    for folder in ("items", "recipes"):
+    recipe_names = [content.relic_id(r) for r in content.RELICS] + ["diadem"]
+    item_names = recipe_names + ["stealing"]  # the Stealing has no recipe yet
+    for folder, names in (("items", item_names), ("recipes", recipe_names)):
+        expected_files = {f"{name}.json" for name in names}
         found = {p.name for p in (BP_DIR / folder).glob("*.json")}
         if found != expected_files:
-            fail(f"{folder}/ must contain exactly the relic and diadem files, found extra/missing: {found ^ expected_files}")
+            fail(f"{folder}/ must contain exactly {sorted(expected_files)}, found extra/missing: {found ^ expected_files}")
+
+    for name, _texture, geometry, _build in content.FX_ENTITIES:
+        identifier = f"{content.NAMESPACE}:{name}"
+        if load_json(BP_DIR / "entities" / f"{name}.json")["minecraft:entity"]["description"]["identifier"] != identifier:
+            fail(f"{name}: wrong behavior entity identifier")
+        client = load_json(RP_DIR / "entity" / f"{name}.entity.json")["minecraft:client_entity"]["description"]
+        geo = load_json(RP_DIR / "models" / "entity" / f"{name}.geo.json")["minecraft:geometry"][0]["description"]
+        if client["identifier"] != identifier or client["geometry"]["default"] != geometry or geo["identifier"] != geometry:
+            fail(f"{name}: client entity and geometry do not match")
+    load_json(RP_DIR / "ui" / "hud_screen.json")
 
     for name in item_names:
-        is_relic = name != "diadem"
+        is_relic = name.startswith("relic_")
         full_id = f"{content.NAMESPACE}:{name}"
         item = load_json(BP_DIR / "items" / f"{name}.json")["minecraft:item"]
         if item["description"]["identifier"] != full_id:
@@ -80,7 +91,7 @@ def validate_relics():
         components = item["components"]
         if is_relic and components["minecraft:max_stack_size"] != 1:
             fail(f"{name}: relics must not stack (needed for serial numbers)")
-        component = "relic" if is_relic else "diadem"
+        component = "relic" if is_relic else name
         if f"{content.NAMESPACE}:{component}" not in components:
             fail(f"{name}: missing {component} custom component")
         texture_key = components["minecraft:icon"]["textures"]["default"]
@@ -91,6 +102,8 @@ def validate_relics():
         if f"item.{full_id}.name=" not in lang:
             fail(f"{name}: name missing in en_US.lang")
 
+        if name not in recipe_names:
+            continue
         recipe = load_json(BP_DIR / "recipes" / f"{name}.json")["minecraft:recipe_shaped"]
         if recipe["result"] != {"item": full_id, "count": 1}:
             fail(f"{name}: recipe result does not match the item")

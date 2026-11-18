@@ -12,8 +12,9 @@ export function applyRelicEffects(player, activeRelics) {
   const wanted = new Map(); // effect id -> highest amplifier
   for (const key of activeRelics) {
     const relic = relicConfig(key);
-    if (relic.effect === "none") continue;
+    if (relic.effect === "none" || relic.effectOn === false) continue;
     const amplifier = amplifierFor(key);
+    if (amplifier < 0) continue; // e.g. health level 1 = the normal 10 hearts
     wanted.set(relic.effect, Math.max(wanted.get(relic.effect) ?? 0, amplifier));
   }
 
@@ -21,7 +22,7 @@ export function applyRelicEffects(player, activeRelics) {
     try {
       const current = player.getEffect(effectId);
       if (current && current.amplifier === amplifier && current.duration > REFRESH_BELOW_TICKS) continue;
-      if (current && current.amplifier > amplifier) continue; // a stronger potion is active
+      if (current && current.amplifier > amplifier) continue; // a stronger potion or boost-up is active
       player.addEffect(effectId, EFFECT_DURATION_TICKS, { amplifier, showParticles: false });
     } catch (error) {
       console.warn(`[CraftedEffects] Effekt ${effectId} konnte nicht gesetzt werden: ${error}`);
