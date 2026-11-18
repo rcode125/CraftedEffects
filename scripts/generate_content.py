@@ -4,7 +4,7 @@
 Writes item and recipe JSON, the effect entities (sword ring, shield dome),
 the touch crosshair UI, item textures (a PNG in art/items/ replaces the
 generated one), language files, the script data
-module (behavior_pack/scripts/data.js) and the player guide RELIKTE.md.
+module (behavior_pack/scripts/data.js) and the player guide EFFEKTE.md.
 Edit the tables below, then run this script (build_addon.py runs it too).
 """
 
@@ -24,7 +24,7 @@ ITEM_FORMAT = "1.21.90"
 RECIPE_FORMAT = "1.20.10"
 CONFIG_VERSION = 6  # bump when the relic table changes; old world settings are migrated (levels kept)
 
-# Item ids used in recipes -> German name (for RELIKTE.md)
+# Item ids used in recipes -> German name (for EFFEKTE.md)
 ITEM_NAMES = {
     "minecraft:firework_rocket": "Feuerwerksrakete",
     "minecraft:flow_armor_trim_smithing_template": "Flow-Rüstungsbesatz",
@@ -72,7 +72,7 @@ ITEM_NAMES = {
 
 # Effects an admin can assign: id -> (German name, description)
 EFFECTS = {
-    "none": ("Kein Effekt", "Das Relikt gibt keinen Dauer-Effekt."),
+    "none": ("Keine Wirkung", "Der Effekt gibt keine Dauerwirkung."),
     "speed": ("Schnelligkeit", "Schneller laufen."),
     "haste": ("Eile", "Schneller abbauen."),
     "strength": ("Stärke", "Mehr Nahkampfschaden."),
@@ -133,7 +133,7 @@ ATTACKS = {
 # Boost-ups (sneak + short right-click): id -> (German name, description)
 BOOSTS = {
     "none": ("Kein Boost", "Schleichen + Rechtsklick macht nichts."),
-    "effect": ("Effekt-Boost", "Gibt kurz einen sehr starken Effekt."),
+    "effect": ("Wirkungs-Boost", "Gibt kurz eine sehr starke Wirkung."),
     "vein": ("3×3-Abbau", "Jeder abgebaute Block baut die 3×3-Fläche um ihn mit ab (nicht Bedrock)."),
     "lava": (
         "Lavaschwimmer",
@@ -633,41 +633,41 @@ def crafting_grid(pattern, ingredients):
 
 def generate_guide():
     lines = [
-        "# CraftedEffects – Relikte, Diadem, Stealing und Crafting",
+        "# CraftedEffects – Effekte, Diadem, Stealing und Crafting",
         "",
         "> Automatisch erzeugt von `scripts/generate_content.py`. Für Minecraft **Bedrock 26.3** – normale Welten und Realms.",
         "",
-        "## So funktionieren Relikte",
+        "## So funktionieren Effekte",
         "",
-        f"- Jedes der {len(RELICS)} Relikte existiert **nur einmal pro Welt**. Wer ein bereits existierendes Relikt noch einmal craftet, bekommt die Zutaten zurück.",
-        "- **Jeder Spieler kann nur ein Relikt haben.** Wer schon eins trägt und ein zweites craftet, bekommt die Zutaten zurück. "
-        "Hebst du ein zweites Relikt auf, wird **getauscht**: das neue bleibt, dein altes fällt vor dir auf den Boden.",
-        "- Liegt dein Relikt **irgendwo im Inventar, in der Hotbar oder in der Zweithand**, hast du dauerhaft seinen Effekt.",
-        "- Ein Relikt startet auf **Level 1**. Mit dem **Diadem** steigt es bis zum Maximallevel. Das Level verstärkt den Dauer-Effekt.",
+        f"- Jeder der {len(RELICS)} Effekte existiert **nur einmal pro Welt**. Wer einen bereits existierenden Effekt noch einmal craftet, bekommt die Zutaten zurück.",
+        "- **Jeder Spieler kann nur einen Effekt haben.** Wer schon einen trägt und einen zweiten craftet, bekommt die Zutaten zurück. "
+        "Hebst du einen zweiten Effekt auf, wird **getauscht**: der neue bleibt, dein alter fällt vor dir auf den Boden.",
+        "- Liegt dein Effekt **irgendwo im Inventar, in der Hotbar oder in der Zweithand**, hast du dauerhaft seine Dauerwirkung.",
+        "- Ein Effekt startet auf **Level 1**. Mit dem **Diadem** steigt er bis zum Maximallevel. Das Level verstärkt die Dauerwirkung.",
         "",
-        "### Steuerung (Relikt in der Hand)",
+        "### Steuerung (Effekt in der Hand)",
         "",
         "| Eingabe | Wirkung |",
         "|---|---|",
         "| **Rechtsklick** (am Handy: Tippen) | **Spezialangriff** – erst ab dem **Maximallevel** |",
         "| **Schleichen + kurzer Rechtsklick** | **Boost-Up** – ab Level 1, eigene Abklingzeit |",
-        "| **Schleichen + Rechtsklick 5 Sekunden halten** | Dauer-Effekt **an/aus** (Boost-Up und Angriff gehen trotzdem) |",
+        "| **Schleichen + Rechtsklick 5 Sekunden halten** | Dauerwirkung **an/aus** (Boost-Up und Angriff gehen trotzdem) |",
         "",
         "Über der Hotbar stehen die Abklingzeiten von Angriff und Boost getrennt.",
         "",
         "### Verlust",
         "",
-        "- Relikte **verbrennen nicht und explodieren nicht** (Lava, Feuer, Kaktus, TNT, Blitz). Nur das **Void** zerstört ein Relikt sofort.",
-        "- Liegt ein Relikt **5 Minuten außerhalb eines Spieler-Inventars** (auf dem Boden, in Truhen, Endertruhen, Fässern, Shulkerkisten …), verfällt es.",
-        "  Ein Relikt im Inventar eines Spielers, der offline ist, verfällt nicht.",
-        "- Beim **Tod** behältst du dein Relikt – außer dich tötet ein Spieler mit dem **Stealing**: dann bekommt er dein Relikt.",
-        "- Ein verlorenes Relikt meldet der Chat. Es kann **wieder gecraftet** werden und beginnt dann wieder bei Level 1.",
+        "- Effekte **verbrennen nicht und explodieren nicht** (Lava, Feuer, Kaktus, TNT, Blitz). Nur das **Void** zerstört einen Effekt sofort.",
+        "- Liegt ein Effekt **5 Minuten außerhalb eines Spieler-Inventars** (auf dem Boden, in Truhen, Endertruhen, Fässern, Shulkerkisten …), verfällt er.",
+        "  Ein Effekt im Inventar eines Spielers, der offline ist, verfällt nicht.",
+        "- Beim **Tod** behältst du deinen Effekt – außer dich tötet ein Spieler mit dem **Stealing**: dann bekommt er deinen Effekt.",
+        "- Einen verlorenen Effekt meldet der Chat. Er kann **wieder gecraftet** werden und beginnt dann wieder bei Level 1.",
         "- Tötest du einen anderen Spieler, lässt er seinen **Spielerkopf** fallen (für das Diadem).",
         "- ⚠️ **Bollwerk** und **Kometenhagel** zerstören Blöcke, das Bollwerk sogar **Obsidian und Bedrock (auch den Weltboden)**. Die Kometen hinterlassen fließende Lava.",
         "",
         "## Übersicht",
         "",
-        "| Relikt | Dauer-Effekt | Max. Level (= Spezialangriff frei) | Spezialangriff | Abklingzeit | Boost-Up | Abklingzeit Boost |",
+        "| Effekt | Dauerwirkung | Max. Level (= Spezialangriff frei) | Spezialangriff | Abklingzeit | Boost-Up | Abklingzeit Boost |",
         "|---|---|---|---|---|---|---|",
     ]
     for r in RELICS:
@@ -679,7 +679,7 @@ def generate_guide():
             f"| {r['name']} | {effect} | {max_text} | {ATTACKS[r['attack']][0]} | {r['cooldown']} s "
             f"| {boost_text(r)} | {r['boost']['cooldown']} s |"
         )
-    lines += ["", "## Relikte im Detail", ""]
+    lines += ["", "## Effekte im Detail", ""]
     for r in RELICS:
         boost = r["boost"]
         boost_line = f"- **Boost-Up (Schleichen + Rechtsklick):** {boost_text(r)}"
@@ -688,7 +688,7 @@ def generate_guide():
         lines += [
             f"### {r['name']}",
             "",
-            f"- **Dauer-Effekt:** {EFFECTS[r['effect']][0]} (Level 1 bis {r['max_level']})"
+            f"- **Dauerwirkung:** {EFFECTS[r['effect']][0]} (Level 1 bis {r['max_level']})"
             + (" – Herzen insgesamt je Level: " + " → ".join(str(hearts(r, lvl)) for lvl in range(1, r["max_level"] + 1))
                if r["effect"] == "health_boost" else ""),
             f"- **Spezialangriff ab Level {r['max_level']}**",
@@ -708,8 +708,8 @@ def generate_guide():
         "",
         "## Diadem",
         "",
-        "Nimm das Diadem in die Hand und mach einen **Rechtsklick**: Dein Relikt (irgendwo im Inventar, in der Hotbar "
-        "oder in der Zweithand) steigt um **1 Level** und das Diadem wird verbraucht. Hast du kein Relikt oder ist es "
+        "Nimm das Diadem in die Hand und mach einen **Rechtsklick**: Dein Effekt (irgendwo im Inventar, in der Hotbar "
+        "oder in der Zweithand) steigt um **1 Level** und das Diadem wird verbraucht. Hast du keinen Effekt oder ist er "
         "schon auf dem Maximallevel, passiert nichts und das Diadem bleibt erhalten. Diademe kann man beliebig oft craften.",
         "",
         f"Item-ID: `{NAMESPACE}:diadem`",
@@ -720,43 +720,43 @@ def generate_guide():
         "",
         "## Stealing",
         "",
-        f"Eine Waffe ({STEALING['damage']} Schaden). Tötest du damit einen Spieler, der ein Relikt trägt, wandert sein "
-        "Relikt **direkt in dein Inventar** (hast du schon eins, wird getauscht) und das Stealing ist verbraucht. "
-        "Ohne Relikt beim Opfer bleibt das Stealing erhalten.",
+        f"Eine Waffe ({STEALING['damage']} Schaden). Tötest du damit einen Spieler, der einen Effekt trägt, wandert sein "
+        "Effekt **direkt in dein Inventar** (hast du schon einen, wird getauscht) und das Stealing ist verbraucht. "
+        "Ohne Effekt beim Opfer bleibt das Stealing erhalten.",
         "",
         f"Item-ID: `{NAMESPACE}:stealing` – **Rezept folgt noch.** Bis dahin gibt es das Stealing nur per `/ce:stealing`.",
         "",
         "## Admin-Befehle",
         "",
         "Nur Operatoren (auf Realms: Spieler mit Operator-Rechten) können diese Befehle nutzen. Cheats müssen **nicht** aktiviert sein. "
-        f"Relikt-Namen in Befehlen: `{'`, `'.join(r['key'] for r in RELICS)}`.",
+        f"Effekt-Namen in Befehlen: `{'`, `'.join(r['key'] for r in RELICS)}`.",
         "",
         "| Befehl | Wirkung |",
         "|---|---|",
-        "| `/ce:list` | Zeigt alle Relikte mit Einstellungen, Level, Boost, An/Aus und ob sie gerade existieren. |",
-        "| `/ce:level <relikt> <level>` | Setzt das Level, z. B. `/ce:level speed 3`. |",
-        "| `/ce:effect <relikt> <effekt> <level>` | Ändert den Dauer-Effekt, z. B. `/ce:effect speed night_vision 1`. |",
-        "| `/ce:attack <relikt> <angriff> [abklingzeit]` | Ändert den Spezialangriff, z. B. `/ce:attack speed automace 20`. |",
-        "| `/ce:boost <relikt> <dauer> <abklingzeit>` | Ändert Dauer und Abklingzeit des Boost-Ups (Sekunden), z. B. `/ce:boost speed 30 120`. |",
-        "| `/ce:toggle <relikt> <true\\|false>` | Schaltet den Dauer-Effekt eines Relikts an oder aus (wie 5 s Halten). |",
-        "| `/ce:name <relikt> <name>` | Benennt ein Relikt um, z. B. `/ce:name speed \"Sturmeffect\"`. |",
-        "| `/ce:enable <relikt> <true\\|false>` | Schaltet ein Relikt ganz an oder aus (aus = nicht craftbar, keine Wirkung). |",
-        "| `/ce:free <relikt>` | Gibt ein Relikt frei, damit es neu gecraftet werden kann. Die alte Kopie wird ungültig. |",
-        "| `/ce:give <relikt> [spieler]` | Gibt ein Relikt direkt (nur wenn es gerade frei ist). |",
+        "| `/ce:list` | Zeigt alle Effekte mit Einstellungen, Level, Boost, An/Aus und ob sie gerade existieren. |",
+        "| `/ce:level <effekt> <level>` | Setzt das Level, z. B. `/ce:level speed 3`. |",
+        "| `/ce:effect <effekt> <wirkung> <level>` | Ändert die Dauerwirkung, z. B. `/ce:effect speed night_vision 1`. |",
+        "| `/ce:attack <effekt> <angriff> [abklingzeit]` | Ändert den Spezialangriff, z. B. `/ce:attack speed automace 20`. |",
+        "| `/ce:boost <effekt> <dauer> <abklingzeit>` | Ändert Dauer und Abklingzeit des Boost-Ups (Sekunden), z. B. `/ce:boost speed 30 120`. |",
+        "| `/ce:toggle <effekt> <true\\|false>` | Schaltet die Dauerwirkung eines Effekts an oder aus (wie 5 s Halten). |",
+        "| `/ce:name <effekt> <name>` | Benennt einen Effekt um, z. B. `/ce:name speed \"Sturmeffect\"`. |",
+        "| `/ce:enable <effekt> <true\\|false>` | Schaltet einen Effekt ganz an oder aus (aus = nicht craftbar, keine Wirkung). |",
+        "| `/ce:free <effekt>` | Gibt einen Effekt frei, damit er neu gecraftet werden kann. Die alte Kopie wird ungültig. |",
+        "| `/ce:give <effekt> [spieler]` | Gibt einen Effekt direkt (nur wenn er gerade frei ist). |",
         "| `/ce:stealing [spieler]` | Gibt ein Stealing. |",
-        "| `/ce:pvp <true\\|false>` | Schaltet Schaden der Relikt-Angriffe gegen Spieler an oder aus. |",
+        "| `/ce:pvp <true\\|false>` | Schaltet Schaden der Effekt-Angriffe gegen Spieler an oder aus. |",
         "| `/ce:reset` | Stellt alle Einstellungen auf die Standardbelegung zurück. |",
         "",
-        "### Effekte für `/ce:effect`",
+        "### Wirkungen für `/ce:effect`",
         "",
-        "| Befehlswert | Effekt | Wirkung |",
+        "| Befehlswert | Wirkung | Beschreibung |",
         "|---|---|---|",
     ]
     lines += [f"| `{key}` | {name} | {desc} |" for key, (name, desc) in EFFECTS.items()]
     lines += ["", "### Angriffe für `/ce:attack`", "", "| Befehlswert | Angriff | Wirkung |", "|---|---|---|"]
     lines += [f"| `{key}` | {name} | {desc} |" for key, (name, desc) in ATTACKS.items()]
     lines.append("")
-    (ROOT / "RELIKTE.md").write_text("\n".join(lines), encoding="utf-8")
+    (ROOT / "EFFEKTE.md").write_text("\n".join(lines), encoding="utf-8")
 
 
 def main():

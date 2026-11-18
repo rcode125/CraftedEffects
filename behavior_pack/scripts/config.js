@@ -136,7 +136,7 @@ export function relicDisplay(key) {
   return {
     nameTag: `§d${relic.name}`,
     lore: [
-      relic.effectOn ? `§7Effekt: §a${effectLabel(relic, key)}` : `§7Effekt: §8aus §7(${effectLabel(relic, key)})`,
+      relic.effectOn ? `§7Wirkung: §a${effectLabel(relic, key)}` : `§7Wirkung: §8aus §7(${effectLabel(relic, key)})`,
       `§7Level: §e${relic.level}/${relic.maxLevel}`,
       relic.level >= relic.maxLevel
         ? `§7Angriff: §c${attackLabel(relic)}`

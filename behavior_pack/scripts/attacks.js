@@ -350,7 +350,7 @@ export function useRelic(player, itemStack) {
   if (!relic.enabled || relic.attack === "none") return;
   if (serialOf(itemStack) === undefined || serialOf(itemStack) !== registeredSerial(key)) {
     console.log(`[CraftedEffects] ${relic.name}: Seriennummer ${serialOf(itemStack)} passt nicht zu ${registeredSerial(key)}`);
-    player.sendMessage("§7Dieses Relikt wird noch geprüft …");
+    player.sendMessage("§7Dieser Effekt wird noch geprüft …");
     return;
   }
 

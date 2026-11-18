@@ -3,7 +3,7 @@ export const DATA = {
   "version": 6,
   "namespace": "craftedeffects",
   "effects": {
-    "none": "Kein Effekt",
+    "none": "Keine Wirkung",
     "speed": "Schnelligkeit",
     "haste": "Eile",
     "strength": "Stärke",
@@ -29,7 +29,7 @@ export const DATA = {
   },
   "boosts": {
     "none": "Kein Boost",
-    "effect": "Effekt-Boost",
+    "effect": "Wirkungs-Boost",
     "vein": "3×3-Abbau",
     "lava": "Lavaschwimmer",
     "rain": "Regenmacher"

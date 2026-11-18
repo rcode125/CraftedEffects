@@ -175,7 +175,7 @@ function checkFresh(player, slot, itemStack, key, alreadyCarries) {
   let reason;
   if (!relic.enabled) reason = `${relic.name} ist deaktiviert`;
   else if (registeredSerial(key) !== undefined) reason = `${relic.name} existiert bereits in dieser Welt`;
-  else if (alreadyCarries) reason = "Du kannst nur ein Relikt gleichzeitig haben";
+  else if (alreadyCarries) reason = "Du kannst nur einen Effekt gleichzeitig haben";
   if (reason) {
     slot.setItem(undefined);
     refundIngredients(player, key);
@@ -224,7 +224,7 @@ export function scanPlayer(player) {
     for (const entry of valid) {
       if (entry === keep) continue;
       dropForSwap(player, entry.slot);
-      player.sendMessage(`§e${relicConfig(entry.key).name} wurde abgelegt – du kannst nur ein Relikt haben.`);
+      player.sendMessage(`§e${relicConfig(entry.key).name} wurde abgelegt – du kannst nur einen Effekt haben.`);
     }
     valid.length = 0;
     valid.push(keep);
@@ -542,7 +542,7 @@ function returnStash(player) {
     giveOrDrop(player, rebuildRelicItem(key, serial));
     player.sendMessage(`§a${relicConfig(key).name} ist wieder bei dir.`);
   } catch (error) {
-    console.warn(`[CraftedEffects] Relikt nach dem Respawn nicht zurückgegeben: ${error}`);
+    console.warn(`[CraftedEffects] Effekt nach dem Respawn nicht zurückgegeben: ${error}`);
   }
 }
 

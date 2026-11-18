@@ -11,7 +11,7 @@ const ATTACK_ENUM = "ce:attacktype";
 
 const ok = (message) => ({ status: CustomCommandStatus.Success, message });
 const fail = (message) => ({ status: CustomCommandStatus.Failure, message });
-const unknownRelic = () => fail(`Unbekanntes Relikt. Möglich: ${RELIC_KEYS.join(", ")}`);
+const unknownRelic = () => fail(`Unbekannter Effekt. Möglich: ${RELIC_KEYS.join(", ")}`);
 
 const RELIC_PARAM = { name: RELIC_ENUM, type: CustomCommandParamType.Enum };
 
@@ -43,7 +43,7 @@ function checkLevel(key, level) {
 const COMMANDS = [
   {
     name: "ce:list",
-    description: "Zeigt alle CraftedEffects-Relikte",
+    description: "Zeigt alle CraftedEffects-Effekte",
     run(_origin) {
       const lines = RELIC_KEYS.map((key) => {
         const relic = relicConfig(key);
@@ -57,7 +57,7 @@ const COMMANDS = [
   },
   {
     name: "ce:level",
-    description: "Setzt das Level eines Relikts",
+    description: "Setzt das Level eines Effekts",
     mandatoryParameters: [RELIC_PARAM, { name: "level", type: CustomCommandParamType.Integer }],
     run(_origin, key, level) {
       if (!isRelicKey(key)) return unknownRelic();
@@ -69,7 +69,7 @@ const COMMANDS = [
   },
   {
     name: "ce:effect",
-    description: "Setzt den Dauer-Effekt eines Relikts",
+    description: "Setzt die Dauerwirkung eines Effekts",
     mandatoryParameters: [
       RELIC_PARAM,
       { name: EFFECT_ENUM, type: CustomCommandParamType.Enum },
@@ -79,12 +79,12 @@ const COMMANDS = [
       if (!isRelicKey(key)) return unknownRelic();
       const invalid = checkLevel(key, level);
       if (invalid) return invalid;
-      return update(key, { effect, level }, `${relicConfig(key).name}: Effekt ist jetzt ${DATA.effects[effect]} ${level}.`);
+      return update(key, { effect, level }, `${relicConfig(key).name}: Dauerwirkung ist jetzt ${DATA.effects[effect]} ${level}.`);
     },
   },
   {
     name: "ce:attack",
-    description: "Setzt den Spezialangriff eines Relikts",
+    description: "Setzt den Spezialangriff eines Effekts",
     mandatoryParameters: [RELIC_PARAM, { name: ATTACK_ENUM, type: CustomCommandParamType.Enum }],
     optionalParameters: [{ name: "abklingzeit", type: CustomCommandParamType.Integer }],
     run(_origin, key, attack, cooldown) {
@@ -96,7 +96,7 @@ const COMMANDS = [
   },
   {
     name: "ce:boost",
-    description: "Setzt Dauer und Abklingzeit des Boost-Ups eines Relikts",
+    description: "Setzt Dauer und Abklingzeit des Boost-Ups eines Effekts",
     mandatoryParameters: [
       RELIC_PARAM,
       { name: "dauer", type: CustomCommandParamType.Integer },
@@ -112,15 +112,15 @@ const COMMANDS = [
   },
   {
     name: "ce:toggle",
-    description: "Schaltet den Dauer-Effekt eines Relikts an oder aus",
+    description: "Schaltet die Dauerwirkung eines Effekts an oder aus",
     mandatoryParameters: [RELIC_PARAM, { name: "an", type: CustomCommandParamType.Boolean }],
     run(_origin, key, on) {
-      return update(key, { effectOn: on }, `Dauer-Effekt von ${key} ist jetzt ${on ? "an" : "aus"}.`);
+      return update(key, { effectOn: on }, `Dauerwirkung von ${key} ist jetzt ${on ? "an" : "aus"}.`);
     },
   },
   {
     name: "ce:stealing",
-    description: "Gibt ein Stealing (stiehlt beim Kill das Relikt)",
+    description: "Gibt ein Stealing (stiehlt beim Kill den Effekt)",
     optionalParameters: [{ name: "spieler", type: CustomCommandParamType.PlayerSelector }],
     run(origin, players) {
       const target = players?.[0] ?? (origin.sourceEntity?.typeId === "minecraft:player" ? origin.sourceEntity : undefined);
@@ -134,40 +134,40 @@ const COMMANDS = [
   },
   {
     name: "ce:name",
-    description: "Benennt ein Relikt um",
+    description: "Benennt einen Effekt um",
     mandatoryParameters: [RELIC_PARAM, { name: "name", type: CustomCommandParamType.String }],
     run(_origin, key, name) {
       const clean = name.trim().slice(0, 40);
       if (!clean) return fail("Der Name darf nicht leer sein.");
-      return update(key, { name: clean }, `Relikt ${key} heißt jetzt ${clean}.`);
+      return update(key, { name: clean }, `Effekt ${key} heißt jetzt ${clean}.`);
     },
   },
   {
     name: "ce:enable",
-    description: "Schaltet ein Relikt an oder aus",
+    description: "Schaltet einen Effekt an oder aus",
     mandatoryParameters: [RELIC_PARAM, { name: "aktiv", type: CustomCommandParamType.Boolean }],
     run(_origin, key, enabled) {
-      return update(key, { enabled }, `Relikt ${key} ist jetzt ${enabled ? "aktiv" : "deaktiviert"}.`);
+      return update(key, { enabled }, `Effekt ${key} ist jetzt ${enabled ? "aktiv" : "deaktiviert"}.`);
     },
   },
   {
     name: "ce:free",
-    description: "Gibt ein Relikt frei, damit es neu gecraftet werden kann",
+    description: "Gibt einen Effekt frei, damit er neu gecraftet werden kann",
     mandatoryParameters: [RELIC_PARAM],
     run(_origin, key) {
       if (!isRelicKey(key)) return unknownRelic();
       later(() => freeRelic(key));
-      return ok(`Relikt ${key} ist frei. Eine noch vorhandene alte Kopie wird ungültig, sobald ein neues gecraftet wird.`);
+      return ok(`Effekt ${key} ist frei. Eine noch vorhandene alte Kopie wird ungültig, sobald ein neuer gecraftet wird.`);
     },
   },
   {
     name: "ce:give",
-    description: "Gibt ein freies Relikt direkt an einen Spieler",
+    description: "Gibt einen freien Effekt direkt an einen Spieler",
     mandatoryParameters: [RELIC_PARAM],
     optionalParameters: [{ name: "spieler", type: CustomCommandParamType.PlayerSelector }],
     run(origin, key, players) {
       if (!isRelicKey(key)) return unknownRelic();
-      if (!isRelicFree(key)) return fail(`Relikt ${key} existiert bereits. Erst /ce:free ${key} benutzen.`);
+      if (!isRelicFree(key)) return fail(`Effekt ${key} existiert bereits. Erst /ce:free ${key} benutzen.`);
       const target = players?.[0] ?? (origin.sourceEntity?.typeId === "minecraft:player" ? origin.sourceEntity : undefined);
       if (!target) return fail("Kein Spieler angegeben.");
       later(() => {
@@ -180,23 +180,23 @@ const COMMANDS = [
   },
   {
     name: "ce:pvp",
-    description: "Schaltet Relikt-Schaden gegen Spieler an oder aus",
+    description: "Schaltet Effekt-Schaden gegen Spieler an oder aus",
     mandatoryParameters: [{ name: "an", type: CustomCommandParamType.Boolean }],
     run(_origin, enabled) {
       later(() => {
         getConfig().pvp = enabled;
         saveConfig();
       });
-      return ok(`PvP für Relikte ist jetzt ${enabled ? "an" : "aus"}.`);
+      return ok(`PvP für Effekte ist jetzt ${enabled ? "an" : "aus"}.`);
     },
   },
   {
     name: "ce:reset",
-    description: "Stellt die Standardbelegung aller Relikte wieder her",
+    description: "Stellt die Standardbelegung aller Effekte wieder her",
     run(_origin) {
       later(() => {
         resetConfig();
-        world.sendMessage("§eCraftedEffects: Alle Relikte wurden auf Standard zurückgesetzt.");
+        world.sendMessage("§eCraftedEffects: Alle Effekte wurden auf Standard zurückgesetzt.");
       });
       return ok("Standardbelegung wird wiederhergestellt.");
     },

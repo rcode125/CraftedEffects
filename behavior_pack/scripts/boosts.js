@@ -34,7 +34,7 @@ function playSound(player, sound) {
 
 function isValidRelic(player, itemStack, key) {
   if (serialOf(itemStack) === undefined || serialOf(itemStack) !== registeredSerial(key)) {
-    player.sendMessage("§7Dieses Relikt wird noch geprüft …");
+    player.sendMessage("§7Dieser Effekt wird noch geprüft …");
     return false;
   }
   return relicConfig(key).enabled;
@@ -80,8 +80,8 @@ function toggleEffect(player, key) {
   const relic = relicConfig(key);
   const on = relic.effectOn === false;
   setEffectOn(key, on);
-  player.sendMessage(on ? `§a${relic.name}: Dauer-Effekt ist wieder an.` : `§e${relic.name}: Dauer-Effekt ist jetzt aus.`);
-  player.onScreenDisplay.setActionBar(on ? "§aEffekt an" : "§eEffekt aus");
+  player.sendMessage(on ? `§a${relic.name}: Dauerwirkung ist wieder an.` : `§e${relic.name}: Dauerwirkung ist jetzt aus.`);
+  player.onScreenDisplay.setActionBar(on ? "§aDauerwirkung an" : "§eDauerwirkung aus");
   playSound(player, on ? "random.levelup" : "random.click");
 }
 

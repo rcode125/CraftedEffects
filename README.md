@@ -1,21 +1,21 @@
-# CraftedEffects – Einzigartige Relikte
+# CraftedEffects – Einzigartige Effekte
 
 Add-on für Minecraft **Bedrock Edition 26.3**, für **normale Welten und Realms**.
 
-- **7 craftbare Relikte**, jedes existiert **nur einmal pro Welt** – und **jeder Spieler kann nur eins haben**
-- **Dauer-Effekt**, solange das Relikt irgendwo im Inventar, in der Hotbar oder in der Zweithand liegt (per Schleichen + 5 s Halten an/aus)
+- **7 craftbare Effekte**, jedes existiert **nur einmal pro Welt** – und **jeder Spieler kann nur eins haben**
+- **Dauerwirkung**, solange der Effekt irgendwo im Inventar, in der Hotbar oder in der Zweithand liegt (per Schleichen + 5 s Halten an/aus)
 - **Spezialangriff** per Rechtsklick ab dem **Maximallevel**: Dash, Kraftring, Bollwerk, Kometenhagel, Lebensschild, **Auto-Mace**, Wasserblase
 - **Boost-Up** per Schleichen + Rechtsklick ab Level 1
-- Relikte **verbrennen und explodieren nicht**; nur das Void oder 5 Minuten außerhalb eines Inventars zerstören sie
-- **Diadem**: hebt dein Relikt um 1 Level bis zum Maximum
-- **Stealing**: Waffe, die beim Kill das Relikt des Gegners stiehlt
-- **Admin-Befehle** (`/ce:…`), um jedes Relikt im Spiel umzukonfigurieren
+- Effekte **verbrennen und explodieren nicht**; nur das Void oder 5 Minuten außerhalb eines Inventars zerstören sie
+- **Diadem**: hebt deinen Effekt um 1 Level bis zum Maximum
+- **Stealing**: Waffe, die beim Kill den Effekt des Gegners stiehlt
+- **Admin-Befehle** (`/ce:…`), um jeden Effekt im Spiel umzukonfigurieren
 
 ## ⬇️ Download (ohne GitHub-Konto)
 
 **[Neueste Version herunterladen](https://github.com/rcode125/CraftedEffects/releases/latest)** – dort unter *Assets* die einzige Datei `CraftedEffects-<version>.mcaddon` anklicken. Ältere Versionen gibt es unter [Releases](https://github.com/rcode125/CraftedEffects/releases).
 
-👉 **Alle Rezepte, Effekte, Angriffe und Befehle stehen in [RELIKTE.md](RELIKTE.md).**
+👉 **Alle Rezepte, Effekte, Angriffe und Befehle stehen in [EFFEKTE.md](EFFEKTE.md).**
 
 ## Installation – normale Welt
 
@@ -32,7 +32,7 @@ Add-on für Minecraft **Bedrock Edition 26.3**, für **normale Welten und Realms
 
 ## Kurzüberblick
 
-| Relikt | Effekt (max. Level) | Spezialangriff | Abkl. | Boost-Up (Schleichen + Klick) | Abkl. |
+| Effekt | Effekt (max. Level) | Spezialangriff | Abkl. | Boost-Up (Schleichen + Klick) | Abkl. |
 |---|---|---|---|---|---|
 | Speedeffect | Schnelligkeit (3) | Dash 30 Blöcke wie ein Riptide-Dreizack | 60 s | Schnelligkeit VI, 30 s | 120 s |
 | Strengtheffect | Stärke (2) | Ring aus Netherite-Schwertern, 3 Herzen Schaden (auch durch Netherite) | 30 s | Stärke III, 10 s | 120 s |
@@ -42,30 +42,30 @@ Add-on für Minecraft **Bedrock Edition 26.3**, für **normale Welten und Realms
 | Jumpboosteffect | Sprungkraft (4) | Auto-Mace: 30 Blöcke hoch, genauer Dash aufs Ziel, Mace-Smash | 60 s | Sprungkraft VI, 15 s | 120 s |
 | Waterbreathingeffect | Wasseratmung (3) | Wasserblase: hält den Gegner 10 s fest und macht Schaden | 60 s | Regen, 30 s | 120 s |
 
-Die genauen Rezepte stehen in [RELIKTE.md](RELIKTE.md). Der **Spezialangriff** wird erst freigeschaltet, wenn das Relikt sein **Maximallevel** erreicht hat (Zahl in Klammern); der **Boost-Up** geht ab Level 1. Beim Gesundheitsschub steigen die Herzen pro Level: 10 → 16 → 20 → 26 → 30 (Gesundheitsschub geht nur in 2-Herz-Schritten).
+Die genauen Rezepte stehen in [EFFEKTE.md](EFFEKTE.md). Der **Spezialangriff** wird erst freigeschaltet, wenn der Effekt sein **Maximallevel** erreicht hat (Zahl in Klammern); der **Boost-Up** geht ab Level 1. Beim Gesundheitsschub steigen die Herzen pro Level: 10 → 16 → 20 → 26 → 30 (Gesundheitsschub geht nur in 2-Herz-Schritten).
 
 > ⚠️ Bollwerk und Kometenhagel zerstören Blöcke, das Bollwerk sogar Bedrock (auch den Weltboden – Void-Gefahr!). Die Kometen hinterlassen fließende Lava. Der Auslöser selbst bekommt keinen Schaden – andere Spieler und deren Bauten schon.
 
 ## Steuerung
 
-| Relikt in der Hand | Wirkung |
+| Effekt in der Hand | Wirkung |
 |---|---|
 | Rechtsklick (Handy: Tippen) | Spezialangriff |
 | Schleichen + kurzer Rechtsklick | Boost-Up |
-| Schleichen + Rechtsklick 5 s halten | Dauer-Effekt an/aus |
+| Schleichen + Rechtsklick 5 s halten | Dauerwirkung an/aus |
 
 ## Diadem
 
-Diadem in die Hand, **Rechtsklick** → dein Relikt (irgendwo im Inventar, in der Hotbar oder Zweithand) steigt um 1 Level, das Diadem ist verbraucht. Ohne Relikt oder am Maximallevel passiert nichts. Spielerköpfe für das Rezept lässt jeder Spieler fallen, den ein anderer Spieler besiegt.
+Diadem in die Hand, **Rechtsklick** → dein Effekt (irgendwo im Inventar, in der Hotbar oder Zweithand) steigt um 1 Level, das Diadem ist verbraucht. Ohne Effekt oder am Maximallevel passiert nichts. Spielerköpfe für das Rezept lässt jeder Spieler fallen, den ein anderer Spieler besiegt.
 
 ## Besitz, Verlust und Stealing
 
-- Beim Craften bekommt das Relikt eine Seriennummer und wird für die Welt registriert. Duplikate werden automatisch entfernt.
-- Jeder Spieler kann **nur ein Relikt** haben. Ein zweites zu craften gibt die Zutaten zurück; hebst du ein zweites auf, wird getauscht (dein altes fällt auf den Boden).
-- Relikte **verbrennen und explodieren nicht** – aus Lava, Feuer, Kaktus oder Explosionen tauchen sie auf sicherem Boden wieder auf. Nur das **Void** zerstört sie sofort.
-- Liegt ein Relikt **5 Minuten außerhalb eines Spieler-Inventars** (Boden, Truhe, Endertruhe, Fass, Shulkerkiste …), verfällt es und kann neu gecraftet werden. Wer offline ist, behält sein Relikt.
-- Beim **Tod** behältst du dein Relikt. Nur wer dich mit dem **Stealing** tötet, bekommt es (das Stealing ist danach verbraucht). Das Stealing gibt es vorerst nur per `/ce:stealing`, das Rezept folgt.
-- Notfalls gibt ein Admin ein Relikt mit `/ce:free <relikt>` frei, z. B. `/ce:free speed`.
+- Beim Craften bekommt der Effekt eine Seriennummer und wird für die Welt registriert. Duplikate werden automatisch entfernt.
+- Jeder Spieler kann **nur einen Effekt** haben. Einen zweiten zu craften gibt die Zutaten zurück; hebst du einen zweiten auf, wird getauscht (dein alter fällt auf den Boden).
+- Effekte **verbrennen und explodieren nicht** – aus Lava, Feuer, Kaktus oder Explosionen tauchen sie auf sicherem Boden wieder auf. Nur das **Void** zerstört sie sofort.
+- Liegt ein Effekt **5 Minuten außerhalb eines Spieler-Inventars** (Boden, Truhe, Endertruhe, Fass, Shulkerkiste …), verfällt er und kann neu gecraftet werden. Wer offline ist, behält seinen Effekt.
+- Beim **Tod** behältst du deinen Effekt. Nur wer dich mit dem **Stealing** tötet, bekommt ihn (das Stealing ist danach verbraucht). Das Stealing gibt es vorerst nur per `/ce:stealing`, das Rezept folgt.
+- Notfalls gibt ein Admin einen Effekt mit `/ce:free <effekt>` frei, z. B. `/ce:free speed`.
 
 ## Auto-Mace
 
@@ -76,15 +76,15 @@ Diadem in die Hand, **Rechtsklick** → dein Relikt (irgendwo im Inventar, in de
 
 ## Spieltest-Checkliste
 
-- [ ] Relikt craften → Name und Beschreibung erscheinen, Chat meldet „… hat … erschaffen!“
-- [ ] Effekt ist aktiv, solange das Relikt im Inventar liegt, und verschwindet beim Ablegen in eine Truhe
+- [ ] Effekt craften → Name und Beschreibung erscheinen, Chat meldet „… hat … erschaffen!“
+- [ ] Dauerwirkung ist aktiv, solange der Effekt im Inventar liegt, und verschwindet beim Ablegen in eine Truhe
 - [ ] Schleichen + kurzer Klick → Boost; Schleichen + 5 s Halten → Effekt aus/an
-- [ ] Dasselbe Relikt erneut craften → wird entfernt, Zutaten kommen zurück; zweites Relikt aufheben → Tausch
-- [ ] Relikt in Lava werfen → taucht daneben wieder auf; ins Void werfen → Chat meldet die Zerstörung
-- [ ] Relikt 5 Minuten in eine Truhe legen → verfällt
-- [ ] Sterben → Relikt kommt nach dem Respawn zurück; mit Stealing getötet → Relikt beim Mörder
+- [ ] Denselben Effekt erneut craften → wird entfernt, Zutaten kommen zurück; zweiten Effekt aufheben → Tausch
+- [ ] Effekt in Lava werfen → taucht daneben wieder auf; ins Void werfen → Chat meldet die Zerstörung
+- [ ] Effekt 5 Minuten in eine Truhe legen → verfällt
+- [ ] Sterben → Effekt kommt nach dem Respawn zurück; mit Stealing getötet → Effekt beim Mörder
 - [ ] Alle Angriffe testen; Auto-Mace mit und ohne Mace in der Hotbar, am Tablet mit Fadenkreuz
-- [ ] Diadem: Relikt im Inventar steigt um 1 Level, am Maximum wird nichts verbraucht
+- [ ] Diadem: Effekt im Inventar steigt um 1 Level, am Maximum wird nichts verbraucht
 - [ ] `/ce:list` und `/ce:level speed 3` als Operator → funktioniert; als normaler Spieler → nicht erlaubt
 - [ ] Welt bzw. Realm neu starten → Einstellungen und Registrierung bleiben erhalten
 
@@ -96,7 +96,7 @@ Bei Problemen hilft der Content-Log (*Einstellungen → Creator → Content-Log 
 python3 scripts/build_addon.py
 ```
 
-- `scripts/generate_content.py` ist die **einzige Quelle** für Relikte, Effekte und Angriffe. Er erzeugt Items, Rezepte, Texturen, Sprachdateien, `behavior_pack/scripts/data.js` und `RELIKTE.md`.
+- `scripts/generate_content.py` ist die **einzige Quelle** für Effekte, Effekte und Angriffe. Er erzeugt Items, Rezepte, Texturen, Sprachdateien, `behavior_pack/scripts/data.js` und `EFFEKTE.md`.
 - `scripts/build_addon.py` ruft den Generator auf, prüft Manifeste, IDs, Texturen und Rezepte (keine doppelten) sowie die JavaScript-Syntax und packt dann `build/CraftedEffects-<version>.mcaddon`.
 - Ziel: Engine `[1, 26, 30]` (= Bedrock 26.3), Script-API `@minecraft/server` **2.8.0** (die stabile Version von 26.3; 2.9.0 ist dort nur Beta).
 
@@ -104,12 +104,12 @@ python3 scripts/build_addon.py
 |---|---|
 | `main.js` | Startpunkt: registriert Item-Komponenten und Befehle, startet die Intervalle |
 | `config.js` | Admin-Konfiguration, gespeichert in der Welt |
-| `registry.js` | Einzigartigkeit, ein Relikt pro Spieler, Unzerstörbarkeit, 5-Minuten-Verfall, Tod und Stealing |
-| `effects.js` | Dauer-Effekte aus dem Inventar |
+| `registry.js` | Einzigartigkeit, ein Effekt pro Spieler, Unzerstörbarkeit, 5-Minuten-Verfall, Tod und Stealing |
+| `effects.js` | Dauerwirkungen aus dem Inventar |
 | `attacks.js` | Spezialangriffe und Abklingzeiten |
 | `boosts.js` | Steuerung (Klick, Schleichen + Klick, 5 s Halten), Boost-Ups, Abklingzeit-Anzeige |
 | `automace.js` | Auto-Mace-Ablauf |
-| `diadem.js` | Diadem: Relikt im Inventar +1 Level |
+| `diadem.js` | Diadem: Effekt im Inventar +1 Level |
 | `fx.js` | Effekt-Entities (Schwert-Ring, Schild-Kuppel) |
 | `water.js` | Waterbreathingeffect: Verzauberungen beim Halten, schnelleres Schwimmen |
 | `protection.js` | Kein Schaden durch eigene Angriffe (Fall, Explosion, Lava) |
@@ -150,4 +150,4 @@ python3 tests/tools/install_server.py ~/Downloads/bedrock-server-1.26.30.5.zip
 
 `npm test` macht zwei Läufe: `test:shipped` lädt das **ausgelieferte** Pack (API 2.8.0) und prüft per Smoke-Test, dass es fehlerfrei lädt. `test:gametests` nutzt eine Testkopie mit `2.9.0-beta`, weil nur Beta-Packs die simulierten Testspieler sehen können. Beide Läufe schlagen auch fehl, wenn der Server beim Laden Fehler meldet (Rezepte, Items, Scripts).
 
-Getestet wird: Registrierung beim Craften, Dauer-Effekt im Inventar und dessen Entfernen, Entfernen von Duplikaten samt Rückgabe der Zutaten, Freigabe nach Zerstörung in Lava, Schockwelle, Auto-Mace (Flughöhe, Wechsel zur Mace, Treffer, kein Fallschaden) und Admin-Befehle. Die gemessene Auto-Mace-Höhe steht im Log als `[CE-TEST]`. In GitHub Actions läuft dasselbe automatisch als Job `gametests`.
+Getestet wird: Registrierung beim Craften, Dauerwirkung im Inventar und dessen Entfernen, Entfernen von Duplikaten samt Rückgabe der Zutaten, Freigabe nach Zerstörung in Lava, Schockwelle, Auto-Mace (Flughöhe, Wechsel zur Mace, Treffer, kein Fallschaden) und Admin-Befehle. Die gemessene Auto-Mace-Höhe steht im Log als `[CE-TEST]`. In GitHub Actions läuft dasselbe automatisch als Job `gametests`.

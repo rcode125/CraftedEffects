@@ -8,7 +8,7 @@ export const DIADEM_ID = "craftedeffects:diadem";
 export function useDiadem(player) {
   const found = carriedRelic(player);
   if (!found) {
-    player.onScreenDisplay.setActionBar("§7Du hast kein Relikt, das das Diadem verbessern könnte.");
+    player.onScreenDisplay.setActionBar("§7Du hast keinen Effekt, den das Diadem verbessern könnte.");
     return;
   }
   const relic = relicConfig(found.key);

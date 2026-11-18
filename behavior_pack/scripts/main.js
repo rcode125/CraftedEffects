@@ -32,7 +32,7 @@ system.beforeEvents.startup.subscribe(({ itemComponentRegistry, customCommandReg
     },
   });
   const commands = registerCommands(customCommandRegistry);
-  console.log(`[CraftedEffects] geladen: Relikte, Diadem, Stealing und ${commands} Befehle registriert`);
+  console.log(`[CraftedEffects] geladen: Effekte, Diadem, Stealing und ${commands} Befehle registriert`);
 });
 
 setupRegistry();
