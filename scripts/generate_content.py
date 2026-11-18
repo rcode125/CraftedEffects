@@ -22,7 +22,7 @@ ART_DIR = ROOT / "art" / "items"  # hand-drawn textures (e.g. from the Pixelstat
 NAMESPACE = "craftedeffects"
 ITEM_FORMAT = "1.21.90"
 RECIPE_FORMAT = "1.20.10"
-CONFIG_VERSION = 6  # bump when the relic table changes; old world settings are migrated (levels kept)
+CONFIG_VERSION = 7  # bump when the relic table changes; old world settings are migrated (levels kept). 6 = cooldown-bar version
 
 # Item ids used in recipes -> German name (for EFFEKTE.md)
 ITEM_NAMES = {

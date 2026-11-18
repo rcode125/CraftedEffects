@@ -9,12 +9,12 @@ import { LookDuration, registerAsync } from "@minecraft/server-gametest";
 const TAG = "craftedeffects";
 const ARENA = "craftedeffects:arena";
 const NAMES = {
-  speed: "Relikt des Windes",
-  strength: "Relikt der Stärke",
-  haste: "Relikt des Bergmanns",
-  fire: "Relikt der Glut",
-  health: "Relikt des Lebens",
-  jump: "Relikt des Himmelssturzes",
+  speed: "Effekt Speed",
+  strength: "Effekt Strength",
+  haste: "Effekt Haste",
+  fire: "Effekt Fire",
+  health: "Effekt Heal",
+  jump: "Effekt Jump",
 };
 const DIADEM = "craftedeffects:diadem";
 // In GameTest coordinates the arena floor (structure layer 0) is at y = 1; creatures stand on y = 2.
@@ -141,6 +141,7 @@ test("speed_effect_while_carried_and_30_block_dash", 400, async (gameTest) => {
 test("strength_ring_damage_and_diadem_levels", 400, async (gameTest) => {
   await freshRelic(gameTest, "strength");
   const player = spawnPlayer(gameTest, 5, 5, "ce_strength");
+  const COOLDOWN = "craftedeffects_strength"; // item cooldown category of the relic
   const pig = gameTest.spawnWithoutBehaviors("minecraft:pig", { x: 10, y: FLOOR + 1, z: 5 });
   const pigBefore = health(pig);
   await craft(gameTest, player, "strength");
@@ -149,6 +150,7 @@ test("strength_ring_damage_and_diadem_levels", 400, async (gameTest) => {
   player.useItemInSlot(0);
   await gameTest.idle(30);
   gameTest.assert(health(pig) === pigBefore, "Spezialangriff lief schon auf Level 1");
+  gameTest.assert(player.getItemCooldown(COOLDOWN) === 0, "Abklingzeit läuft, obwohl kein Angriff ausgelöst wurde");
 
   // Diadem: relic in the offhand, diadem in the hand.
   const equippable = player.getComponent("minecraft:equippable");
@@ -181,6 +183,11 @@ test("strength_ring_damage_and_diadem_levels", 400, async (gameTest) => {
   player.useItemInSlot(0);
   await waitFor(gameTest, 40, "Kraftring hat das Schwein nicht getroffen", () => !pig.isValid || health(pig) < pigBefore);
   gameTest.assert(!pig.isValid || pigBefore - health(pig) >= 5.9, `Kraftring machte ${pigBefore - health(pig)} statt 6 Schaden`);
+
+  // The cooldown is visible on the item (like on a wind charge): 30 s are running.
+  const sweep = player.getItemCooldown(COOLDOWN);
+  console.warn(`[CE-TEST] Abklingzeit auf dem Item: ${sweep} Ticks`);
+  gameTest.assert(sweep > 500 && sweep <= 600, `Abklingzeit auf dem Item ist ${sweep} statt ~600 Ticks`);
   gameTest.succeed();
 });
 
