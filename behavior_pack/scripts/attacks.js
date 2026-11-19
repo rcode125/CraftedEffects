@@ -18,7 +18,7 @@ const RING_MAX_RADIUS = 10;
 const RING_DAMAGE = 6; // 3 hearts; "magic" ignores armour, so it is 3 hearts even through full netherite
 const RING_SWORDS = 12;
 const FORTRESS_TICKS = 60; // 3 seconds
-const FORTRESS_POWER = 5; // respawn anchor
+const FORTRESS_POWER = 6; // end crystal
 const FORTRESS_HARD_RADIUS = 4;
 const HARD_BLOCKS = new Set(["minecraft:bedrock", "minecraft:obsidian", "minecraft:crying_obsidian"]);
 const COMET_COUNT = 8;
@@ -350,7 +350,7 @@ export function useRelic(player, itemStack) {
   if (!relic.enabled || relic.attack === "none") return;
   if (serialOf(itemStack) === undefined || serialOf(itemStack) !== registeredSerial(key)) {
     console.log(`[CraftedEffects] ${relic.name}: Seriennummer ${serialOf(itemStack)} passt nicht zu ${registeredSerial(key)}`);
-    player.sendMessage("§7Dieser Effekt wird noch geprüft …");
+    player.onScreenDisplay.setActionBar("§7Dieser Effekt wird noch geprüft …");
     return;
   }
 
@@ -373,7 +373,7 @@ export function useRelic(player, itemStack) {
   if (!attack) return;
   try {
     if (attack(player)) {
-      cooldowns.set(cooldownId, system.currentTick + relic.cooldown * 20);
+      if (relic.cooldown > 0) cooldowns.set(cooldownId, system.currentTick + relic.cooldown * 20);
       player.onScreenDisplay.setActionBar(`§6${relic.name}: §e${relic.attack === "automace" ? "Auto-Mace!" : "Angriff!"}`);
     }
   } catch (error) {
@@ -389,6 +389,22 @@ export function attackCooldownLeft(player, key) {
 
 /** Shield hits and bubble rules: runs inside entityHurt / itemUse / swing events. */
 export function setupAttacks() {
+  // Chat message as soon as a special attack cooldown is over.
+  system.runInterval(() => {
+    const now = system.currentTick;
+    for (const [id, readyAt] of cooldowns) {
+      if (readyAt > now) continue;
+      cooldowns.delete(id);
+      const [playerId, key] = id.split(":");
+      const player = world.getEntity(playerId);
+      try {
+        if (player?.isValid) player.sendMessage(`§6${relicConfig(key).name}: Spezialangriff ist wieder bereit.`);
+      } catch {
+        // Player left or not ready.
+      }
+    }
+  }, 10);
+
   world.beforeEvents.entityHurt.subscribe((event) => {
     const attacker = event.damageSource?.damagingEntity;
     const hurt = event.hurtEntity;

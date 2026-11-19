@@ -1,0 +1,29 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "craftedeffects:stealing_2_recipe"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "minecraft:ominous_bottle",
+        "data": 1
+      },
+      {
+        "item": "minecraft:amethyst_shard"
+      }
+    ],
+    "unlock": [
+      {
+        "item": "minecraft:ominous_bottle"
+      }
+    ],
+    "result": {
+      "item": "craftedeffects:stealing_2",
+      "count": 1
+    }
+  }
+}

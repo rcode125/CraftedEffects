@@ -29,8 +29,8 @@ export function useDiadem(player) {
   }
 
   const level = setLevel(found.key, relic.level + 1);
-  player.sendMessage(`§6${relic.name} ist jetzt auf Level §e${level}/${relic.maxLevel}§6!`);
-  if (level >= relic.maxLevel) player.sendMessage("§6Der Spezialangriff ist freigeschaltet!");
+  player.onScreenDisplay.setActionBar(`§6${relic.name} ist jetzt auf Level §e${level}/${relic.maxLevel}§6!`);
+  if (level >= relic.maxLevel) player.sendMessage(`§6${relic.name}: Der Spezialangriff ist freigeschaltet!`);
   try {
     player.dimension.playSound("random.levelup", player.location);
   } catch {

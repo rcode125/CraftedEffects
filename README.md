@@ -8,7 +8,7 @@ Add-on für Minecraft **Bedrock Edition 26.3**, für **normale Welten und Realms
 - **Boost-Up** per Schleichen + Rechtsklick ab Level 1
 - Effekte **verbrennen und explodieren nicht**; nur das Void oder 5 Minuten außerhalb eines Inventars zerstören sie
 - **Diadem**: hebt deinen Effekt um 1 Level bis zum Maximum
-- **Stealing**: Waffe, die beim Kill den Effekt des Gegners stiehlt
+- **Stealing-Flasche** (Unheilvolle Flasche + Amethystscherbe): 2–6 Minuten lang stiehlst du beim Kill den Effekt des Gegners
 - **Admin-Befehle** (`/ce:…`), um jeden Effekt im Spiel umzukonfigurieren
 
 ## ⬇️ Download (ohne GitHub-Konto)
@@ -36,7 +36,7 @@ Add-on für Minecraft **Bedrock Edition 26.3**, für **normale Welten und Realms
 |---|---|---|---|---|---|
 | Speedeffect | Schnelligkeit (3) | Dash 30 Blöcke wie ein Riptide-Dreizack | 60 s | Schnelligkeit VI, 30 s | 120 s |
 | Strengtheffect | Stärke (2) | Ring aus Netherite-Schwertern, 3 Herzen Schaden (auch durch Netherite) | 30 s | Stärke III, 10 s | 120 s |
-| Hasteeffect | Eile (5) | Bollwerk: 3 s unverwundbar + Explosion wie ein Respawn-Anker (zerstört auch Obsidian und Bedrock) | 60 s | 3×3-Abbau, 20 s | 120 s |
+| Hasteeffect | Eile (5) | Bollwerk: 3 s unverwundbar + Explosion wie ein Endkristall (zerstört auch Obsidian und Bedrock) | 60 s | 3×3-Abbau, 20 s | 120 s |
 | Fireresistanceeffect | Feuerresistenz (2) | Kometenhagel: 8 Kometen, große Explosionen, fließende Lava | 120 s | Ultraschnell in Lava/Feuer, Gegner im 5-Block-Umkreis brennen, 20 s | 120 s |
 | Healtheffect | Gesundheitsschub (5 = 30 Herzen) | Lebensschild: Kuppel aus Schilden, Regeneration III, Gegner fliegen 20 Blöcke weg | 90 s | 60 Herzen, 20 s | 120 s |
 | Jumpboosteffect | Sprungkraft (4) | Auto-Mace: 30 Blöcke hoch, genauer Dash aufs Ziel, Mace-Smash | 60 s | Sprungkraft VI, 15 s | 120 s |
@@ -64,7 +64,12 @@ Diadem in die Hand, **Rechtsklick** → dein Effekt (irgendwo im Inventar, in de
 - Jeder Spieler kann **nur einen Effekt** haben. Einen zweiten zu craften gibt die Zutaten zurück; hebst du einen zweiten auf, wird getauscht (dein alter fällt auf den Boden).
 - Effekte **verbrennen und explodieren nicht** – aus Lava, Feuer, Kaktus oder Explosionen tauchen sie auf sicherem Boden wieder auf. Nur das **Void** zerstört sie sofort.
 - Liegt ein Effekt **5 Minuten außerhalb eines Spieler-Inventars** (Boden, Truhe, Endertruhe, Fass, Shulkerkiste …), verfällt er und kann neu gecraftet werden. Wer offline ist, behält seinen Effekt.
-- Beim **Tod** behältst du deinen Effekt. Nur wer dich mit dem **Stealing** tötet, bekommt ihn (das Stealing ist danach verbraucht). Das Stealing gibt es vorerst nur per `/ce:stealing`, das Rezept folgt.
+- Beim **Tod** behältst du deinen Effekt. Nur wer dich mit aktivem **Stealing** tötet, bekommt ihn (das Stealing ist danach verbraucht).
+- **Stealing-Flasche:** Unheilvolle Flasche + Amethystscherbe (formlos an der Werkbank), dann trinken. Die Stufe der Unheilvollen Flasche bestimmt die Dauer: I = 2 min, II = 3 min, III = 4 min, IV = 5 min, V = 6 min. Stirbst du, ist das Stealing weg.
+
+## Chat-Meldungen
+
+Im Chat steht nur noch, wenn ein Effekt **erschaffen** oder **zerstört/freigegeben** wurde, wenn ein Spezialangriff **freigeschaltet** wurde oder wenn die **Abklingzeit** eines Spezialangriffs oder Boost-Ups **abgelaufen** ist. Alles andere (Angriffe, Boosts, An/Aus, Diadem-Level, Stealing) erscheint nur kurz über der Hotbar.
 - Notfalls gibt ein Admin einen Effekt mit `/ce:free <effekt>` frei, z. B. `/ce:free speed`.
 
 ## Auto-Mace
@@ -82,7 +87,9 @@ Diadem in die Hand, **Rechtsklick** → dein Effekt (irgendwo im Inventar, in de
 - [ ] Denselben Effekt erneut craften → wird entfernt, Zutaten kommen zurück; zweiten Effekt aufheben → Tausch
 - [ ] Effekt in Lava werfen → taucht daneben wieder auf; ins Void werfen → Chat meldet die Zerstörung
 - [ ] Effekt 5 Minuten in eine Truhe legen → verfällt
-- [ ] Sterben → Effekt kommt nach dem Respawn zurück; mit Stealing getötet → Effekt beim Mörder
+- [ ] Sterben → Effekt kommt nach dem Respawn zurück; Stealing-Flasche getrunken und dann getötet → Effekt beim Mörder
+- [ ] Unheilvolle Flasche (Stufe I–V) + Amethystscherbe → passende Stealing-Flasche (2–6 min)
+- [ ] Abklingzeit von Angriff/Boost abgelaufen → Meldung im Chat; Angriff selbst → nichts im Chat
 - [ ] Alle Angriffe testen; Auto-Mace mit und ohne Mace in der Hotbar, am Tablet mit Fadenkreuz
 - [ ] Diadem: Effekt im Inventar steigt um 1 Level, am Maximum wird nichts verbraucht
 - [ ] `/ce:list` und `/ce:level speed 3` als Operator → funktioniert; als normaler Spieler → nicht erlaubt
@@ -107,6 +114,7 @@ python3 scripts/build_addon.py
 | `registry.js` | Einzigartigkeit, ein Effekt pro Spieler, Unzerstörbarkeit, 5-Minuten-Verfall, Tod und Stealing |
 | `effects.js` | Dauerwirkungen aus dem Inventar |
 | `attacks.js` | Spezialangriffe und Abklingzeiten |
+| `stealing.js` | Stealing-Flasche: Trinken, Restzeit, Ablauf |
 | `boosts.js` | Steuerung (Klick, Schleichen + Klick, 5 s Halten), Boost-Ups, Abklingzeit-Anzeige |
 | `automace.js` | Auto-Mace-Ablauf |
 | `diadem.js` | Diadem: Effekt im Inventar +1 Level |

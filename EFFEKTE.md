@@ -83,7 +83,7 @@ Zutaten insgesamt: 1× Diamantaxt, 1× Ward-Rüstungsbesatz, 1× Diamantschwert,
 
 - **Dauerwirkung:** Eile (Level 1 bis 5)
 - **Spezialangriff ab Level 5**
-- **Spezialangriff – Bollwerk:** 3 Sekunden Resistenz V (unverwundbar) und Langsamkeit. Eine Explosion so stark wie ein Respawn-Anker (ohne Feuer) schleudert Gegner weg und zerstört Blöcke – sogar Obsidian und Bedrock. Du selbst bekommst keinen Schaden.
+- **Spezialangriff – Bollwerk:** 3 Sekunden Resistenz V (unverwundbar) und Langsamkeit. Eine Explosion so stark wie ein Endkristall (ohne Feuer) schleudert Gegner weg und zerstört Blöcke – sogar Obsidian und Bedrock. Du selbst bekommst keinen Schaden.
 - **Abklingzeit Angriff:** 60 Sekunden
 - **Boost-Up (Schleichen + Rechtsklick):** 3×3-Abbau für 20 s – Jeder abgebaute Block baut die 3×3-Fläche um ihn mit ab (nicht Bedrock).
 - **Abklingzeit Boost-Up:** 120 Sekunden
@@ -190,9 +190,17 @@ Zutaten insgesamt: 4× Goldbarren, 4× Spielerkopf, 1× Enderauge
 
 ## Stealing
 
-Eine Waffe (8 Schaden). Tötest du damit einen Spieler, der einen Effekt trägt, wandert sein Effekt **direkt in dein Inventar** (hast du schon einen, wird getauscht) und das Stealing ist verbraucht. Ohne Effekt beim Opfer bleibt das Stealing erhalten.
+Eine Flasche zum **Trinken**. Danach hast du eine Zeit lang Stealing: Tötest du in dieser Zeit einen Spieler, der einen Effekt trägt, wandert sein Effekt **direkt in dein Inventar** (hast du schon einen, wird getauscht) und das Stealing ist verbraucht. Stirbst du selbst, ist das Stealing weg.
 
-Item-ID: `craftedeffects:stealing` – **Rezept folgt noch.** Bis dahin gibt es das Stealing nur per `/ce:stealing`.
+**Rezept (formlos, Werkbank):** 1× Unheilvolle Flasche + 1× Amethystscherbe. Je höher die Stufe der Unheilvollen Flasche, desto länger hält das Stealing:
+
+| Stufe der Unheilvollen Flasche | Stealing-Dauer | Item-ID |
+|---|---|---|
+| I | 2 min | `craftedeffects:stealing_1` |
+| II | 3 min | `craftedeffects:stealing_2` |
+| III | 4 min | `craftedeffects:stealing_3` |
+| IV | 5 min | `craftedeffects:stealing_4` |
+| V | 6 min | `craftedeffects:stealing_5` |
 
 ## Admin-Befehle
 
@@ -210,7 +218,7 @@ Nur Operatoren (auf Realms: Spieler mit Operator-Rechten) können diese Befehle 
 | `/ce:enable <effekt> <true\|false>` | Schaltet einen Effekt ganz an oder aus (aus = nicht craftbar, keine Wirkung). |
 | `/ce:free <effekt>` | Gibt einen Effekt frei, damit er neu gecraftet werden kann. Die alte Kopie wird ungültig. |
 | `/ce:give <effekt> [spieler]` | Gibt einen Effekt direkt (nur wenn er gerade frei ist). |
-| `/ce:stealing [spieler]` | Gibt ein Stealing. |
+| `/ce:stealing [stufe] [spieler]` | Gibt eine Stealing-Flasche (Stufe 1–5, Standard 1). |
 | `/ce:pvp <true\|false>` | Schaltet Schaden der Effekt-Angriffe gegen Spieler an oder aus. |
 | `/ce:reset` | Stellt alle Einstellungen auf die Standardbelegung zurück. |
 
@@ -239,7 +247,7 @@ Nur Operatoren (auf Realms: Spieler mit Operator-Rechten) können diese Befehle 
 | `none` | Kein Angriff | Rechtsklick macht nichts. |
 | `dash` | Dash | Schleudert dich wie ein Riptide-Dreizack 30 Blöcke in Blickrichtung (auch nach oben oder unten), ohne Partikel und Sound. Danach kein Fallschaden. |
 | `ring` | Kraftring | Ein Ring aus Netherite-Schwertern fliegt von dir nach außen (bis 10 Blöcke). Jedes getroffene Wesen bekommt 3 Herzen Schaden – auch durch volle Netherite-Rüstung. |
-| `fortress` | Bollwerk | 3 Sekunden Resistenz V (unverwundbar) und Langsamkeit. Eine Explosion so stark wie ein Respawn-Anker (ohne Feuer) schleudert Gegner weg und zerstört Blöcke – sogar Obsidian und Bedrock. Du selbst bekommst keinen Schaden. |
+| `fortress` | Bollwerk | 3 Sekunden Resistenz V (unverwundbar) und Langsamkeit. Eine Explosion so stark wie ein Endkristall (ohne Feuer) schleudert Gegner weg und zerstört Blöcke – sogar Obsidian und Bedrock. Du selbst bekommst keinen Schaden. |
 | `comets` | Kometenhagel | 8 Kometen erscheinen im Ring 10 Blöcke über dir und stürzen herab. Beim Aufprall gibt es eine große Explosion und fließende Lava. Du selbst bekommst keinen Schaden. |
 | `aegis` | Lebensschild | Stößt Gegner weg und baut 5 Sekunden lang eine Kuppel aus Schilden um dich. Darin bekommst du Regeneration III, Sättigung und Sofortheilung. Gegner, die das Schild berühren oder schlagen, nehmen Schaden und fliegen zurück; am Ende werden alle Gegner 20 Blöcke weggeschleudert. |
 | `automace` | Auto-Mace | Schleudert dich 30 Blöcke hoch, dann 5 Sekunden sanfter Fall (am Handy/Tablet mit Fadenkreuz). Schaust du auf einen Gegner, wirst du genau auf ihn gedasht. Mit Mace in der Hotbar gibt es Smash-Schaden nach Fallhöhe, ohne Mace normalen Dash-Schaden. Währenddessen kannst du nicht normal zuschlagen. Kein Fallschaden. |

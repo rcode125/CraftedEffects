@@ -34,7 +34,7 @@ function playSound(player, sound) {
 
 function isValidRelic(player, itemStack, key) {
   if (serialOf(itemStack) === undefined || serialOf(itemStack) !== registeredSerial(key)) {
-    player.sendMessage("§7Dieser Effekt wird noch geprüft …");
+    player.onScreenDisplay.setActionBar("§7Dieser Effekt wird noch geprüft …");
     return false;
   }
   return relicConfig(key).enabled;
@@ -80,8 +80,7 @@ function toggleEffect(player, key) {
   const relic = relicConfig(key);
   const on = relic.effectOn === false;
   setEffectOn(key, on);
-  player.sendMessage(on ? `§a${relic.name}: Dauerwirkung ist wieder an.` : `§e${relic.name}: Dauerwirkung ist jetzt aus.`);
-  player.onScreenDisplay.setActionBar(on ? "§aDauerwirkung an" : "§eDauerwirkung aus");
+  player.onScreenDisplay.setActionBar(on ? `§a${relic.name}: Dauerwirkung ist wieder an.` : `§e${relic.name}: Dauerwirkung ist jetzt aus.`);
   playSound(player, on ? "random.levelup" : "random.click");
 }
 
@@ -121,7 +120,7 @@ export function useBoost(player, key) {
     console.warn(`[CraftedEffects] Boost ${relic.boost} fehlgeschlagen: ${error}`);
     return;
   }
-  boostCooldowns.set(`${player.id}:${key}`, system.currentTick + relic.boostCooldown * 20);
+  if (relic.boostCooldown > 0) boostCooldowns.set(`${player.id}:${key}`, system.currentTick + relic.boostCooldown * 20);
   player.onScreenDisplay.setActionBar(`§b${relic.name}: Boost-Up!`);
   playSound(player, "beacon.power");
 }
@@ -210,6 +209,22 @@ export function setupBoosts() {
     const cause = event.damageSource?.cause;
     if (cause === EntityDamageCause.lava || cause === EntityDamageCause.fire || cause === EntityDamageCause.fireTick) event.cancel = true;
   });
+
+  // Chat message as soon as a boost cooldown is over.
+  system.runInterval(() => {
+    const now = system.currentTick;
+    for (const [id, readyAt] of boostCooldowns) {
+      if (readyAt > now) continue;
+      boostCooldowns.delete(id);
+      const [playerId, key] = id.split(":");
+      const player = world.getEntity(playerId);
+      try {
+        if (player?.isValid) player.sendMessage(`§b${relicConfig(key).name}: Boost-Up ist wieder bereit.`);
+      } catch {
+        // Player left or not ready.
+      }
+    }
+  }, 10);
 
   system.runInterval(() => {
     const now = system.currentTick;
