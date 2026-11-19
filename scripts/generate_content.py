@@ -58,6 +58,7 @@ ITEM_NAMES = {
     "minecraft:enchanted_book": "Verzaubertes Buch (Schutz empfohlen)",
     "minecraft:totem_of_undying": "Totem der Unsterblichkeit",
     "minecraft:ominous_bottle": "Unheilvolle Flasche",
+    "minecraft:amethyst_shard": "Amethystscherbe",
     "minecraft:wind_charge": "Windkugel",
     "minecraft:echo_shard": "Echoscherbe",
     "minecraft:rabbit_foot": "Hasenpfote",
@@ -102,7 +103,7 @@ ATTACKS = {
     ),
     "fortress": (
         "Bollwerk",
-        "3 Sekunden Resistenz V (unverwundbar) und Langsamkeit. Eine Explosion so stark wie ein Respawn-Anker "
+        "3 Sekunden Resistenz V (unverwundbar) und Langsamkeit. Eine Explosion so stark wie ein Endkristall "
         "(ohne Feuer) schleudert Gegner weg und zerstört Blöcke – sogar Obsidian und Bedrock. Du selbst bekommst keinen Schaden.",
     ),
     "comets": (
@@ -228,8 +229,15 @@ RELICS = [
     },
 ]
 
-# Weapon that steals the relic of the player it kills. Recipe and texture follow later (sheet).
-STEALING = {"name": "Stealing", "damage": 8, "durability": 250}
+# Stealing bottle: Ominous Bottle + Amethyst Shard. Drinking it lets you steal the effect of the next
+# player you kill. The level of the Ominous Bottle (I-V) decides how long the Stealing lasts.
+STEALING = {"name": "Stealing", "minutes": [2, 3, 4, 5, 6], "drink_seconds": 1.6}
+ROMAN = ["I", "II", "III", "IV", "V"]
+
+
+def stealing_id(level):
+    """Item name of the Stealing bottle made from an Ominous Bottle of this level (1-5)."""
+    return f"stealing_{level}"
 
 DIADEM = {
     "name": "Diadem",
@@ -343,23 +351,29 @@ def diadem_texture():
 
 
 def stealing_texture():
-    """Dark red-black sword with a golden hilt (placeholder until the Pixelstation one exists)."""
+    """Bottle with a dark red-purple potion and an amethyst stopper (placeholder until the Pixelstation one exists)."""
     clear = (0, 0, 0, 0)
-    blade_light, blade, blade_dark = (190, 60, 70, 255), (120, 20, 35, 255), (50, 10, 20, 255)
-    hilt, grip = (255, 205, 60, 255), (90, 55, 30, 255)
+    glass, glass_light = (40, 30, 50, 255), (200, 200, 220, 255)
+    liquid, liquid_light, liquid_dark = (150, 30, 70, 255), (200, 70, 120, 255), (80, 10, 45, 255)
+    stopper, stopper_dark = (170, 110, 230, 255), (110, 60, 170, 255)
     pixels = [[clear] * 16 for _ in range(16)]
-    for i in range(4, 15):  # blade on the diagonal, tip top right
-        x, y = i, 15 - i
-        pixels[y][x] = blade
-        if x - 1 >= 0:
-            pixels[y][x - 1] = blade_light
-        if y + 1 < 16:
-            pixels[y + 1][x] = blade_dark
-    for x, y in [(2, 10), (3, 11), (4, 12), (5, 13), (6, 12), (5, 11), (3, 9)]:  # cross guard
-        pixels[y][x] = hilt
-    for x, y in [(2, 13), (1, 14), (3, 12)]:  # grip
-        pixels[y][x] = grip
-    pixels[15][0] = hilt
+    for y in range(2, 5):  # stopper
+        for x in range(6, 10):
+            pixels[y][x] = stopper if x < 8 else stopper_dark
+    for y in range(5, 8):  # neck
+        pixels[y][6], pixels[y][9] = glass, glass
+        pixels[y][7], pixels[y][8] = glass_light, liquid_light if y > 5 else glass_light
+    for y in range(8, 15):  # round body
+        half = 4 if 9 <= y <= 13 else 3
+        left, right = 8 - half - 1, 8 + half
+        pixels[y][left], pixels[y][right] = glass, glass
+        for x in range(left + 1, right):
+            pixels[y][x] = liquid_dark if y >= 13 else liquid
+        if y in (9, 10):
+            pixels[y][left + 1] = liquid_light
+    for x in range(5, 11):
+        pixels[15][x] = glass
+    pixels[10][10], pixels[11][10] = glass_light, glass_light  # shine
     return png_bytes(pixels)
 
 
@@ -503,11 +517,10 @@ def item_json(full_id, texture_key, custom_component, stack, glint):
         # Holding right-click for 5 s (while sneaking) switches the permanent effect on/off.
         components["minecraft:use_modifiers"] = {"use_duration": 5, "movement_modifier": 1.0}
     if custom_component == "stealing":
-        components["minecraft:hand_equipped"] = True
-        components["minecraft:damage"] = STEALING["damage"]
-        components["minecraft:durability"] = {"max_durability": STEALING["durability"]}
-        components["minecraft:enchantable"] = {"slot": "sword", "value": 10}
-        components["minecraft:can_destroy_in_creative"] = False
+        # Drunk like a potion; the custom component (onConsume) starts the Stealing time.
+        components["minecraft:food"] = {"can_always_eat": True, "nutrition": 0, "saturation_modifier": 0}
+        components["minecraft:use_animation"] = "drink"
+        components["minecraft:use_modifiers"] = {"use_duration": STEALING["drink_seconds"], "movement_modifier": 0.35}
     return {
         "format_version": ITEM_FORMAT,
         "minecraft:item": {
@@ -531,6 +544,24 @@ def recipe_json(full_id, pattern, ingredients, unlock_item):
     }
 
 
+def stealing_recipe_json(level):
+    """Shapeless: Ominous Bottle of this level (Bedrock data value level-1) + Amethyst Shard."""
+    full_id = f"{NAMESPACE}:{stealing_id(level)}"
+    return {
+        "format_version": RECIPE_FORMAT,
+        "minecraft:recipe_shapeless": {
+            "description": {"identifier": f"{full_id}_recipe"},
+            "tags": ["crafting_table"],
+            "ingredients": [
+                {"item": "minecraft:ominous_bottle", "data": level - 1},
+                {"item": "minecraft:amethyst_shard"},
+            ],
+            "unlock": [{"item": "minecraft:ominous_bottle"}],
+            "result": {"item": full_id, "count": 1},
+        },
+    }
+
+
 def generate_packs():
     for folder in (BP_DIR / "items", BP_DIR / "recipes", BP_DIR / "entities", RP_DIR / "textures" / "items",
                    RP_DIR / "entity", RP_DIR / "models" / "entity"):
@@ -543,12 +574,11 @@ def generate_packs():
 
     entries = [(relic_id(r), r["name"], relic_texture(r["colour"]), "relic", 1, True, r) for r in RELICS]
     entries.append(("diadem", DIADEM["name"], diadem_texture(), "diadem", 16, False, DIADEM))
-    entries.append(("stealing", STEALING["name"], stealing_texture(), "stealing", 1, True, STEALING))
     for item_name, display, texture, component, stack, glint, source in entries:
         full_id = f"{NAMESPACE}:{item_name}"
         texture_key = f"{NAMESPACE}_{item_name}"
         write_json(BP_DIR / "items" / f"{item_name}.json", item_json(full_id, texture_key, component, stack, glint))
-        if "pattern" in source:  # Stealing has no recipe yet (only /ce:stealing)
+        if "pattern" in source:
             unlock = source["ingredients"][source["pattern"][1][1]]  # the centre ingredient unlocks the recipe
             write_json(BP_DIR / "recipes" / f"{item_name}.json",
                        recipe_json(full_id, source["pattern"], source["ingredients"], unlock))
@@ -558,6 +588,19 @@ def generate_packs():
         texture_path.write_bytes(custom.read_bytes() if custom.is_file() else texture)
         texture_data[texture_key] = {"textures": f"textures/items/{item_name}"}
         lang_lines.append(f"item.{full_id}.name={display}")
+
+    # Stealing bottles: one item per Ominous Bottle level, all with the same texture.
+    stealing_key = f"{NAMESPACE}_stealing"
+    custom = ART_DIR / "stealing.png"
+    (RP_DIR / "textures" / "items" / "stealing.png").write_bytes(
+        custom.read_bytes() if custom.is_file() else stealing_texture())
+    texture_data[stealing_key] = {"textures": "textures/items/stealing"}
+    for level, minutes in enumerate(STEALING["minutes"], start=1):
+        item_name = stealing_id(level)
+        full_id = f"{NAMESPACE}:{item_name}"
+        write_json(BP_DIR / "items" / f"{item_name}.json", item_json(full_id, stealing_key, "stealing", 16, True))
+        write_json(BP_DIR / "recipes" / f"{item_name}.json", stealing_recipe_json(level))
+        lang_lines.append(f"item.{full_id}.name={STEALING['name']} {ROMAN[level - 1]} ({minutes} min)")
 
     for name, texture, geometry, build_geometry in FX_ENTITIES:
         identifier = f"{NAMESPACE}:{name}"
@@ -609,6 +652,8 @@ def generate_script_data():
             }
             for r in RELICS
         },
+        "stealing": {f"{NAMESPACE}:{stealing_id(level)}": minutes
+                     for level, minutes in enumerate(STEALING["minutes"], start=1)},
         "refund": {r["key"]: recipe_items(r["pattern"], r["ingredients"]) for r in RELICS},
     }
     body = json.dumps(data, indent=2, ensure_ascii=False)
@@ -720,11 +765,19 @@ def generate_guide():
         "",
         "## Stealing",
         "",
-        f"Eine Waffe ({STEALING['damage']} Schaden). Tötest du damit einen Spieler, der einen Effekt trägt, wandert sein "
-        "Effekt **direkt in dein Inventar** (hast du schon einen, wird getauscht) und das Stealing ist verbraucht. "
-        "Ohne Effekt beim Opfer bleibt das Stealing erhalten.",
+        "Eine Flasche zum **Trinken**. Danach hast du eine Zeit lang Stealing: Tötest du in dieser Zeit einen Spieler, "
+        "der einen Effekt trägt, wandert sein Effekt **direkt in dein Inventar** (hast du schon einen, wird getauscht) "
+        "und das Stealing ist verbraucht. Stirbst du selbst, ist das Stealing weg.",
         "",
-        f"Item-ID: `{NAMESPACE}:stealing` – **Rezept folgt noch.** Bis dahin gibt es das Stealing nur per `/ce:stealing`.",
+        "**Rezept (formlos, Werkbank):** 1× Unheilvolle Flasche + 1× Amethystscherbe. Je höher die Stufe der "
+        "Unheilvollen Flasche, desto länger hält das Stealing:",
+        "",
+        "| Stufe der Unheilvollen Flasche | Stealing-Dauer | Item-ID |",
+        "|---|---|---|",
+    ]
+    lines += [f"| {ROMAN[level - 1]} | {minutes} min | `{NAMESPACE}:{stealing_id(level)}` |"
+              for level, minutes in enumerate(STEALING["minutes"], start=1)]
+    lines += [
         "",
         "## Admin-Befehle",
         "",
@@ -743,7 +796,7 @@ def generate_guide():
         "| `/ce:enable <effekt> <true\\|false>` | Schaltet einen Effekt ganz an oder aus (aus = nicht craftbar, keine Wirkung). |",
         "| `/ce:free <effekt>` | Gibt einen Effekt frei, damit er neu gecraftet werden kann. Die alte Kopie wird ungültig. |",
         "| `/ce:give <effekt> [spieler]` | Gibt einen Effekt direkt (nur wenn er gerade frei ist). |",
-        "| `/ce:stealing [spieler]` | Gibt ein Stealing. |",
+        "| `/ce:stealing [stufe] [spieler]` | Gibt eine Stealing-Flasche (Stufe 1–5, Standard 1). |",
         "| `/ce:pvp <true\\|false>` | Schaltet Schaden der Effekt-Angriffe gegen Spieler an oder aus. |",
         "| `/ce:reset` | Stellt alle Einstellungen auf die Standardbelegung zurück. |",
         "",

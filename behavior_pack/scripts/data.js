@@ -171,6 +171,13 @@ export const DATA = {
       "enabled": true
     }
   },
+  "stealing": {
+    "craftedeffects:stealing_1": 2,
+    "craftedeffects:stealing_2": 3,
+    "craftedeffects:stealing_3": 4,
+    "craftedeffects:stealing_4": 5,
+    "craftedeffects:stealing_5": 6
+  },
   "refund": {
     "speed": [
       "minecraft:firework_rocket",

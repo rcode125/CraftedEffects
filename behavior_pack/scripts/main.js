@@ -9,6 +9,7 @@ import { setupWater } from "./water.js";
 import { registerCommands } from "./commands.js";
 import { onDiademUse } from "./diadem.js";
 import { setupProtection } from "./protection.js";
+import { drinkStealing, setupStealing } from "./stealing.js";
 
 const RELIC_COMPONENT = "craftedeffects:relic";
 const DIADEM_COMPONENT = "craftedeffects:diadem";
@@ -24,8 +25,15 @@ system.beforeEvents.startup.subscribe(({ itemComponentRegistry, customCommandReg
       });
     },
   });
-  // The Stealing works through the death event (registry.js); the component only marks the item.
-  itemComponentRegistry.registerCustomComponent(STEALING_COMPONENT, {});
+  // Drinking a Stealing bottle starts the Stealing time (stealing.js); the kill is handled in registry.js.
+  itemComponentRegistry.registerCustomComponent(STEALING_COMPONENT, {
+    onConsume({ source, itemStack }) {
+      const typeId = itemStack?.typeId;
+      system.run(() => {
+        if (source?.isValid) drinkStealing(source, typeId);
+      });
+    },
+  });
   itemComponentRegistry.registerCustomComponent(DIADEM_COMPONENT, {
     onUse({ source }) {
       onDiademUse(source);
@@ -42,6 +50,7 @@ setupBoosts();
 setupAutoMace();
 setupFx();
 setupWater();
+setupStealing();
 
 const activeRelics = new Map(); // player id -> relic keys currently carried
 let reportedUnreadable = false;

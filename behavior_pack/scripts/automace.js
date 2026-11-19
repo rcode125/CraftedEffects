@@ -122,7 +122,7 @@ function smash(player, state) {
   }
   playSound(player, "mace.heavy_smash_ground");
   player.applyKnockback({ x: 0, z: 0 }, 0.8); // bounce back up like a real mace hit
-  player.sendMessage(`§6Auto-Mace: §c${damage} Schaden §7(${Math.round(fallDistance)} Blöcke Fallhöhe)`);
+  player.onScreenDisplay.setActionBar(`§6Auto-Mace: §c${damage} Schaden §7(${Math.round(fallDistance)} Blöcke Fallhöhe)`);
 }
 
 function tick(player, state) {

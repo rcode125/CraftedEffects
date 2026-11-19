@@ -1,6 +1,7 @@
 import { EquipmentSlot, ItemStack, system, world } from "@minecraft/server";
 import { DATA } from "./data.js";
 import { relicConfig, relicDisplay, relicKey, relicTypeId, saveConfig } from "./config.js";
+import { endStealing, hasStealing } from "./stealing.js";
 
 // Keeps track of which relic currently exists in the world, so that each one
 // can only exist once. Every real relic carries a serial number; the registry
@@ -11,12 +12,11 @@ import { relicConfig, relicDisplay, relicKey, relicTypeId, saveConfig } from "./
 // - relics cannot burn or explode; only the void destroys them
 // - a relic that is not in a player's inventory for 5 minutes decays
 //   (ground, chests, ender chests, barrels, shulkers ...); offline players keep theirs
-// - on death the relic stays with the player, unless the killer uses the Stealing
+// - on death the relic stays with the player, unless the killer has drunk a Stealing bottle
 
 const REGISTRY_KEY = "ce:registry_v4"; // relics of 4.x worlds stay valid across updates
 const SERIAL_PROPERTY = "ce:serial";
 const STASH_PROPERTY = "ce:stash";
-export const STEALING_ID = "craftedeffects:stealing";
 const PLAYER_HEAD_ID = "minecraft:player_head";
 
 const DECAY_TICKS = 5 * 60 * 20; // 5 minutes outside a player's inventory
@@ -179,7 +179,7 @@ function checkFresh(player, slot, itemStack, key, alreadyCarries) {
   if (reason) {
     slot.setItem(undefined);
     refundIngredients(player, key);
-    player.sendMessage(`§c${reason}. Die Zutaten wurden zurückgegeben.`);
+    player.onScreenDisplay.setActionBar(`§c${reason}. Die Zutaten wurden zurückgegeben.`);
     return false;
   }
   slot.setItem(claimRelic(key, itemStack, player));
@@ -224,7 +224,7 @@ export function scanPlayer(player) {
     for (const entry of valid) {
       if (entry === keep) continue;
       dropForSwap(player, entry.slot);
-      player.sendMessage(`§e${relicConfig(entry.key).name} wurde abgelegt – du kannst nur einen Effekt haben.`);
+      player.onScreenDisplay.setActionBar(`§e${relicConfig(entry.key).name} wurde abgelegt – du kannst nur einen Effekt haben.`);
     }
     valid.length = 0;
     valid.push(keep);
@@ -466,8 +466,7 @@ function takeRelicFromDead(dead, key, serial, dimension, location) {
 }
 
 function consumeStealing(killer) {
-  const slot = killer.getComponent("minecraft:inventory")?.container?.getSlot(killer.selectedSlotIndex);
-  if (slot?.getItem()?.typeId === STEALING_ID) slot.setItem(undefined);
+  endStealing(killer);
   try {
     killer.dimension.playSound("random.break", killer.location);
   } catch {
@@ -480,9 +479,7 @@ function onPlayerDeath(dead, damageSource) {
   const location = { ...dead.location };
   const killer = damageSource?.damagingEntity;
   const killedByPlayer = killer?.typeId === "minecraft:player" && killer.id !== dead.id;
-  const withStealing =
-    killedByPlayer &&
-    killer.getComponent("minecraft:inventory")?.container?.getItem(killer.selectedSlotIndex)?.typeId === STEALING_ID;
+  const withStealing = killedByPlayer && hasStealing(killer);
 
   if (killedByPlayer) {
     try {
@@ -520,7 +517,8 @@ function onPlayerDeath(dead, damageSource) {
       save();
       giveOrDrop(killer, rebuildRelicItem(key, serial));
       consumeStealing(killer);
-      world.sendMessage(`§c${killer.name} hat ${dead.name} mit dem Stealing §d${relicName}§c abgenommen!`);
+      killer.onScreenDisplay.setActionBar(`§5Stealing: §d${relicName}§5 von ${dead.name} gestohlen!`);
+      if (dead.isValid) dead.onScreenDisplay.setActionBar(`§c${killer.name} hat dir §d${relicName}§c gestohlen!`);
       return;
     }
     // Normal death: the relic waits for the respawn.
@@ -540,7 +538,7 @@ function returnStash(player) {
     Object.assign(entry, { stashed: false, offline: false, holder: player.name, holderId: player.id, missingTicks: 0 });
     save();
     giveOrDrop(player, rebuildRelicItem(key, serial));
-    player.sendMessage(`§a${relicConfig(key).name} ist wieder bei dir.`);
+    player.onScreenDisplay.setActionBar(`§a${relicConfig(key).name} ist wieder bei dir.`);
   } catch (error) {
     console.warn(`[CraftedEffects] Effekt nach dem Respawn nicht zurückgegeben: ${error}`);
   }

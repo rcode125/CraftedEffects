@@ -65,8 +65,9 @@ def validate_relics():
     lang = (RP_DIR / "texts" / "en_US.lang").read_text(encoding="utf-8")
     recipes_seen = set()
     recipe_names = [content.relic_id(r) for r in content.RELICS] + ["diadem"]
-    item_names = recipe_names + ["stealing"]  # the Stealing has no recipe yet
-    for folder, names in (("items", item_names), ("recipes", recipe_names)):
+    stealing_names = [content.stealing_id(level) for level in range(1, len(content.STEALING["minutes"]) + 1)]
+    item_names = recipe_names + stealing_names
+    for folder, names in (("items", item_names), ("recipes", item_names)):
         expected_files = {f"{name}.json" for name in names}
         found = {p.name for p in (BP_DIR / folder).glob("*.json")}
         if found != expected_files:
@@ -91,7 +92,7 @@ def validate_relics():
         components = item["components"]
         if is_relic and components["minecraft:max_stack_size"] != 1:
             fail(f"{name}: relics must not stack (needed for serial numbers)")
-        component = "relic" if is_relic else name
+        component = "relic" if is_relic else "stealing" if name in stealing_names else name
         if f"{content.NAMESPACE}:{component}" not in components:
             fail(f"{name}: missing {component} custom component")
         texture_key = components["minecraft:icon"]["textures"]["default"]
@@ -102,7 +103,10 @@ def validate_relics():
         if f"item.{full_id}.name=" not in lang:
             fail(f"{name}: name missing in en_US.lang")
 
-        if name not in recipe_names:
+        if name in stealing_names:
+            recipe = load_json(BP_DIR / "recipes" / f"{name}.json")["minecraft:recipe_shapeless"]
+            if recipe["result"] != {"item": full_id, "count": 1}:
+                fail(f"{name}: recipe result does not match the item")
             continue
         recipe = load_json(BP_DIR / "recipes" / f"{name}.json")["minecraft:recipe_shaped"]
         if recipe["result"] != {"item": full_id, "count": 1}:

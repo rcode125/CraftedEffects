@@ -3,7 +3,8 @@ import { DATA } from "./data.js";
 import {
   RELIC_KEYS, attackLabel, boostLabel, effectLabel, getConfig, isRelicKey, relicConfig, resetConfig, saveConfig, setLevel,
 } from "./config.js";
-import { STEALING_ID, freeRelic, isRelicFree, newRelicItem, relicStatus } from "./registry.js";
+import { freeRelic, isRelicFree, newRelicItem, relicStatus } from "./registry.js";
+import { STEALING_IDS } from "./stealing.js";
 
 const RELIC_ENUM = "ce:relic";
 const EFFECT_ENUM = "ce:effecttype";
@@ -120,16 +121,22 @@ const COMMANDS = [
   },
   {
     name: "ce:stealing",
-    description: "Gibt ein Stealing (stiehlt beim Kill den Effekt)",
-    optionalParameters: [{ name: "spieler", type: CustomCommandParamType.PlayerSelector }],
-    run(origin, players) {
+    description: "Gibt eine Stealing-Flasche (Stufe 1-5)",
+    optionalParameters: [
+      { name: "stufe", type: CustomCommandParamType.Integer },
+      { name: "spieler", type: CustomCommandParamType.PlayerSelector },
+    ],
+    run(origin, level, players) {
+      const stufe = level ?? 1;
+      if (stufe < 1 || stufe > STEALING_IDS.length) return fail(`Stufe muss zwischen 1 und ${STEALING_IDS.length} liegen.`);
       const target = players?.[0] ?? (origin.sourceEntity?.typeId === "minecraft:player" ? origin.sourceEntity : undefined);
       if (!target) return fail("Kein Spieler angegeben.");
+      const itemId = STEALING_IDS[stufe - 1];
       later(() => {
-        const leftover = target.getComponent("minecraft:inventory")?.container?.addItem(new ItemStack(STEALING_ID, 1));
+        const leftover = target.getComponent("minecraft:inventory")?.container?.addItem(new ItemStack(itemId, 1));
         if (leftover) target.dimension.spawnItem(leftover, target.location);
       });
-      return ok(`Stealing geht an ${target.name}.`);
+      return ok(`Stealing (Stufe ${stufe}) geht an ${target.name}.`);
     },
   },
   {
